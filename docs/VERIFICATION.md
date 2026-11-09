@@ -27,3 +27,7 @@ Configure the managed database and backups, verified email domain, private bucke
 ## Reference design update — 2026-11-10
 
 The supplied landing design was converted into a React component with scoped CSS and actual login links, class filters, course dialogs and FAQ controls. Shared branding, fonts, buttons, cards, forms, charts and navigation use the same crimson/navy visual language across Student, Teacher and Admin workspaces. Eight focused Playwright cases passed across desktop and mobile; all 28 existing unit/integration tests passed. The production Next.js build passed in an isolated .next-design-check output directory using the already-generated Prisma client, avoiding replacement of the running application’s locked Windows DLL. No database schema, account password or student record was changed.
+
+## Formal palette and premium dashboards — 2026-11-10
+
+The current interface uses Navy Blue, Slate and White across the landing page, authentication and all dashboards. A dedicated premium dashboard component adds role-specific quick links, refined metrics, actual assessment-history charts and calendar panels. The isolated production build and TypeScript validation passed. Design checks passed for desktop and mobile across all three roles; the mobile Student case passed on a focused rerun after an initial concurrent-build rendering delay. Landing filters, course details, FAQs, login links, mobile navigation and horizontal overflow checks were exercised. No database schema, password, academic service or student record was changed.

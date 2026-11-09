@@ -1,13 +1,13 @@
 .spark-landing {
-  --red: #cf3048;
-  --red2: #a81f36;
+  --brand: #16324f;
+  --brand-hover: #0f243a;
   --ink: #171e2c;
   --muted: #687184;
   --line: #e9edf2;
   --bg: #f8f9fb;
-  --soft: #fff0f2;
+  --soft: #edf2f7;
   --teal: #148879;
-  --yellow: #ffc956;
+  --yellow: #b99b63;
   --radius: 18px;
 }
 .spark-landing * {
@@ -46,7 +46,7 @@
   padding: 8px;
 }
 .spark-landing .topline b {
-  color: #ffd877;
+  color: #d2bf91;
 }
 .spark-landing header {
   position: sticky;
@@ -76,17 +76,17 @@
   width: 40px;
   display: grid;
   place-items: center;
-  background: var(--red);
+  background: var(--brand);
   color: white;
   font-size: 27px;
   border-radius: 12px;
-  box-shadow: 0 6px 16px #cf304833;
+  box-shadow: 0 6px 16px #16324f33;
 }
 .spark-landing .brand small {
   display: block;
   font-size: 10px;
   letter-spacing: 3.1px;
-  color: var(--red);
+  color: var(--brand);
   margin-top: -4px;
 }
 .spark-landing .links {
@@ -98,7 +98,7 @@
   font-weight: 600;
 }
 .spark-landing .links a:hover {
-  color: var(--red);
+  color: var(--brand);
 }
 .spark-landing .nav-actions {
   display: flex;
@@ -119,12 +119,12 @@
   transform: translateY(-2px);
 }
 .spark-landing .btn.primary {
-  background: var(--red);
+  background: var(--brand);
   color: #fff;
-  box-shadow: 0 7px 16px #cf304833;
+  box-shadow: 0 7px 16px #16324f33;
 }
 .spark-landing .btn.primary:hover {
-  background: var(--red2);
+  background: var(--brand-hover);
 }
 .spark-landing .btn.outline {
   background: #fff;
@@ -143,8 +143,8 @@
 }
 .spark-landing .hero {
   background:
-    radial-gradient(circle at 83% 9%, #ffe4e5 0, transparent 34%),
-    linear-gradient(145deg, #fff 18%, #fff8f7 100%);
+    radial-gradient(circle at 83% 9%, #e4ecf4 0, transparent 34%),
+    linear-gradient(145deg, #fff 18%, #f6f8fb 100%);
   padding: 66px 0 42px;
   overflow: hidden;
 }
@@ -158,11 +158,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #f7ced4;
+  border: 1px solid #cbd8e5;
   background: #fff;
   padding: 8px 13px;
   border-radius: 30px;
-  color: #b7253b;
+  color: #245273;
   font-weight: 700;
   font-size: 12px;
 }
@@ -170,8 +170,8 @@
   height: 7px;
   width: 7px;
   border-radius: 100%;
-  background: var(--red);
-  box-shadow: 0 0 0 4px #ffe1e6;
+  background: var(--brand);
+  box-shadow: 0 0 0 4px #e2eaf2;
 }
 .spark-landing .hero h1 {
   font-size: clamp(40px, 5vw, 68px);
@@ -182,7 +182,7 @@
 }
 .spark-landing .hero h1 em {
   font-style: normal;
-  color: var(--red);
+  color: var(--brand);
 }
 .spark-landing .hero p {
   color: #647081;
@@ -223,16 +223,16 @@
   position: absolute;
   inset: 40px 15px 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffe2e4, #fff1cf);
+  background: linear-gradient(135deg, #e4edf5, #e7eef5);
   transform: rotate(-15deg);
 }
 .spark-landing .art-back {
   position: absolute;
   inset: 56px 58px 30px;
-  background: linear-gradient(140deg, #ef465b, #b3223b);
+  background: linear-gradient(140deg, #557b99, #16324f);
   border-radius: 42% 42% 24% 24%;
   transform: rotate(7deg);
-  box-shadow: 0 25px 60px #b3223b30;
+  box-shadow: 0 25px 60px #16324f30;
 }
 .spark-landing .art-card {
   position: absolute;
@@ -241,9 +241,9 @@
   right: 9%;
   bottom: 11%;
   background: #fff;
-  border: 1px solid #f4dbe0;
+  border: 1px solid #d8e2ec;
   border-radius: 25px;
-  box-shadow: 0 30px 70px #31131d2a;
+  box-shadow: 0 30px 70px #152b402a;
   transform: rotate(-5deg);
   padding: 23px;
   display: flex;
@@ -269,7 +269,7 @@
   line-height: 1.2;
 }
 .spark-landing .art-card strong span {
-  color: var(--red);
+  color: var(--brand);
 }
 .spark-landing .mini-stat {
   position: absolute;
@@ -335,8 +335,8 @@
 }
 .spark-landing .grade:hover,
 .spark-landing .grade.active {
-  border-color: var(--red);
-  background: #fff5f5;
+  border-color: var(--brand);
+  background: #f1f5f9;
   transform: translateY(-3px);
 }
 .spark-landing .grade .grade-icon {
@@ -367,7 +367,7 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 800;
-  color: var(--red);
+  color: var(--brand);
 }
 .spark-landing h2 {
   font-size: clamp(29px, 3.3vw, 43px);
@@ -466,27 +466,27 @@
 }
 .spark-landing .cover.blue {
   color: #fff;
-  background: linear-gradient(135deg, #3154b9, #8094e8);
+  background: linear-gradient(135deg, #244b70, #7f9ab1);
 }
 .spark-landing .cover.red {
   color: #fff;
-  background: linear-gradient(135deg, #b7223f, #f46979);
+  background: linear-gradient(135deg, #23445c, #7595a7);
 }
 .spark-landing .cover.purple {
   color: #fff;
-  background: linear-gradient(135deg, #5936a6, #a677ed);
+  background: linear-gradient(135deg, #40516b, #8b9bb3);
 }
 .spark-landing .cover.green {
   color: #fff;
-  background: linear-gradient(135deg, #087c76, #4cc5ac);
+  background: linear-gradient(135deg, #2c5c62, #81a8aa);
 }
 .spark-landing .cover.orange {
   color: #fff;
-  background: linear-gradient(135deg, #b95b22, #ffb66d);
+  background: linear-gradient(135deg, #665b4b, #b8aa93);
 }
 .spark-landing .cover.navy {
   color: #fff;
-  background: linear-gradient(135deg, #142a49, #4171a8);
+  background: linear-gradient(135deg, #1a344d, #62819a);
 }
 .spark-landing .course-info {
   padding: 20px;
@@ -528,7 +528,7 @@
 }
 .spark-landing .course-bottom a,
 .spark-landing .textlink {
-  color: var(--red);
+  color: var(--brand);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -559,7 +559,7 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: #fff0f2;
+  background: #edf2f7;
   font-size: 25px;
   margin-bottom: 19px;
 }
@@ -606,7 +606,7 @@
 .spark-landing .step .num {
   font-size: 12px;
   font-weight: 800;
-  color: var(--red);
+  color: var(--brand);
   margin-bottom: 18px;
 }
 .spark-landing .step h3 {
@@ -621,7 +621,7 @@
 }
 .spark-landing .app-section {
   padding: 80px 0;
-  background: linear-gradient(115deg, #fff0f2, #f9fafb);
+  background: linear-gradient(115deg, #edf2f7, #f9fafb);
 }
 .spark-landing .app-grid {
   display: grid;
@@ -673,7 +673,7 @@
   align-items: center;
 }
 .spark-landing .phone-card {
-  background: var(--red);
+  background: var(--brand);
   color: white;
   padding: 18px;
   border-radius: 15px;
@@ -736,7 +736,7 @@
   transform: rotate(45deg);
 }
 .spark-landing .cta {
-  background: var(--red);
+  background: var(--brand);
   border-radius: 25px;
   padding: 50px;
   text-align: center;
@@ -750,7 +750,7 @@
 }
 .spark-landing .cta .btn {
   background: white;
-  color: var(--red);
+  color: var(--brand);
   margin-top: 15px;
 }
 .spark-landing footer {
@@ -845,7 +845,7 @@
   padding: 13px;
   width: 100%;
   background: white;
-  outline-color: var(--red);
+  outline-color: var(--brand);
 }
 .spark-landing .toast {
   position: fixed;
@@ -1058,14 +1058,14 @@
   background: none;
   padding: 4px;
   font: inherit;
-  color: var(--red);
+  color: var(--brand);
   cursor: pointer;
 }
 .spark-landing .brand-mark {
   object-fit: contain;
 }
 .spark-landing .program-dialog {
-  border: 1px solid #f4dbe0;
+  border: 1px solid #d8e2ec;
   border-radius: 23px;
   padding: 34px;
   width: min(480px, calc(100% - 32px));
@@ -1124,3 +1124,5 @@
     padding: 10px 11px;
   }
 }
+
+.spark-landing .cover p{color:inherit}.spark-landing .cta p{color:#e3ebf3;opacity:1}

@@ -97,11 +97,11 @@ export function Shell({
           })}
         </nav>
         <div className="sidebar-note">
-          <strong>A little progress, every day.</strong>
+          <strong>A focused academic workspace.</strong>
           <p className="mt-2">
-            Keep showing up. Your future self will thank you.
+            Everything you need to keep your academic activity organized.
           </p>
-          <Link href="/" className="text-rose-700 flex mt-3">
+          <Link href="/" className="text-slate-700 flex mt-3">
             Visit website <ArrowUpRight size={13} />
           </Link>
         </div>
@@ -117,7 +117,13 @@ export function Shell({
             >
               <Menu size={18} />
             </button>
-            <span className="muted text-xs">Your learning, connected.</span>
+            <span className="muted text-xs">
+              Workspace /{" "}
+              {navigation[role].find(
+                ([key]) =>
+                  pathname === (key === "dashboard" ? base : `${base}/${key}`),
+              )?.[1] || "Academic workspace"}
+            </span>
           </div>
           <div className="flex">
             <Link aria-label="Notifications" href={`${base}/notifications`}>

@@ -1,20 +1,28 @@
-# Reference visual system
+# Spark Academy visual system
 
-The supplied SPARK_Academy_Landing_Demo.html is used as a visual reference. Its document scripts/instructions are not executed. The public layout is implemented as a typed React component with scoped CSS.
+The supplied HTML informs the Bengali landing layout and learning illustrations. The latest requested palette is formal Navy Blue, Slate and White throughout the website.
 
-## Shared design
+## Palette
 
-- Crimson #CF3048, deep navy #1B2434 and soft pink #FFF0F2.
-- Outfit and Hind Siliguri typography, with system fallbacks when Google Fonts is unavailable.
-- Bengali landing content, illustrated book/lightbulb hero, class selectors, colored course covers, feature cards, learning steps, a labeled illustrative mobile dashboard, FAQs and the closing call to action.
-- The same identity, typography, card/button/form styles, sidebar states and crimson chart accents are used by authentication and all role workspaces.
-- Red/yellow/green learning statuses retain their semantic colors.
+- Primary Navy: #16324F; hover #0F243A.
+- Workspace background: #F5F7FA; white cards with #E5EBF2 borders.
+- Muted blue accent: #315F81; text #17324D.
+- Course covers use coordinated, desaturated blue, teal, slate and stone tones.
+- Danger and RED/YELLOW/GREEN understanding statuses keep their semantic colors.
 
-Login controls open the existing authentication page. Course details explain enrollment through the coaching administrator. There is no fabricated admission submission, payment, native-app download or live-session booking. Existing asynchronous voice Q&A, private feedback, revision, exams and other platform features remain connected to the same backend.
+## Premium dashboards
 
-## Safe local build validation
+Student, Teacher and Admin workspaces share a dark navy sidebar, refined typography, uniform summary cards and role-specific quick-access links. The dashboard includes an academic welcome panel, a performance area chart derived from actual released assessments, upcoming classes, examinations and notifications. Existing results, revision and anonymous Q&A sections remain available. No fabricated improvement percentages or performance history are added.
 
-With a development server running on Windows, Prisma may hold its generated engine DLL open. When the schema/client is already generated and unchanged, validate Next.js in a separate output directory without replacing the engine or the active server output:
+The dashboard implementation is separated into premium-dashboard.tsx; charts and shared shell components remain reusable. All role permissions, API services, existing accounts and database records are unchanged by the design update.
+
+## Public and authentication pages
+
+Outfit/Hind Siliguri typography, the Bengali reference layout, program filters, course dialogs, FAQ, login and password-reset screens use the same formal palette. Google Fonts have system fallbacks. The phone dashboard illustration is labeled as an illustration. Enrollment actions direct users to their coaching administrator; no unsupported native app, payment or live-session booking is introduced.
+
+## Local validation on Windows
+
+The generated Prisma client is unchanged. To avoid replacing the engine DLL held by a running development server, Next.js can validate a production build into an ignored separate directory:
 
 ```powershell
 $env:SPARK_BUILD_DIR = '.next-design-check'
@@ -22,4 +30,4 @@ npx next build
 Remove-Item Env:\SPARK_BUILD_DIR
 ```
 
-For the standard production command, stop the development server first, then run npm run build. The alternative output directory is ignored by Git.
+For the standard npm run build command, stop the development server first. Existing database services do not need recreation.

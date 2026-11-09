@@ -72,6 +72,6 @@ Production: npm run db:deploy, npm run build, npm run start. Never reset or recr
 
 The original prototype remains in this workstation’s ignored legacy/ folder and earlier Git history; it is not served by this application. Logo assets are in public/.
 
-## Visual reference
+## Visual system
 
-The website follows the supplied Spark Academy HTML demo: Bengali landing layout, crimson/navy colors, Outfit/Hind Siliguri typography and matching styling throughout authentication and all role workspaces. See [design notes](docs/DESIGN.md). Existing accounts and database services are unchanged.
+The supplied Bengali landing layout is paired with a formal Navy Blue, Slate and White palette throughout the website. Student, Teacher and Admin dashboards use a premium dark sidebar, refined summary cards, role-specific quick links, real assessment charts and upcoming-class panels. See [design notes](docs/DESIGN.md). Existing accounts and database services are unchanged.

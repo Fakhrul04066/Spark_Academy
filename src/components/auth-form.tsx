@@ -80,7 +80,7 @@ export function AuthForm({
             A little spark.
             <br />A lifetime of
             <br />
-            <span style={{ color: "#ffbac5" }}>possibilities.</span>
+            <span style={{ color: "#c0d3e3" }}>possibilities.</span>
           </h1>
           <p>
             A focused space to learn, practice and become a little better every
@@ -141,7 +141,7 @@ export function AuthForm({
                 <span className="text-red-700">Password is required</span>
               )}
             </label>
-            <Link className="text-rose-700 text-xs" href="/forgot-password">
+            <Link className="text-slate-700 text-xs" href="/forgot-password">
               Forgot password?
             </Link>
             <button className="btn" disabled={busy}>
@@ -186,7 +186,7 @@ export function AuthForm({
                   ? "Send reset link"
                   : "Update password"}
             </button>
-            <Link href="/login" className="text-rose-700">
+            <Link href="/login" className="text-slate-700">
               Back to sign in
             </Link>
           </form>

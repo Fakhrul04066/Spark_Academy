@@ -54,7 +54,7 @@ export function ReferenceLanding() {
               alt=""
             />
             <span>
-              Spark <span style={{ color: "var(--red)" }}>Academy</span>
+              Spark <span style={{ color: "var(--brand)" }}>Academy</span>
               <small>LEARN • GROW • SHINE</small>
             </span>
           </a>
@@ -148,7 +148,7 @@ export function ReferenceLanding() {
                     style={{
                       height: "6px",
                       width: "65%",
-                      background: "#f4b5bf",
+                      background: "#b7cadb",
                       borderRadius: "20px",
                     }}
                   ></div>
@@ -158,7 +158,7 @@ export function ReferenceLanding() {
                   <span>
                     Weekly Exam
                     <br />
-                    <b style={{ color: "var(--red)" }}>Rank Tracker</b>
+                    <b style={{ color: "var(--brand)" }}>Rank Tracker</b>
                   </span>
                 </div>
                 <div className="mini-stat stat-two">
@@ -241,7 +241,7 @@ export function ReferenceLanding() {
               <span className="kicker">EXPLORE OUR PROGRAMS</span>
               <h2>
                 তোমার স্বপ্নের জন্য{" "}
-                <span style={{ color: "var(--red)" }}>সঠিক কোর্স</span>
+                <span style={{ color: "var(--brand)" }}>সঠিক কোর্স</span>
               </h2>
               <p>
                 স্কুল থেকে HSC Science পর্যন্ত, প্রতিটি ধাপে যত্ন নিয়ে সাজানো
@@ -528,7 +528,7 @@ export function ReferenceLanding() {
               <span className="kicker">WHY SPARK ACADEMY</span>
               <h2>
                 শুধু পড়ানো নয়,{" "}
-                <span style={{ color: "var(--red)" }}>সম্পূর্ণ গাইডলাইন</span>
+                <span style={{ color: "var(--brand)" }}>সম্পূর্ণ গাইডলাইন</span>
               </h2>
               <p>
                 শিক্ষার্থী, শিক্ষক ও অ্যাডমিন—সবার জন্য এক জায়গায় প্রয়োজনীয় সব
@@ -613,7 +613,7 @@ export function ReferenceLanding() {
               <span className="kicker">HOW IT WORKS</span>
               <h2>
                 পড়াশোনায় এগিয়ে যাওয়ার{" "}
-                <span style={{ color: "var(--red)" }}>সহজ পথ</span>
+                <span style={{ color: "var(--brand)" }}>সহজ পথ</span>
               </h2>
               <p>
                 একটি অ্যাকাউন্ট থেকেই কোর্স, পরীক্ষা ও নিজের অগ্রগতির সব তথ্য
@@ -659,7 +659,7 @@ export function ReferenceLanding() {
               <h2>
                 তোমার শেখার জগৎ
                 <br />
-                <span style={{ color: "var(--red)" }}>এবার হাতের মুঠোয়</span>
+                <span style={{ color: "var(--brand)" }}>এবার হাতের মুঠোয়</span>
               </h2>
               <p>
                 ওয়েব ও মোবাইল ভিউে একই অ্যাকাউন্ট। ক্লাস রুটিন, পরীক্ষা, ফলাফল,
@@ -731,7 +731,7 @@ export function ReferenceLanding() {
                       <span
                         style={{
                           height: "38%",
-                          background: "#ffb8c4",
+                          background: "#c0d3e3",
                           flex: "1",
                           borderRadius: "4px",
                         }}
@@ -739,7 +739,7 @@ export function ReferenceLanding() {
                       <span
                         style={{
                           height: "52%",
-                          background: "#f7899c",
+                          background: "#8baac2",
                           flex: "1",
                           borderRadius: "4px",
                         }}
@@ -747,7 +747,7 @@ export function ReferenceLanding() {
                       <span
                         style={{
                           height: "65%",
-                          background: "#ef5f79",
+                          background: "#5e85a2",
                           flex: "1",
                           borderRadius: "4px",
                         }}
@@ -755,7 +755,7 @@ export function ReferenceLanding() {
                       <span
                         style={{
                           height: "83%",
-                          background: "var(--red)",
+                          background: "var(--brand)",
                           flex: "1",
                           borderRadius: "4px",
                         }}
@@ -763,7 +763,7 @@ export function ReferenceLanding() {
                       <span
                         style={{
                           height: "98%",
-                          background: "#9d1f35",
+                          background: "#244b6d",
                           flex: "1",
                           borderRadius: "4px",
                         }}
@@ -781,7 +781,7 @@ export function ReferenceLanding() {
               <span className="kicker">FAQ</span>
               <h2>
                 কিছু সাধারণ{" "}
-                <span style={{ color: "var(--red)" }}>প্রশ্ন ও উত্তর</span>
+                <span style={{ color: "var(--brand)" }}>প্রশ্ন ও উত্তর</span>
               </h2>
             </div>
             <div className="faq-layout">

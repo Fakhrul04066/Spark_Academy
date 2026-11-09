@@ -1,4 +1,5 @@
 "use client";
+import { PremiumDashboard } from "./premium-dashboard";
 
 import Link from "next/link";
 
@@ -442,152 +443,13 @@ export function Workspace({
         data && (
           <>
             {module === "dashboard" ? (
-              <>
-                <div className="dashboard-banner">
-                  <span className="eyebrow">KEEP YOUR MOMENTUM</span>
-                  <h2 className="mt-2">Every step forward matters.</h2>
-                  <p>
-                    {role === "STUDENT"
-                      ? "Your next lesson, practice session and revision all add up."
-                      : role === "TEACHER"
-                        ? "Guide your learners with focused lessons and timely feedback."
-                        : "A clear view of your coaching center, all in one place."}
-                  </p>
-                </div>
-                <div className="grid four mb-6">
-                  {[
-                    [
-                      role === "STUDENT"
-                        ? "Study progress"
-                        : "Assigned students",
-                      role === "STUDENT"
-                        ? `${data.progress}%`
-                        : (data.students ?? 0),
-                      BookOpen,
-                    ],
-                    ["Available exams", data.exams, ClipboardCheck],
-                    ["Attendance", `${data.attendance}%`, CalendarDays],
-                    [
-                      role === "STUDENT"
-                        ? "Revision due"
-                        : "Average exam score",
-                      role === "STUDENT" ? data.revisions : `${data.average}%`,
-                      Clock,
-                    ],
-                  ].map(([label, value, Icon]) => {
-                    const I = Icon as typeof BookOpen;
-                    return (
-                      <div className="card stat" key={String(label)}>
-                        <div className="row">
-                          <span className="icon">
-                            <I size={19} />
-                          </span>
-                          <span className="footnote">LIVE DATA</span>
-                        </div>
-                        <strong>{String(value)}</strong>
-                        <p>{String(label)}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="grid two">
-                  <div className="card">
-                    <div className="row mb-5">
-                      <h3>Learning overview</h3>
-                      <span className="pill">This workspace</span>
-                    </div>
-                    {catalog.progress?.length ? (
-                      <ProgressChart data={catalog.progress} />
-                    ) : (
-                      <Empty
-                        title="Your progress starts here"
-                        text="Complete an assigned lesson to start tracking your learning."
-                      />
-                    )}
-                    <p className="footnote mt-3">
-                      {role === "STUDENT"
-                        ? "Lesson completion is explicitly marked by the learner."
-                        : "Subject averages use released examination scores."}
-                    </p>
-                  </div>
-                  <div className="card">
-                    <div className="row mb-5">
-                      <h3>Coming up</h3>
-                      <Link
-                        className="text-rose-700 text-xs"
-                        href={`${base}/routines`}
-                      >
-                        View routine ↗
-                      </Link>
-                    </div>
-                    <div className="stack">
-                      {catalog.routines
-                        ?.filter((r: Row) => new Date(r.endsAt) > new Date())
-                        .slice(0, 4)
-                        .map((r: Row) => (
-                          <div
-                            className="row border-b border-slate-100 pb-4"
-                            key={r.id}
-                          >
-                            <span className="feature-icon mb-0">
-                              <CalendarDays size={18} />
-                            </span>
-                            <div className="flex-1">
-                              <strong>{r.subject}</strong>
-                              <p className="text-xs">
-                                {r.location} · {when(r.startsAt)} Dhaka
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      {!catalog.routines?.some(
-                        (r: Row) => new Date(r.endsAt) > new Date(),
-                      ) && (
-                        <Empty
-                          title="A little breathing room"
-                          text="No upcoming classes have been scheduled."
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className="card">
-                    <h3 className="mb-5">Examinations</h3>
-                    {catalog.exams?.slice(0, 3).map((r: Row) => (
-                      <div
-                        key={r.id}
-                        className="row py-3 border-b border-slate-100"
-                      >
-                        <div>
-                          <strong>{r.title}</strong>
-                          <p className="text-xs">
-                            {r.durationMinutes} minutes · {r._count.questions}{" "}
-                            questions
-                          </p>
-                        </div>
-                        <Link href={`${base}/exams`}>
-                          <ArrowUpRight size={18} />
-                        </Link>
-                      </div>
-                    ))}
-                    {!catalog.exams?.length && <p>No examinations yet.</p>}
-                  </div>
-                  <div className="card">
-                    <h3 className="mb-5">Latest updates</h3>
-                    {catalog.notifications?.slice(0, 3).map((n: Row) => (
-                      <div
-                        key={n.id}
-                        className="py-3 border-b border-slate-100"
-                      >
-                        <strong>{n.title}</strong>
-                        <p className="text-xs">{n.message}</p>
-                      </div>
-                    ))}
-                    {!catalog.notifications?.length && (
-                      <p>You’re all caught up.</p>
-                    )}
-                  </div>
-                </div>
-              </>
+              <PremiumDashboard
+                role={role}
+                name={name}
+                data={data}
+                catalog={catalog}
+                base={base}
+              />
             ) : module === "profile" || module === "settings" ? (
               <Profile
                 data={data}
@@ -981,7 +843,7 @@ export function Workspace({
                                 )}
                                 {r.replies.map((reply: Row) => (
                                   <div
-                                    className="bg-rose-50 rounded-xl p-4 mt-4"
+                                    className="bg-slate-50 rounded-xl p-4 mt-4"
                                     key={reply.id}
                                   >
                                     <strong className="text-xs">
@@ -1047,7 +909,7 @@ export function Workspace({
                                 </p>
                                 {r.replies.map((reply: Row) => (
                                   <div
-                                    className="bg-rose-50 rounded-lg p-4 mt-4"
+                                    className="bg-slate-50 rounded-lg p-4 mt-4"
                                     key={reply.id}
                                   >
                                     <strong className="text-xs">
@@ -1161,7 +1023,7 @@ export function Workspace({
                                       "/student/",
                                       base + "/",
                                     )}
-                                    className="text-rose-700 text-xs"
+                                    className="text-slate-700 text-xs"
                                   >
                                     Open related page →
                                   </Link>
@@ -1381,7 +1243,7 @@ export function Workspace({
 
 function DashboardActivity({ catalog, base }: { catalog: Row; base: string }) {
   return (
-    <div className="grid three mt-6">
+    <div className="grid three mt-6 premium-activity">
       <div className="card">
         <h3>Latest results</h3>
         {catalog.results?.slice(0, 3).map((r: Row) => (
@@ -1427,7 +1289,7 @@ function DashboardActivity({ catalog, base }: { catalog: Row; base: string }) {
         {!catalog.questions?.length && (
           <p className="mt-4">No questions yet.</p>
         )}
-        <Link href={`${base}/questions`} className="text-rose-700 text-xs">
+        <Link href={`${base}/questions`} className="text-slate-700 text-xs">
           Open anonymous Q&amp;A →
         </Link>
       </div>
@@ -1438,7 +1300,7 @@ function DashboardActivity({ catalog, base }: { catalog: Row; base: string }) {
 function Empty({ title, text }: { title: string; text: string }) {
   return (
     <div className="empty">
-      <BookOpen size={26} className="mx-auto mb-3 text-rose-600" />
+      <BookOpen size={26} className="mx-auto mb-3 text-slate-600" />
       <h3>{title}</h3>
       <p>{text}</p>
     </div>

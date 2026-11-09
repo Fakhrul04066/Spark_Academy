@@ -31,3 +31,7 @@ The supplied landing design was converted into a React component with scoped CSS
 ## Formal palette and premium dashboards — 2026-11-10
 
 The current interface uses Navy Blue, Slate and White across the landing page, authentication and all dashboards. A dedicated premium dashboard component adds role-specific quick links, refined metrics, actual assessment-history charts and calendar panels. The isolated production build and TypeScript validation passed. Design checks passed for desktop and mobile across all three roles; the mobile Student case passed on a focused rerun after an initial concurrent-build rendering delay. Landing filters, course details, FAQs, login links, mobile navigation and horizontal overflow checks were exercised. No database schema, password, academic service or student record was changed.
+
+## Current reference-informed visual update — 2026-11-10
+
+Eight desktop/mobile checks passed for the updated black/green landing page and the Student, Teacher and Admin workspaces. Inter/Anek Bangla font rendering, visible tile text, working public program search and absence of browser page errors were verified separately. TypeScript and the isolated production build passed. Existing academic APIs, Prisma schema, passwords and student data were not changed.

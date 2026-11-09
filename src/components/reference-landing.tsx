@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import "./reference-landing.css";
+import { Brand } from "./brand";
 const programs = [
   ["junior", "6"],
   ["junior", "7 8"],
@@ -10,6 +11,7 @@ const programs = [
   ["hsc", "hsc"],
 ];
 export function ReferenceLanding() {
+  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all"),
     [grade, setGrade] = useState(""),
     [menu, setMenu] = useState(false),
@@ -17,10 +19,23 @@ export function ReferenceLanding() {
     [course, setCourse] = useState<string | null>(null);
   const dialog = useRef<HTMLDialogElement>(null),
     trigger = useRef<HTMLElement | null>(null);
-  const visible = (category: string, grades: string) =>
-    grade
+  const visible = (category: string, grades: string) => {
+    const match = grade
       ? grades.split(" ").includes(grade)
       : filter === "all" || category === filter;
+    const terms: Record<string, string> = {
+      "6": "class 6 sixth ষষ্ঠ ৬ষ্ঠ foundation academic",
+      "7 8": "class 7 8 seventh eighth সপ্তম অষ্টম ৭ম ৮ম academic",
+      "9": "class 9 science নবম ৯ম বিজ্ঞান ssc",
+      "10": "class 10 ssc final দশম ১০ম এসএসসি",
+      hsc: "hsc science 11 12 একাদশ দ্বাদশ বিজ্ঞান physics chemistry math এইচএসসি",
+    };
+    return (
+      match &&
+      (!search.trim() ||
+        (terms[grades] || "").includes(search.trim().toLowerCase()))
+    );
+  };
   const count = programs.filter(([category, grades]) =>
     visible(category, grades),
   ).length;
@@ -45,19 +60,7 @@ export function ReferenceLanding() {
       </div>
       <header>
         <div className="container nav">
-          <a className="brand" href="#home">
-            <img
-              className="brand-mark"
-              src="/spark-mark.svg"
-              width="40"
-              height="40"
-              alt=""
-            />
-            <span>
-              Spark <span style={{ color: "var(--brand)" }}>Academy</span>
-              <small>LEARN • GROW • SHINE</small>
-            </span>
-          </a>
+          <Brand />
           <nav
             id="navlinks"
             className={`links ${menu ? "open" : ""}`}
@@ -69,6 +72,32 @@ export function ReferenceLanding() {
             <a href="#how">কীভাবে কাজ করে</a>
             <a href="#app">মোবাইল ভিউ</a>
           </nav>
+          <form
+            className="program-search"
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              document
+                .getElementById("courses")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <button aria-label="Search programs" type="submit">
+              ⌕
+            </button>
+            <input
+              aria-label="Search academic programs"
+              type="search"
+              placeholder="কোর্স খুঁজুন…"
+              value={search}
+              maxLength={80}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setGrade("");
+                setFilter("all");
+              }}
+            />
+          </form>
           <div className="nav-actions">
             <a className="btn outline" href="/login">
               লগইন
@@ -107,14 +136,7 @@ export function ReferenceLanding() {
                   নিজের অগ্রগতি ট্র্যাকিং এবং অভিজ্ঞ শিক্ষকের সাহায্য। সবকিছু
                   এখন এক প্ল্যাটফর্মে।
                 </p>
-                <div className="hero-cta">
-                  <a href="#courses" className="btn primary">
-                    আমাদের কোর্স দেখুন ↗
-                  </a>
-                  <a href="#features" className="btn outline">
-                    কী কী থাকছে? ▶
-                  </a>
-                </div>
+
                 <div className="hero-facts">
                   <span>
                     <b className="tick">✓</b> নিয়মিত পরীক্ষা
@@ -182,7 +204,11 @@ export function ReferenceLanding() {
                   onClick={() => chooseGrade("6")}
                   className={`grade ${grade === "6" ? "active" : ""}`}
                 >
-                  <div className="grade-icon">🌱</div>
+                  <div className="grade-icon">
+                    <span className="tile-level">
+                      CLASS<b>6</b>
+                    </span>
+                  </div>
                   <b>৬ষ্ঠ শ্রেণি</b>
                   <span>Class 6</span>
                 </button>
@@ -191,7 +217,11 @@ export function ReferenceLanding() {
                   onClick={() => chooseGrade("7")}
                   className={`grade ${grade === "7" ? "active" : ""}`}
                 >
-                  <div className="grade-icon">📗</div>
+                  <div className="grade-icon">
+                    <span className="tile-level">
+                      CLASS<b>7</b>
+                    </span>
+                  </div>
                   <b>৭ম শ্রেণি</b>
                   <span>Class 7</span>
                 </button>
@@ -200,7 +230,11 @@ export function ReferenceLanding() {
                   onClick={() => chooseGrade("8")}
                   className={`grade ${grade === "8" ? "active" : ""}`}
                 >
-                  <div className="grade-icon">📘</div>
+                  <div className="grade-icon">
+                    <span className="tile-level">
+                      CLASS<b>8</b>
+                    </span>
+                  </div>
                   <b>৮ম শ্রেণি</b>
                   <span>Class 8</span>
                 </button>
@@ -209,7 +243,11 @@ export function ReferenceLanding() {
                   onClick={() => chooseGrade("9")}
                   className={`grade ${grade === "9" ? "active" : ""}`}
                 >
-                  <div className="grade-icon">🔬</div>
+                  <div className="grade-icon">
+                    <span className="tile-level">
+                      CLASS<b>9</b>
+                    </span>
+                  </div>
                   <b>৯ম শ্রেণি</b>
                   <span>Class 9</span>
                 </button>
@@ -218,7 +256,11 @@ export function ReferenceLanding() {
                   onClick={() => chooseGrade("10")}
                   className={`grade ${grade === "10" ? "active" : ""}`}
                 >
-                  <div className="grade-icon">🎯</div>
+                  <div className="grade-icon">
+                    <span className="tile-level">
+                      CLASS<b>10</b>
+                    </span>
+                  </div>
                   <b>১০ম শ্রেণি</b>
                   <span>Class 10</span>
                 </button>
@@ -227,12 +269,24 @@ export function ReferenceLanding() {
                   onClick={() => chooseGrade("hsc")}
                   className={`grade ${grade === "hsc" ? "active" : ""}`}
                 >
-                  <div className="grade-icon">🎓</div>
+                  <div className="grade-icon">
+                    <span className="tile-level">
+                      HSC<b>11–12</b>
+                    </span>
+                  </div>
                   <b>HSC Science</b>
                   <span>Class 11–12</span>
                 </button>
               </div>
             </div>
+          </div>
+          <div className="hero-cta">
+            <a href="#courses" className="btn primary">
+              আমাদের কোর্স দেখুন ↗
+            </a>
+            <a href="#features" className="btn outline">
+              কী কী থাকছে? ▶
+            </a>
           </div>
         </section>
         <section className="section gray" id="courses">
@@ -858,18 +912,7 @@ export function ReferenceLanding() {
         <div className="container">
           <div className="footer-grid">
             <div>
-              <div className="brand">
-                <img
-                  className="brand-mark"
-                  src="/spark-mark.svg"
-                  width="40"
-                  height="40"
-                  alt=""
-                />
-                <span>
-                  Spark Academy<small>LEARN • GROW • SHINE</small>
-                </span>
-              </div>
+              <Brand />
               <p>
                 Smart Coaching, Better Learning.
                 <br />

@@ -1,28 +1,20 @@
 # Spark Academy visual system
 
-The supplied HTML informs the Bengali landing layout and learning illustrations. The latest requested palette is formal Navy Blue, Slate and White throughout the website.
+## Current reference direction — 2026-11-10
 
-## Palette
+The public homepage at https://10minuteschool.com/ was reviewed for its current color and typography system. The application now uses a black/dark landing page, white header, green actions, Inter and Anek Bangla typography, gradient Bengali headings and colorful academic tiles. Spark Academy keeps its own name and original red education/play logo with a stacked wordmark.
 
-- Primary Navy: #16324F; hover #0F243A.
-- Workspace background: #F5F7FA; white cards with #E5EBF2 borders.
-- Muted blue accent: #315F81; text #17324D.
-- Course covers use coordinated, desaturated blue, teal, slate and stone tones.
-- Danger and RED/YELLOW/GREEN understanding statuses keep their semantic colors.
+Primary action: #1CAB55. Hover: #149353. Identity accent: #ED1C24. Core text: #111827. Public backgrounds: #050607 / #080A0D. The same fonts, logo assets and green-action styling apply to authentication and the existing premium role dashboards. Learning-status and danger colors remain semantic.
 
-## Premium dashboards
+The class filters, course dialogs, FAQ, mobile menu and actual login links are retained. A working public program search filters the existing academic catalog; it does not claim to search private lessons. Existing protected academic services and database records are unchanged.
 
-Student, Teacher and Admin workspaces share a dark navy sidebar, refined typography, uniform summary cards and role-specific quick-access links. The dashboard includes an academic welcome panel, a performance area chart derived from actual released assessments, upcoming classes, examinations and notifications. Existing results, revision and anonymous Q&A sections remain available. No fabricated improvement percentages or performance history are added.
+The displayed phone dashboard is labeled illustrative. Course enrollment still uses the coaching administrator. No unsupported courses, payments, live tutoring or third-party contact details are introduced.
 
-The dashboard implementation is separated into premium-dashboard.tsx; charts and shared shell components remain reusable. All role permissions, API services, existing accounts and database records are unchanged by the design update.
+## Validation
 
-## Public and authentication pages
+Eight desktop/mobile design cases passed, including Student, Teacher and Admin workspaces. Program search, font rendering and course-tile contrast were also checked in a browser. TypeScript and the isolated production Next.js build passed.
 
-Outfit/Hind Siliguri typography, the Bengali reference layout, program filters, course dialogs, FAQ, login and password-reset screens use the same formal palette. Google Fonts have system fallbacks. The phone dashboard illustration is labeled as an illustration. Enrollment actions direct users to their coaching administrator; no unsupported native app, payment or live-session booking is introduced.
-
-## Local validation on Windows
-
-The generated Prisma client is unchanged. To avoid replacing the engine DLL held by a running development server, Next.js can validate a production build into an ignored separate directory:
+For Windows validation while the generated Prisma engine is held by a running app:
 
 ```powershell
 $env:SPARK_BUILD_DIR = '.next-design-check'
@@ -30,4 +22,4 @@ npx next build
 Remove-Item Env:\SPARK_BUILD_DIR
 ```
 
-For the standard npm run build command, stop the development server first. Existing database services do not need recreation.
+Stop the development server before the standard npm run build command. The separate output directory is ignored by Git.

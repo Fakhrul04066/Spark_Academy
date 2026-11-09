@@ -74,4 +74,4 @@ The original prototype remains in this workstation’s ignored legacy/ folder an
 
 ## Visual system
 
-The supplied Bengali landing layout is paired with a formal Navy Blue, Slate and White palette throughout the website. Student, Teacher and Admin dashboards use a premium dark sidebar, refined summary cards, role-specific quick links, real assessment charts and upcoming-class panels. See [design notes](docs/DESIGN.md). Existing accounts and database services are unchanged.
+The current reference-informed design uses a black landing page, white header, green actions, Inter/Anek Bangla typography and an original red Spark Academy logo. Existing premium Student, Teacher and Admin dashboards use the same identity and action colors. Class filters, program search, course details and FAQ are interactive. See [design notes](docs/DESIGN.md). Existing accounts and academic services are preserved.

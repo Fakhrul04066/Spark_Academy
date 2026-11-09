@@ -765,26 +765,26 @@ audio {
 
 /* Formal navy, slate and white palette shared across the application. */
 :root {
-  --primary: #16324f;
+  --primary: #111827;
   --foreground: #171e2c;
   --muted: #687184;
   --line: #e9edf2;
   --background: #f8f9fb;
 }
 body {
-  font-family: "Outfit", "Hind Siliguri", sans-serif;
+  font-family: "Inter", "Anek Bangla", sans-serif;
   color: var(--foreground);
 }
 .btn {
-  background: #16324f;
+  background: #111827;
   border-radius: 10px;
-  box-shadow: 0 7px 16px #16324f20;
+  box-shadow: 0 7px 16px #11182720;
   transition:
     transform 0.2s,
     background 0.2s;
 }
 .btn:hover {
-  background: #0f243a;
+  background: #0b0d10;
   transform: translateY(-2px);
 }
 .btn.secondary {
@@ -799,7 +799,7 @@ body {
 }
 .btn.danger {
   background: #edf2f7;
-  color: #0f243a;
+  color: #0b0d10;
   box-shadow: none;
 }
 .card {
@@ -809,7 +809,7 @@ body {
 }
 .pill {
   background: #edf2f7;
-  color: #0f243a;
+  color: #0b0d10;
   border: 1px solid #cbd8e5;
 }
 .eyebrow {
@@ -818,14 +818,14 @@ body {
 .feature-icon,
 .stat .icon {
   background: #edf2f7;
-  color: #16324f;
+  color: #111827;
   border-radius: 14px;
 }
 .bar span {
-  background: #16324f;
+  background: #111827;
 }
 .exam-timer {
-  color: #0f243a;
+  color: #0b0d10;
 }
 .brand {
   letter-spacing: -0.8px;
@@ -833,20 +833,20 @@ body {
 .brand img {
   width: 40px;
   height: 40px;
-  filter: drop-shadow(0 6px 8px #16324f20);
+  filter: drop-shadow(0 6px 8px #11182720);
 }
 .brand-name {
   line-height: 1.15;
   white-space: nowrap;
 }
 .brand-accent {
-  color: #16324f;
+  color: #111827;
 }
 .brand-name small {
   display: block;
   font-size: 8px;
   letter-spacing: 2px;
-  color: #16324f;
+  color: #111827;
   margin-top: 4px;
 }
 .sidebar {
@@ -857,7 +857,7 @@ body {
   border: 1px solid transparent;
 }
 .sidebar nav a.active {
-  color: #0f243a;
+  color: #0b0d10;
   background: #edf2f7;
   border-color: #cbd8e5;
 }
@@ -874,7 +874,7 @@ body {
 }
 .avatar {
   background: #edf2f7;
-  color: #0f243a;
+  color: #0b0d10;
   border: 1px solid #cbd8e5;
 }
 .content {
@@ -934,21 +934,21 @@ body {
 }
 .input:focus {
   outline-color: #adc2d5;
-  border-color: #16324f;
+  border-color: #111827;
 }
 button:focus-visible,
 a:focus-visible {
-  outline-color: #16324f;
+  outline-color: #111827;
 }
 .check-option:has(input:checked) {
-  border-color: #16324f;
+  border-color: #111827;
   background: #edf2f7;
 }
 th {
   background: #f6f8fb;
 }
 .question {
-  border-left-color: #16324f;
+  border-left-color: #111827;
 }
 .timeline {
   border-left-color: #cbd8e5;
@@ -985,11 +985,11 @@ th {
   background: #f5f7fa;
 }
 .sidebar {
-  background: linear-gradient(170deg, #10283f, #193b55);
+  background: linear-gradient(170deg, #0b0d10, #171b20);
   border-right: 0;
   padding: 30px 18px 20px;
   color: #fff;
-  box-shadow: 5px 0 30px #16324f06;
+  box-shadow: 5px 0 30px #11182706;
 }
 .sidebar .brand {
   color: #fff;
@@ -1032,9 +1032,9 @@ th {
   background: #1d3b54;
 }
 .sidebar nav a.active {
-  background: #24445f;
+  background: #203d2b;
   color: white;
-  border: 1px solid #3a5b77;
+  border: 1px solid #345440;
   box-shadow: 0 3px 12px #071b2c10;
 }
 .sidebar nav a.active svg {
@@ -1072,7 +1072,7 @@ th {
   background: #eaf0f6;
   border: 3px solid #fff;
   box-shadow: 0 0 0 1px #dfe7ef;
-  color: #16324f;
+  color: #111827;
   width: 38px;
   height: 38px;
 }
@@ -1103,7 +1103,7 @@ th {
   font-size: 32px;
   font-weight: 600;
   letter-spacing: -1px;
-  color: #17324d;
+  color: #111827;
 }
 .page-head p {
   color: #8796a8;
@@ -1121,10 +1121,10 @@ th {
   justify-content: space-between;
   gap: 30px;
   padding: 32px 36px;
-  background: linear-gradient(112deg, #102b45 0%, #244a66 100%);
+  background: linear-gradient(112deg, #090b0e 0%, #242024 100%);
   border-radius: 19px;
   color: white;
-  box-shadow: 0 12px 30px #18354f10;
+  box-shadow: 0 12px 30px #11182710;
 }
 .premium-welcome:before {
   content: "";
@@ -1240,7 +1240,7 @@ th {
   background: white;
   border: 1px solid #e5ebf2;
   border-radius: 15px;
-  box-shadow: 0 5px 18px #17324d03;
+  box-shadow: 0 5px 18px #11182703;
   position: relative;
   overflow: hidden;
   transition:
@@ -1249,7 +1249,7 @@ th {
 }
 .metric-panel:hover {
   border-color: #c6d5e3;
-  box-shadow: 0 10px 25px #17324d08;
+  box-shadow: 0 10px 25px #11182708;
 }
 .metric-top {
   display: flex;
@@ -1287,7 +1287,7 @@ th {
   border-radius: 7px;
 }
 .metric-top > a:hover {
-  color: #16324f;
+  color: #111827;
   background: #f2f5f8;
 }
 .metric-value {
@@ -1295,7 +1295,7 @@ th {
   line-height: 1.05;
   letter-spacing: -1.3px;
   font-weight: 600;
-  color: #16324f;
+  color: #111827;
   margin-bottom: 10px;
 }
 .metric-panel h3 {
@@ -1338,7 +1338,7 @@ th {
 }
 .dashboard-shortcuts > a:hover {
   border-color: #9db4c8;
-  color: #16324f;
+  color: #111827;
 }
 .dashboard-shortcuts > a > svg:last-child {
   color: #93a5b5;
@@ -1355,7 +1355,7 @@ th {
   border: 1px solid #e5ebf2;
   border-radius: 16px;
   padding: 25px;
-  box-shadow: 0 5px 20px #16324f03;
+  box-shadow: 0 5px 20px #11182703;
 }
 .panel-heading {
   display: flex;
@@ -1376,7 +1376,7 @@ th {
   font-size: 17px;
   letter-spacing: -0.3px;
   font-weight: 500;
-  color: #18354f;
+  color: #111827;
 }
 .panel-heading > svg,
 .panel-heading > a {
@@ -1399,7 +1399,7 @@ th {
 }
 .performance-summary > strong {
   font-size: 34px;
-  color: #1a3a55;
+  color: #111827;
   line-height: 1;
   font-weight: 500;
   letter-spacing: -1px;
@@ -1466,7 +1466,7 @@ th {
   font-size: 20px;
   font-weight: 500;
   line-height: 1.1;
-  color: #244b69;
+  color: #1f2937;
 }
 .schedule-date span {
   font-size: 8px;
@@ -1618,7 +1618,7 @@ th {
 .premium-activity h3 {
   font-size: 16px;
   font-weight: 500;
-  color: #27445f;
+  color: #1f2937;
 }
 .premium-activity strong {
   font-weight: 500;
@@ -1698,8 +1698,8 @@ th {
     padding: 28px 17px;
   }
   .sidebar .mobile-menu {
-    background: #24445f;
-    border-color: #3a5b77;
+    background: #203d2b;
+    border-color: #345440;
     color: #d5e4ef;
   }
   .topbar {
@@ -1820,4 +1820,127 @@ th {
 }
 .premium-activity .text-xs {
   font-size: 11px;
+}
+
+/* Reference-informed black/white, green-action and red identity system. */
+:root {
+  --primary: #1cab55;
+  --foreground: #111827;
+  --background: #f7f8fa;
+}
+body {
+  font-family: "Inter", "Anek Bangla", sans-serif;
+}
+.brand-name {
+  display: grid;
+  gap: 1px;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+.brand-line {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+}
+.brand-line.brand-accent {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: inherit;
+}
+.brand img {
+  width: 42px;
+  height: 42px;
+  filter: none;
+}
+.sidebar .brand-line,
+.auth-story .brand-line {
+  color: white;
+}
+.sidebar .brand-line.brand-accent,
+.auth-story .brand-line.brand-accent {
+  color: #d1d5db;
+}
+.btn {
+  background: #1cab55;
+  color: white;
+  border-radius: 7px;
+  box-shadow: 0 3px 0 #128042;
+}
+.btn:hover {
+  background: #149353;
+}
+.btn.secondary {
+  background: white;
+  color: #111827;
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+.btn.secondary:hover {
+  background: #f3f4f6;
+}
+.btn.danger {
+  background: #fff1f2;
+  color: #9f1239;
+  box-shadow: none;
+}
+.input:focus {
+  border-color: #1cab55;
+  outline-color: #bbf7d0;
+}
+.check-option:has(input:checked) {
+  border-color: #1cab55;
+  background: #f0fdf4;
+}
+.bar span {
+  background: #1cab55;
+}
+.question {
+  border-left-color: #1cab55;
+}
+.brand-accent {
+  color: #ed1c24;
+}
+.sidebar {
+  background: linear-gradient(180deg, #0c0e11, #191d22);
+}
+.sidebar nav a.active {
+  background: #203d2b;
+  border-color: #345440;
+  color: #fff;
+}
+.sidebar nav a:hover {
+  background: #20282b;
+}
+.premium-welcome {
+  background:
+    radial-gradient(ellipse at 90% 20%, #54212444, transparent 60%),
+    linear-gradient(110deg, #101216, #242027);
+}
+.metric-icon {
+  color: #149353;
+  background: #effaf3;
+}
+.premium-welcome h2,
+.page-head h1 {
+  font-family: "Inter", "Anek Bangla", sans-serif;
+}
+.premium-welcome .welcome-dot {
+  background: #24c36b;
+}
+.panel-footer > a,
+.schedule-link,
+.all-updates {
+  color: #118348;
+}
+.auth-story {
+  background:
+    radial-gradient(ellipse at 85% 20%, #5c1f2744, transparent 65%), #0c0e11;
+}
+.auth-shell {
+  background: #f7f8fa;
+}
+.auth-story .eyebrow {
+  color: #8be3ad;
 }

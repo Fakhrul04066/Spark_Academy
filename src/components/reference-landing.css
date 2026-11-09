@@ -1,6 +1,6 @@
 .spark-landing {
-  --brand: #16324f;
-  --brand-hover: #0f243a;
+  --brand: #111827;
+  --brand-hover: #0b0d10;
   --ink: #171e2c;
   --muted: #687184;
   --line: #e9edf2;
@@ -20,7 +20,7 @@
   margin: 0;
   color: var(--ink);
   background: #fff;
-  font-family: "Outfit", "Hind Siliguri", sans-serif;
+  font-family: "Inter", "Anek Bangla", sans-serif;
 }
 .spark-landing button,
 .spark-landing input,
@@ -80,7 +80,7 @@
   color: white;
   font-size: 27px;
   border-radius: 12px;
-  box-shadow: 0 6px 16px #16324f33;
+  box-shadow: 0 6px 16px #11182733;
 }
 .spark-landing .brand small {
   display: block;
@@ -121,7 +121,7 @@
 .spark-landing .btn.primary {
   background: var(--brand);
   color: #fff;
-  box-shadow: 0 7px 16px #16324f33;
+  box-shadow: 0 7px 16px #11182733;
 }
 .spark-landing .btn.primary:hover {
   background: var(--brand-hover);
@@ -229,10 +229,10 @@
 .spark-landing .art-back {
   position: absolute;
   inset: 56px 58px 30px;
-  background: linear-gradient(140deg, #557b99, #16324f);
+  background: linear-gradient(140deg, #557b99, #111827);
   border-radius: 42% 42% 24% 24%;
   transform: rotate(7deg);
-  box-shadow: 0 25px 60px #16324f30;
+  box-shadow: 0 25px 60px #11182730;
 }
 .spark-landing .art-card {
   position: absolute;
@@ -466,27 +466,27 @@
 }
 .spark-landing .cover.blue {
   color: #fff;
-  background: linear-gradient(135deg, #244b70, #7f9ab1);
+  background: linear-gradient(135deg, #2876cf, #70b8ff);
 }
 .spark-landing .cover.red {
   color: #fff;
-  background: linear-gradient(135deg, #23445c, #7595a7);
+  background: linear-gradient(135deg, #e4782c, #ffab65);
 }
 .spark-landing .cover.purple {
   color: #fff;
-  background: linear-gradient(135deg, #40516b, #8b9bb3);
+  background: linear-gradient(135deg, #5545a4, #a68ce9);
 }
 .spark-landing .cover.green {
   color: #fff;
-  background: linear-gradient(135deg, #2c5c62, #81a8aa);
+  background: linear-gradient(135deg, #149353, #45ce80);
 }
 .spark-landing .cover.orange {
   color: #fff;
-  background: linear-gradient(135deg, #665b4b, #b8aa93);
+  background: linear-gradient(135deg, #97532b, #ecb263);
 }
 .spark-landing .cover.navy {
   color: #fff;
-  background: linear-gradient(135deg, #1a344d, #62819a);
+  background: linear-gradient(135deg, #173455, #5787c2);
 }
 .spark-landing .course-info {
   padding: 20px;
@@ -1042,7 +1042,7 @@
 }
 
 .spark-landing {
-  font-family: "Outfit", "Hind Siliguri", sans-serif;
+  font-family: "Inter", "Anek Bangla", sans-serif;
   line-height: 1.6;
 }
 .spark-landing [hidden] {
@@ -1125,4 +1125,514 @@
   }
 }
 
-.spark-landing .cover p{color:inherit}.spark-landing .cta p{color:#e3ebf3;opacity:1}
+.spark-landing .cover p {
+  color: inherit;
+}
+.spark-landing .cta p {
+  color: #e3ebf3;
+  opacity: 1;
+}
+
+/* Spark Academy presentation in the current reference's visual direction. */
+.spark-landing {
+  --brand: #1cab55;
+  --brand-hover: #149353;
+  --ink: #f9fafb;
+  --muted: #aeb5c0;
+  --line: #ffffff1a;
+  --bg: #08090c;
+  --soft: #11161a;
+  --teal: #22c55e;
+  background: #050607;
+  color: #f9fafb;
+  font-family: "Inter", "Anek Bangla", sans-serif;
+}
+.spark-landing .topline {
+  display: none;
+}
+.spark-landing header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: none;
+  color: #111827;
+}
+.spark-landing .nav {
+  min-height: 68px;
+  gap: 22px;
+}
+.spark-landing .brand {
+  color: #15171c;
+  font-family: "Inter", sans-serif;
+  gap: 9px;
+  flex-shrink: 0;
+}
+.spark-landing .brand-line {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+.spark-landing .brand-line.brand-accent {
+  font-size: 13px;
+  letter-spacing: 0.11em;
+  font-weight: 500;
+  color: #24262b;
+}
+.spark-landing .links {
+  gap: 23px;
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 500;
+}
+.spark-landing .links a:hover {
+  color: #149353;
+}
+.spark-landing .btn {
+  border-radius: 7px;
+  font-family: "Inter", "Anek Bangla", sans-serif;
+}
+.spark-landing .btn.primary {
+  background: #1cab55;
+  box-shadow: 0 3px 0 #128042;
+  color: white;
+}
+.spark-landing .btn.primary:hover {
+  background: #149353;
+}
+.spark-landing .nav-actions > .outline {
+  background: #1cab55;
+  color: white;
+  border: 0;
+  box-shadow: 0 3px 0 #128042;
+}
+.spark-landing .nav-actions > .primary {
+  display: none;
+}
+.program-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dbe2ea;
+  border-radius: 24px;
+  background: white;
+  max-width: 245px;
+  flex: 1;
+  min-width: 140px;
+}
+.program-search button {
+  background: none;
+  border: 0;
+  color: #111827;
+  font-size: 26px;
+  padding: 2px 0 3px 13px;
+  line-height: 1;
+}
+.program-search input {
+  background: none;
+  border: 0;
+  outline: none;
+  min-width: 0;
+  width: 100%;
+  padding: 10px 13px;
+  color: #374151;
+  font-size: 13px;
+  font-family: inherit;
+}
+.spark-landing .hero {
+  padding: 92px 0 64px;
+  background-color: #030405;
+  background-image:
+    radial-gradient(ellipse at 22% 9%, #62141d88 0, transparent 38%),
+    radial-gradient(ellipse at 69% 10%, #6c111b88 0, transparent 36%),
+    radial-gradient(#ffffff65 0.7px, transparent 0.9px),
+    radial-gradient(#ffffff32 0.6px, transparent 0.8px);
+  background-size:
+    auto,
+    auto,
+    137px 109px,
+    193px 181px;
+  background-position:
+    center,
+    center,
+    0 0,
+    49px 31px;
+}
+.spark-landing .hero-grid {
+  display: block;
+  text-align: center;
+}
+.spark-landing .hero-grid > div:first-child > .eyebrow {
+  display: none;
+}
+.spark-landing .hero-art {
+  display: none;
+}
+.spark-landing .hero h1 {
+  font-family: "Anek Bangla", "Inter", sans-serif;
+  font-size: clamp(43px, 5.3vw, 77px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin: 40px auto 16px;
+  background: linear-gradient(90deg, #ffac63 10%, #f6bbd8 48%, #93cbff 92%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  max-width: 1080px;
+}
+.spark-landing .hero h1 br {
+  display: none;
+}
+.spark-landing .hero h1 em {
+  color: inherit;
+}
+.spark-landing .hero h1 em:before {
+  content: " ";
+}
+.spark-landing .hero p {
+  color: #e1e3e8;
+  max-width: 830px;
+  margin: 0 auto;
+  font-size: 19px;
+  line-height: 1.6;
+}
+.spark-landing .hero-facts {
+  display: none;
+}
+.spark-landing .grade-wrap {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin-top: 42px;
+}
+.spark-landing .grade-top {
+  display: none;
+}
+.spark-landing .grades {
+  gap: 16px;
+}
+.spark-landing .grade {
+  background: linear-gradient(145deg, #25191c99, #0b0c10);
+  border: 1px solid #ffffff21;
+  border-radius: 30px;
+  padding: 15px 12px 17px;
+  color: white;
+  box-shadow: inset 0 2px 10px #ffffff10;
+}
+.spark-landing .grade:hover,
+.spark-landing .grade.active {
+  border-color: #28cb74;
+  background: linear-gradient(145deg, #1d3027, #0b0f0d);
+  transform: translateY(-5px);
+}
+.spark-landing .grade-icon {
+  height: 118px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #4ed5f7, #5582ff);
+  box-shadow:
+    inset 0 1px 0 #ffffff55,
+    0 8px 20px #0003;
+  margin-bottom: 16px;
+  color: white;
+  font-family: "Inter", sans-serif;
+}
+.spark-landing .grade:nth-child(3) .grade-icon {
+  background: linear-gradient(145deg, #ffba4b, #ff765b);
+}
+.spark-landing .grade:nth-child(4) .grade-icon,
+.spark-landing .grade:nth-child(5) .grade-icon {
+  background: linear-gradient(145deg, #32e88a, #03a947);
+}
+.spark-landing .grade:nth-child(6) .grade-icon {
+  background: linear-gradient(145deg, #4dcff6, #6384fa);
+}
+.spark-landing .tile-level {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+}
+.spark-landing .tile-level b {
+  font-size: 43px;
+  display: block;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.spark-landing .grade > b {
+  font-size: 17px;
+  font-weight: 600;
+}
+.spark-landing .grade > span {
+  font-size: 11px;
+  color: #b7bcc6;
+}
+.spark-landing .hero-cta {
+  justify-content: center;
+  margin: 34px auto 0;
+}
+.spark-landing .hero-cta .outline {
+  background: #ffffff0a;
+  border: 1px solid #ffffff25;
+  color: white;
+}
+.spark-landing .hero-cta .btn {
+  font-size: 15px;
+  padding: 12px 22px;
+  border-radius: 24px;
+}
+.spark-landing .section,
+.spark-landing .section.gray {
+  background: #080a0d;
+}
+.spark-landing .section-head h2 {
+  color: #f8fafc;
+  font-family: "Anek Bangla", "Inter", sans-serif;
+  font-weight: 600;
+}
+.spark-landing .section-head p {
+  color: #a4acb9;
+}
+.spark-landing .kicker {
+  color: #5dd18d;
+}
+.spark-landing .course {
+  background: #101319;
+  border-color: #ffffff18;
+  border-radius: 17px;
+}
+.spark-landing .cover p {
+  color: white;
+}
+.spark-landing .course-info h4 {
+  color: #f3f4f6;
+  font-family: "Anek Bangla", "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+.spark-landing .course-info p {
+  color: #aeb7c5;
+}
+.spark-landing .tags span {
+  background: #1e242d;
+  color: #bfc9d6;
+}
+.spark-landing .course-bottom {
+  border-color: #ffffff16;
+}
+.spark-landing .course-tools #count {
+  color: #98a4b5 !important;
+}
+.spark-landing .pill {
+  background: #101419;
+  color: #d1d5db;
+  border-color: #ffffff21;
+}
+.spark-landing .pill.active {
+  background: #149353;
+  color: white;
+  border-color: #149353;
+}
+.spark-landing .feature {
+  background: linear-gradient(145deg, #15181e, #0c0f13);
+  border-color: #ffffff17;
+  box-shadow: inset 0 1px 0 #ffffff05;
+}
+.spark-landing .feature h3 {
+  color: #f3f4f6;
+}
+.spark-landing .feature p {
+  color: #aeb7c5;
+}
+.spark-landing .feature .ico {
+  background: #153723;
+}
+.spark-landing .statband {
+  background: #0d1510;
+  border-top: 1px solid #ffffff12;
+  border-bottom: 1px solid #ffffff12;
+}
+.spark-landing .step {
+  background: #11161b;
+  border-color: #ffffff18;
+}
+.spark-landing .step h3 {
+  color: #f9fafb;
+}
+.spark-landing .step p {
+  color: #aeb7c5;
+}
+.spark-landing .step .num {
+  color: #5dd18d;
+}
+.spark-landing .app-section {
+  background:
+    radial-gradient(ellipse at 15% 50%, #15452b25, transparent 65%), #0a0e11;
+}
+.spark-landing .app-grid h2 {
+  color: white;
+}
+.spark-landing .app-grid p {
+  color: #aeb7c5;
+}
+.spark-landing .phone {
+  color: #111827;
+}
+.spark-landing .checks {
+  color: #e5e7eb;
+}
+.spark-landing .faq-item {
+  border-color: #ffffff1c;
+}
+.spark-landing .faq-q {
+  background: none;
+  color: #f1f5f9;
+}
+.spark-landing .faq-a {
+  color: #aeb7c5;
+}
+.spark-landing .cta {
+  background:
+    radial-gradient(ellipse at 30% 10%, #1d793e55, transparent 70%), #102219;
+  border: 1px solid #2e5c40;
+}
+.spark-landing .cta h2 {
+  color: white;
+}
+.spark-landing .cta p {
+  color: #b6d1bf;
+}
+.spark-landing .cta .btn {
+  background: #1cab55;
+  color: white;
+  box-shadow: 0 3px 0 #128042;
+}
+.spark-landing footer {
+  background: #050607;
+  border-top: 1px solid #ffffff13;
+}
+.spark-landing footer .brand {
+  color: white;
+}
+.spark-landing footer .brand-accent {
+  color: #d1d5db !important;
+}
+.spark-landing .program-dialog {
+  background: #101419;
+  color: white;
+  border-color: #ffffff25;
+}
+.spark-landing .program-dialog p {
+  color: #b9c3d0;
+}
+.spark-landing .program-dialog .modal-close {
+  background: #252b32;
+  color: white;
+}
+.spark-landing .menu-btn {
+  color: #111827;
+}
+@media (max-width: 1150px) {
+  .program-search {
+    display: none;
+  }
+  .spark-landing .links {
+    gap: 17px;
+  }
+}
+@media (max-width: 720px) {
+  .spark-landing .nav {
+    min-height: 64px;
+    gap: 12px;
+  }
+  .spark-landing .brand img {
+    width: 36px;
+    height: 36px;
+  }
+  .spark-landing .brand-line {
+    font-size: 14px;
+  }
+  .spark-landing .brand-line.brand-accent {
+    font-size: 11px;
+  }
+  .spark-landing .links {
+    top: 64px;
+    color: #111827;
+    border-bottom-color: #e5e7eb;
+  }
+  .spark-landing .hero {
+    padding: 44px 0;
+  }
+  .spark-landing .hero h1 {
+    font-size: 42px;
+    line-height: 1.25;
+    margin: 20px auto 13px;
+    max-width: 420px;
+  }
+  .spark-landing .hero p {
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 420px;
+  }
+  .spark-landing .grades {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 11px;
+  }
+  .spark-landing .grade-wrap {
+    margin-top: 30px;
+  }
+  .spark-landing .grade {
+    padding: 9px 8px 13px;
+    border-radius: 21px;
+  }
+  .spark-landing .grade-icon {
+    height: 88px;
+    border-radius: 17px;
+    margin-bottom: 12px;
+  }
+  .spark-landing .tile-level {
+    font-size: 13px;
+  }
+  .spark-landing .tile-level b {
+    font-size: 33px;
+  }
+  .spark-landing .grade > b {
+    font-size: 13px;
+  }
+  .spark-landing .grade > span {
+    font-size: 9px;
+  }
+  .spark-landing .hero-cta {
+    gap: 9px;
+  }
+  .spark-landing .hero-cta .btn {
+    font-size: 12px;
+    padding: 11px 17px;
+  }
+  .spark-landing .nav-actions > .outline {
+    display: inline-flex;
+    padding: 10px 16px;
+    background: #1cab55;
+    color: white;
+  }
+}
+
+.spark-landing .grade .tile-level {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+.spark-landing .grade .tile-level b {
+  color: #fff;
+}
+.spark-landing footer .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+@media (max-width: 720px) {
+  .spark-landing .grade .tile-level {
+    font-size: 13px;
+  }
+}

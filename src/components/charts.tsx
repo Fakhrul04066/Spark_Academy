@@ -29,8 +29,8 @@ export function PerformanceChart({
         >
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#315f81" stopOpacity={0.24} />
-              <stop offset="100%" stopColor="#315f81" stopOpacity={0.01} />
+              <stop offset="0%" stopColor="#149353" stopOpacity={0.24} />
+              <stop offset="100%" stopColor="#149353" stopOpacity={0.01} />
             </linearGradient>
           </defs>
           <CartesianGrid
@@ -56,7 +56,7 @@ export function PerformanceChart({
             contentStyle={{
               border: "1px solid #e1e8f0",
               borderRadius: 12,
-              boxShadow: "0 8px 28px #16324f12",
+              boxShadow: "0 8px 28px #11182712",
               fontSize: 12,
             }}
             labelFormatter={(_, payload) =>
@@ -67,10 +67,10 @@ export function PerformanceChart({
           <Area
             type="monotone"
             dataKey="percentage"
-            stroke="#315f81"
+            stroke="#149353"
             strokeWidth={3}
             fill={`url(#${id})`}
-            dot={{ r: 3, fill: "#fff", stroke: "#315f81", strokeWidth: 2 }}
+            dot={{ r: 3, fill: "#fff", stroke: "#149353", strokeWidth: 2 }}
             activeDot={{ r: 5, stroke: "#fff", strokeWidth: 3 }}
           />
         </AreaChart>
@@ -96,7 +96,7 @@ export function ProgressChart({
           <Tooltip />
           <Bar
             dataKey="percentage"
-            fill="#16324f"
+            fill="#111827"
             radius={[6, 6, 0, 0]}
             maxBarSize={45}
           />

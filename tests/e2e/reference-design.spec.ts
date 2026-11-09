@@ -45,7 +45,7 @@ test("reference landing: class filters, course details, FAQ and real login", asy
     await page
       .getByRole("button", { name: "Sign in →", exact: true })
       .evaluate((e) => getComputedStyle(e).backgroundColor),
-  ).toBe("rgb(22, 50, 79)");
+  ).toBe("rgb(28, 171, 85)");
 });
 for (const role of ["student", "teacher", "admin"] as const)
   test(`${role}: reference theme preserves functional dashboard`, async ({
@@ -71,7 +71,7 @@ for (const role of ["student", "teacher", "admin"] as const)
       await page
         .locator(".sidebar nav a.active")
         .evaluate((e) => getComputedStyle(e).backgroundColor),
-    ).toBe("rgb(36, 68, 95)");
+    ).toBe("rgb(32, 61, 43)");
     expect((await page.request.get("/api/profile")).status()).toBe(200);
     expect(
       await page.evaluate(

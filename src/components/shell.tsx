@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { Brand } from "./brand";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
@@ -66,12 +67,9 @@ export function Shell({
     };
   }, [pathname]);
   return (
-    <div className="app-shell">
+    <div className="app-shell" lang="en">
       <aside className={`sidebar ${open ? "open" : ""}`}>
-        <Link href="/" className="brand">
-          <img src="/spark-mark.svg" alt="" />
-          Spark Academy
-        </Link>
+        <Brand />
         <button
           type="button"
           aria-label="Close navigation"
@@ -103,7 +101,7 @@ export function Shell({
           <p className="mt-2">
             Keep showing up. Your future self will thank you.
           </p>
-          <Link href="/" className="text-emerald-700 flex mt-3">
+          <Link href="/" className="text-rose-700 flex mt-3">
             Visit website <ArrowUpRight size={13} />
           </Link>
         </div>

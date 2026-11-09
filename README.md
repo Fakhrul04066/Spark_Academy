@@ -71,3 +71,7 @@ Test setup migrates a separate local spark_test database. Integration tests refu
 Production: npm run db:deploy, npm run build, npm run start. Never reset or recreate a populated student database.
 
 The original prototype remains in this workstation’s ignored legacy/ folder and earlier Git history; it is not served by this application. Logo assets are in public/.
+
+## Visual reference
+
+The website follows the supplied Spark Academy HTML demo: Bengali landing layout, crimson/navy colors, Outfit/Hind Siliguri typography and matching styling throughout authentication and all role workspaces. See [design notes](docs/DESIGN.md). Existing accounts and database services are unchanged.

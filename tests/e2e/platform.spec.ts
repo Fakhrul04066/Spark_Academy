@@ -45,7 +45,7 @@ test("public page is responsive and contains no excluded session offering", asyn
 }, testInfo) => {
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: /Your learning journey/ }),
+    page.getByRole("heading", { name: /নতুন শক্তিতে/ }),
   ).toBeVisible();
   await expect(page.locator("body")).not.toContainText("EduTrack");
   await expect(page.locator("body")).not.toContainText("1:1");

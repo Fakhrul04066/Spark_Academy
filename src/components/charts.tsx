@@ -26,7 +26,7 @@ export function ProgressChart({
           <Tooltip />
           <Bar
             dataKey="percentage"
-            fill="#059669"
+            fill="#cf3048"
             radius={[6, 6, 0, 0]}
             maxBarSize={45}
           />

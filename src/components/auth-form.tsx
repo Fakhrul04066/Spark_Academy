@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { Brand } from "./brand";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -70,19 +71,16 @@ export function AuthForm({
     }
   }
   return (
-    <div className="auth-shell">
+    <div className="auth-shell" lang="en">
       <aside className="auth-story">
-        <Link href="/" className="brand">
-          <img src="/spark-mark.svg" alt="" />
-          Spark Academy
-        </Link>
+        <Brand />
         <div>
           <span className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
           <h1>
             A little spark.
             <br />A lifetime of
             <br />
-            <span style={{ color: "#6ee7b7" }}>possibilities.</span>
+            <span style={{ color: "#ffbac5" }}>possibilities.</span>
           </h1>
           <p>
             A focused space to learn, practice and become a little better every
@@ -143,7 +141,7 @@ export function AuthForm({
                 <span className="text-red-700">Password is required</span>
               )}
             </label>
-            <Link className="text-emerald-700 text-xs" href="/forgot-password">
+            <Link className="text-rose-700 text-xs" href="/forgot-password">
               Forgot password?
             </Link>
             <button className="btn" disabled={busy}>
@@ -188,7 +186,7 @@ export function AuthForm({
                   ? "Send reset link"
                   : "Update password"}
             </button>
-            <Link href="/login" className="text-emerald-700">
+            <Link href="/login" className="text-rose-700">
               Back to sign in
             </Link>
           </form>

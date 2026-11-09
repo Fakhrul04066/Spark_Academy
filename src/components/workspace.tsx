@@ -514,7 +514,7 @@ export function Workspace({
                     <div className="row mb-5">
                       <h3>Coming up</h3>
                       <Link
-                        className="text-emerald-700 text-xs"
+                        className="text-rose-700 text-xs"
                         href={`${base}/routines`}
                       >
                         View routine ↗
@@ -981,7 +981,7 @@ export function Workspace({
                                 )}
                                 {r.replies.map((reply: Row) => (
                                   <div
-                                    className="bg-emerald-50 rounded-xl p-4 mt-4"
+                                    className="bg-rose-50 rounded-xl p-4 mt-4"
                                     key={reply.id}
                                   >
                                     <strong className="text-xs">
@@ -1047,7 +1047,7 @@ export function Workspace({
                                 </p>
                                 {r.replies.map((reply: Row) => (
                                   <div
-                                    className="bg-emerald-50 rounded-lg p-4 mt-4"
+                                    className="bg-rose-50 rounded-lg p-4 mt-4"
                                     key={reply.id}
                                   >
                                     <strong className="text-xs">
@@ -1161,7 +1161,7 @@ export function Workspace({
                                       "/student/",
                                       base + "/",
                                     )}
-                                    className="text-emerald-700 text-xs"
+                                    className="text-rose-700 text-xs"
                                   >
                                     Open related page →
                                   </Link>
@@ -1427,7 +1427,7 @@ function DashboardActivity({ catalog, base }: { catalog: Row; base: string }) {
         {!catalog.questions?.length && (
           <p className="mt-4">No questions yet.</p>
         )}
-        <Link href={`${base}/questions`} className="text-emerald-700 text-xs">
+        <Link href={`${base}/questions`} className="text-rose-700 text-xs">
           Open anonymous Q&amp;A →
         </Link>
       </div>
@@ -1438,7 +1438,7 @@ function DashboardActivity({ catalog, base }: { catalog: Row; base: string }) {
 function Empty({ title, text }: { title: string; text: string }) {
   return (
     <div className="empty">
-      <BookOpen size={26} className="mx-auto mb-3 text-emerald-600" />
+      <BookOpen size={26} className="mx-auto mb-3 text-rose-600" />
       <h3>{title}</h3>
       <p>{text}</p>
     </div>

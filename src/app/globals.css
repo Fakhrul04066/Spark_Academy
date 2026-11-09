@@ -762,3 +762,208 @@ audio {
     visibility: visible;
   }
 }
+
+/* Shared visual language from the supplied Spark Academy reference. */
+:root {
+  --primary: #cf3048;
+  --foreground: #171e2c;
+  --muted: #687184;
+  --line: #e9edf2;
+  --background: #f8f9fb;
+}
+body {
+  font-family: "Outfit", "Hind Siliguri", sans-serif;
+  color: var(--foreground);
+}
+.btn {
+  background: #cf3048;
+  border-radius: 10px;
+  box-shadow: 0 7px 16px #cf304820;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+.btn:hover {
+  background: #a81f36;
+  transform: translateY(-2px);
+}
+.btn.secondary {
+  box-shadow: none;
+  background: #fff;
+  color: #171e2c;
+  border-color: #dfe3eb;
+}
+.btn.secondary:hover {
+  background: #fff5f5;
+  border-color: #f3bdc7;
+}
+.btn.danger {
+  background: #fff0f2;
+  color: #a81f36;
+  box-shadow: none;
+}
+.card {
+  border-radius: 18px;
+  border-color: #e9edf2;
+  box-shadow: 0 9px 27px #121b2d07;
+}
+.pill {
+  background: #fff0f2;
+  color: #a81f36;
+  border: 1px solid #f7ced4;
+}
+.eyebrow {
+  color: #b7253b;
+}
+.feature-icon,
+.stat .icon {
+  background: #fff0f2;
+  color: #cf3048;
+  border-radius: 14px;
+}
+.bar span {
+  background: #cf3048;
+}
+.exam-timer {
+  color: #a81f36;
+}
+.brand {
+  letter-spacing: -0.8px;
+}
+.brand img {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 6px 8px #cf304820);
+}
+.brand-name {
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.brand-accent {
+  color: #cf3048;
+}
+.brand-name small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #cf3048;
+  margin-top: 4px;
+}
+.sidebar {
+  background: linear-gradient(180deg, #fff 70%, #fff8f9);
+  border-right-color: #f0e5e9;
+}
+.sidebar nav a {
+  border: 1px solid transparent;
+}
+.sidebar nav a.active {
+  color: #a81f36;
+  background: #fff0f2;
+  border-color: #f7ced4;
+}
+.sidebar nav a:hover {
+  background: #fff5f6;
+}
+.sidebar-note {
+  background: #fff0f2;
+  border: 1px solid #f7ced4;
+}
+.topbar {
+  background: #ffffffed;
+  backdrop-filter: blur(14px);
+}
+.avatar {
+  background: #fff0f2;
+  color: #a81f36;
+  border: 1px solid #f7ced4;
+}
+.content {
+  background: radial-gradient(ellipse at 95% 0, #fff0f2 0, transparent 36%);
+}
+.dashboard-banner {
+  background: linear-gradient(120deg, #1b2434, #4c2339);
+  border-radius: 20px;
+  box-shadow: 0 13px 35px #1b243412;
+}
+.dashboard-banner .eyebrow {
+  color: #ffbac5;
+}
+.dashboard-banner p {
+  color: #d5c9d4;
+}
+.auth-story {
+  background:
+    radial-gradient(ellipse at 85% 20%, #733446 0, transparent 55%), #1b2434;
+  position: relative;
+  overflow: hidden;
+}
+.auth-story:after {
+  content: "✦";
+  position: absolute;
+  right: -40px;
+  bottom: 90px;
+  font-size: 360px;
+  color: #ffffff04;
+  pointer-events: none;
+}
+.auth-story .eyebrow {
+  color: #ffbac5;
+}
+.auth-story p {
+  color: #d5c9d4;
+}
+.auth-story .brand-accent,
+.auth-story .brand-name small {
+  color: #ffbac5;
+}
+.auth-form {
+  background: #fff;
+  border: 1px solid #f2e3e7;
+  border-radius: 23px;
+  box-shadow: 0 20px 60px #31131d0a;
+  padding: 38px;
+  max-width: 470px;
+}
+.auth-shell {
+  background:
+    radial-gradient(circle at 90% 10%, #ffe4e5, transparent 40%), #fff8f7;
+}
+.input {
+  border-radius: 10px;
+  border-color: #dfe4eb;
+}
+.input:focus {
+  outline-color: #f6b7c4;
+  border-color: #cf3048;
+}
+button:focus-visible,
+a:focus-visible {
+  outline-color: #cf3048;
+}
+.check-option:has(input:checked) {
+  border-color: #cf3048;
+  background: #fff0f2;
+}
+th {
+  background: #fff8f9;
+}
+.question {
+  border-left-color: #cf3048;
+}
+.timeline {
+  border-left-color: #f7ced4;
+}
+@media (max-width: 760px) {
+  .auth-shell {
+    padding: 24px 14px;
+  }
+  .auth-form {
+    padding: 28px 22px;
+  }
+  .sidebar .brand {
+    font-size: 17px;
+  }
+  .content {
+    padding-top: 24px;
+  }
+}

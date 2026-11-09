@@ -23,3 +23,7 @@ Local mail previews and mocked provider request/error tests passed. The developm
 ## Operational checks still required before live enrollment
 
 Configure the managed database and backups, verified email domain, private bucket, private Sheets service account and scheduler. Run live-provider smoke checks, a backup/restore drill, load testing for the intended concurrency and an independent security/accessibility review. Local tests are not a substitute for these deployment-specific checks.
+
+## Reference design update — 2026-11-10
+
+The supplied landing design was converted into a React component with scoped CSS and actual login links, class filters, course dialogs and FAQ controls. Shared branding, fonts, buttons, cards, forms, charts and navigation use the same crimson/navy visual language across Student, Teacher and Admin workspaces. Eight focused Playwright cases passed across desktop and mobile; all 28 existing unit/integration tests passed. The production Next.js build passed in an isolated .next-design-check output directory using the already-generated Prisma client, avoiding replacement of the running application’s locked Windows DLL. No database schema, account password or student record was changed.

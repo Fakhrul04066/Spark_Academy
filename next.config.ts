@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  distDir: process.env.SPARK_BUILD_DIR || ".next",
   serverExternalPackages: ["@prisma/client", "bcryptjs"],
   async headers() {
     return [

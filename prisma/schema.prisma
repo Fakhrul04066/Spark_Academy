@@ -1,0 +1,426 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum Understanding {
+  RED
+  YELLOW
+  GREEN
+}
+
+model User {
+  id               String              @id @default(cuid())
+  email            String              @unique
+  name             String
+  passwordHash     String
+  role             Role
+  active           Boolean             @default(true)
+  sessionVersion   Int                 @default(0)
+  emailReminders   Boolean             @default(true)
+  phone            String?
+  school           String?
+  avatarKey        String?
+  studentCode      String?             @unique
+  className        String?
+  group            String?
+  guardianName     String?
+  guardianContact  String?
+  createdAt        DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime            @updatedAt @db.Timestamptz(3)
+  enrollments      Enrollment[]
+  assignments      TeacherAssignment[]
+  attempts         ExamAttempt[]
+  attendance       AttendanceRecord[]
+  progress         LearningProgress[]
+  questions        AnonymousQuestion[]
+  replies          QuestionReply[]
+  topics           RevisionTopic[]
+  feedback         TeacherFeedback[]   @relation("FeedbackStudent")
+  receivedFeedback TeacherFeedback[]   @relation("FeedbackTeacher")
+  feedbackReplies  FeedbackReply[]
+  notifications    Notification[]
+  resets           PasswordReset[]
+  audio            AudioAttachment[]
+  audit            AuditLog[]
+}
+
+model Batch {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  className   String
+  createdAt   DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime            @updatedAt @db.Timestamptz(3)
+  enrollments Enrollment[]
+  assignments TeacherAssignment[]
+  lessons     Lesson[]
+  exams       Exam[]
+  attendance  AttendanceSession[]
+  routines    ClassRoutine[]
+  resources   LearningResource[]
+  questions   AnonymousQuestion[]
+}
+
+model Enrollment {
+  id      String @id @default(cuid())
+  userId  String
+  batchId String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  batch   Batch  @relation(fields: [batchId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, batchId])
+}
+
+model Subject {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  chapters    Chapter[]
+  assignments TeacherAssignment[]
+  questions   AnonymousQuestion[]
+}
+
+model Chapter {
+  id        String             @id @default(cuid())
+  name      String
+  subjectId String
+  subject   Subject            @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  lessons   Lesson[]
+  exams     Exam[]
+  resources LearningResource[]
+  topics    RevisionTopic[]
+
+  @@unique([subjectId, name])
+}
+
+model TeacherAssignment {
+  id        String  @id @default(cuid())
+  userId    String
+  batchId   String
+  subjectId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  batch     Batch   @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, batchId, subjectId])
+}
+
+model Lesson {
+  id          String             @id @default(cuid())
+  title       String
+  description String
+  youtubeUrl  String
+  order       Int                @default(0)
+  chapterId   String
+  batchId     String
+  chapter     Chapter            @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  batch       Batch              @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  progress    LearningProgress[]
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
+
+  @@index([batchId, chapterId])
+}
+
+model Exam {
+  id              String         @id @default(cuid())
+  title           String
+  chapterId       String
+  batchId         String
+  durationMinutes Int
+  attemptLimit    Int            @default(1)
+  published       Boolean        @default(false)
+  startsAt        DateTime       @db.Timestamptz(3)
+  endsAt          DateTime       @db.Timestamptz(3)
+  releaseAt       DateTime       @db.Timestamptz(3)
+  chapter         Chapter        @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  batch           Batch          @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  questions       ExamQuestion[]
+  attempts        ExamAttempt[]
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
+
+  @@index([batchId, published])
+}
+
+model ExamQuestion {
+  id            String           @id @default(cuid())
+  examId        String
+  text          String
+  marks         Float            @default(1)
+  order         Int
+  correctOption Int
+  exam          Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
+  options       QuestionOption[]
+  answers       StudentAnswer[]
+}
+
+model QuestionOption {
+  id         String       @id @default(cuid())
+  questionId String
+  text       String
+  order      Int
+  question   ExamQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, order])
+}
+
+model ExamAttempt {
+  id          String          @id @default(cuid())
+  examId      String
+  userId      String
+  number      Int
+  startedAt   DateTime        @default(now()) @db.Timestamptz(3)
+  deadline    DateTime        @db.Timestamptz(3)
+  submittedAt DateTime?       @db.Timestamptz(3)
+  score       Float?
+  total       Float?
+  correct     Int?
+  exam        Exam            @relation(fields: [examId], references: [id], onDelete: Restrict)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  answers     StudentAnswer[]
+
+  @@unique([examId, userId, number])
+  @@index([userId, submittedAt])
+}
+
+model StudentAnswer {
+  id         String       @id @default(cuid())
+  attemptId  String
+  questionId String
+  option     Int
+  attempt    ExamAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question   ExamQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+
+  @@unique([attemptId, questionId])
+}
+
+model AttendanceSession {
+  id      String             @id @default(cuid())
+  batchId String
+  date    String
+  batch   Batch              @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  records AttendanceRecord[]
+
+  @@unique([batchId, date])
+}
+
+model AttendanceRecord {
+  id        String            @id @default(cuid())
+  sessionId String
+  userId    String
+  present   Boolean
+  session   AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionId, userId])
+}
+
+model ClassRoutine {
+  id        String   @id @default(cuid())
+  batchId   String
+  teacherId String
+  subject   String
+  location  String
+  startsAt  DateTime @db.Timestamptz(3)
+  endsAt    DateTime @db.Timestamptz(3)
+  batch     Batch    @relation(fields: [batchId], references: [id], onDelete: Restrict)
+
+  @@index([batchId, startsAt])
+}
+
+model LearningProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  completedAt DateTime @default(now()) @db.Timestamptz(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model AnonymousQuestion {
+  id        String           @id @default(cuid())
+  userId    String
+  batchId   String
+  subjectId String
+  topic     String
+  text      String
+  audioId   String?          @unique
+  reported  Boolean          @default(false)
+  hidden    Boolean          @default(false)
+  createdAt DateTime         @default(now()) @db.Timestamptz(3)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  batch     Batch            @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  subject   Subject          @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  audio     AudioAttachment? @relation("QuestionAudio", fields: [audioId], references: [id], onDelete: Restrict)
+  replies   QuestionReply[]
+
+  @@index([batchId, subjectId])
+}
+
+model QuestionReply {
+  id         String            @id @default(cuid())
+  questionId String
+  userId     String
+  text       String
+  audioId    String?           @unique
+  createdAt  DateTime          @default(now()) @db.Timestamptz(3)
+  question   AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  user       User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  audio      AudioAttachment?  @relation("ReplyAudio", fields: [audioId], references: [id], onDelete: Restrict)
+}
+
+model AudioAttachment {
+  id        String             @id @default(cuid())
+  ownerId   String
+  key       String             @unique
+  mime      String
+  bytes     Int
+  createdAt DateTime           @default(now()) @db.Timestamptz(3)
+  owner     User               @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  question  AnonymousQuestion? @relation("QuestionAudio")
+  reply     QuestionReply?     @relation("ReplyAudio")
+}
+
+model RevisionTopic {
+  id           String               @id @default(cuid())
+  userId       String
+  chapterId    String
+  name         String
+  learningDate String
+  status       Understanding
+  version      Int                  @default(1)
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  chapter      Chapter              @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  schedules    RevisionSchedule[]
+  syncJobs     GoogleSheetSyncJob[]
+  createdAt    DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime             @updatedAt @db.Timestamptz(3)
+
+  @@index([userId, status])
+}
+
+model RevisionSchedule {
+  id          String               @id @default(cuid())
+  topicId     String
+  version     Int
+  dueDate     String
+  completedAt DateTime?            @db.Timestamptz(3)
+  cancelled   Boolean              @default(false)
+  topic       RevisionTopic        @relation(fields: [topicId], references: [id], onDelete: Restrict)
+  reminder    RevisionReminderLog?
+
+  @@unique([topicId, version, dueDate])
+  @@index([dueDate, cancelled, completedAt])
+}
+
+model RevisionReminderLog {
+  id         String           @id @default(cuid())
+  scheduleId String           @unique
+  status     String           @default("PENDING")
+  attempts   Int              @default(0)
+  error      String?
+  sentAt     DateTime?        @db.Timestamptz(3)
+  lockedAt   DateTime?        @db.Timestamptz(3)
+  schedule   RevisionSchedule @relation(fields: [scheduleId], references: [id], onDelete: Restrict)
+}
+
+model GoogleSheetSyncJob {
+  id       String        @id @default(cuid())
+  topicId  String
+  version  Int
+  status   String        @default("PENDING")
+  attempts Int           @default(0)
+  error    String?
+  lockedAt DateTime?     @db.Timestamptz(3)
+  topic    RevisionTopic @relation(fields: [topicId], references: [id], onDelete: Restrict)
+
+  @@unique([topicId, version])
+}
+
+model TeacherFeedback {
+  id        String          @id @default(cuid())
+  studentId String
+  teacherId String
+  category  String
+  subject   String
+  message   String
+  status    String          @default("PENDING")
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+  student   User            @relation("FeedbackStudent", fields: [studentId], references: [id], onDelete: Restrict)
+  teacher   User            @relation("FeedbackTeacher", fields: [teacherId], references: [id], onDelete: Restrict)
+  replies   FeedbackReply[]
+
+  @@index([studentId, status])
+}
+
+model FeedbackReply {
+  id         String          @id @default(cuid())
+  feedbackId String
+  adminId    String
+  text       String
+  createdAt  DateTime        @default(now()) @db.Timestamptz(3)
+  feedback   TeacherFeedback @relation(fields: [feedbackId], references: [id], onDelete: Restrict)
+  admin      User            @relation(fields: [adminId], references: [id], onDelete: Restrict)
+}
+
+model LearningResource {
+  id        String   @id @default(cuid())
+  title     String
+  type      String
+  url       String
+  batchId   String
+  chapterId String
+  batch     Batch    @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model Notification {
+  dedupeKey String?   @unique
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  path      String
+  readAt    DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, readAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  resource  String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  actor     User     @relation(fields: [actorId], references: [id], onDelete: Restrict)
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  usedAt    DateTime? @db.Timestamptz(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime @db.Timestamptz(3)
+}

@@ -1,2 +1,11 @@
 node_modules/
+.next/
 dist/
+.env
+.env.*
+!.env.example
+.local/
+playwright-report/
+test-results/
+*.tsbuildinfo
+legacy/

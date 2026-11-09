@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   revisionDates,
+  revisionProgress,
   dhakaDate,
   rank,
   scoreExam,
@@ -25,6 +26,23 @@ describe("Academic rules", () => {
       "2027-01-07",
     ]);
     expect(revisionDates("2026-11-09", "GREEN")).toEqual([]);
+  });
+  it("derives revision lights from active completed dates", () => {
+    expect(revisionProgress([{ cancelled: false, completedAt: null }])).toBe(
+      "RED",
+    );
+    expect(
+      revisionProgress([
+        { cancelled: false, completedAt: new Date() },
+        { cancelled: false, completedAt: null },
+      ]),
+    ).toBe("YELLOW");
+    expect(
+      revisionProgress([
+        { cancelled: false, completedAt: new Date() },
+        { cancelled: true, completedAt: null },
+      ]),
+    ).toBe("GREEN");
   });
   it("uses Dhaka calendar dates near midnight", () =>
     expect(dhakaDate(new Date("2026-11-09T20:00:00Z"))).toBe("2026-11-10"));

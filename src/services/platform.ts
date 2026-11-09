@@ -10,6 +10,7 @@ import {
   percentage,
   rank,
   revisionDates,
+  revisionProgress,
   scoreExam,
   safeUrl,
   youtubeUrl,
@@ -88,6 +89,7 @@ const fields = {
       topic: str,
       text: z.string().max(10000),
       audioId: id.optional(),
+      imageId: id.optional(),
     })
     .strict(),
   feedback: z
@@ -885,16 +887,29 @@ export async function mutate(
   }
   if (resource === "revision-schedules") {
     check(u.role === "STUDENT");
-    const data = z.object({ id }).strict().parse(body);
+    const data = z
+      .object({ id, completed: z.boolean().default(true) })
+      .strict()
+      .parse(body);
     const schedule = await db.revisionSchedule.findUniqueOrThrow({
       where: { id: data.id },
       include: { topic: true },
     });
     check(schedule.topic.userId === u.id && !schedule.cancelled);
     await db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "RevisionTopic" WHERE id = ${schedule.topicId} FOR UPDATE`;
       await tx.revisionSchedule.update({
         where: { id: data.id },
-        data: { completedAt: new Date() },
+        data: { completedAt: data.completed ? new Date() : null },
+      });
+      const schedules = await tx.revisionSchedule.findMany({
+        where: { topicId: schedule.topicId },
+      });
+      await tx.revisionTopic.update({
+        where: { id: schedule.topicId },
+        data: {
+          status: revisionProgress(schedules, schedule.topic.status),
+        },
       });
       await tx.googleSheetSyncJob.upsert({
         where: {
@@ -1036,9 +1051,9 @@ export async function mutate(
     check(u.role === "STUDENT");
     const data = fields.questions.parse(body);
     check(
-      data.text.trim() || data.audioId,
+      data.text.trim() || data.audioId || data.imageId,
       400,
-      "Add text or a voice recording",
+      "Add text, a voice recording or an image",
     );
     await academicAccess(u, data.batchId);
     check(
@@ -1052,10 +1067,27 @@ export async function mutate(
           where: {
             id: data.audioId,
             ownerId: u.id,
+            mime: { startsWith: "audio/" },
+            imageQuestion: null,
             question: null,
             reply: null,
           },
         }),
+      );
+    if (data.imageId)
+      check(
+        await db.audioAttachment.findFirst({
+          where: {
+            id: data.imageId,
+            ownerId: u.id,
+            mime: { startsWith: "image/" },
+            question: null,
+            reply: null,
+            imageQuestion: null,
+          },
+        }),
+        400,
+        "Image is unavailable or already attached",
       );
     const q = await db.anonymousQuestion.create({
       data: { ...data, userId: u.id },
@@ -1084,6 +1116,8 @@ export async function mutate(
           where: {
             id: data.audioId,
             ownerId: u.id,
+            mime: { startsWith: "audio/" },
+            imageQuestion: null,
             question: null,
             reply: null,
           },

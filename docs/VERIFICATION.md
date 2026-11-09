@@ -35,3 +35,13 @@ The current interface uses Navy Blue, Slate and White across the landing page, a
 ## Current reference-informed visual update — 2026-11-10
 
 Eight desktop/mobile checks passed for the updated black/green landing page and the Student, Teacher and Admin workspaces. Inter/Anek Bangla font rendering, visible tile text, working public program search and absence of browser page errors were verified separately. TypeScript and the isolated production build passed. Existing academic APIs, Prisma schema, passwords and student data were not changed.
+
+## Login, revision, and image attachment verification — 2026-11-10
+
+- Restored the existing local PostgreSQL process; verified existing student1, teacher1 and admin accounts remain active and their unchanged demo passwords match stored hashes.
+- 30 unit/database integration tests passed, including automatic revision transitions, undo, date/history preservation, image ownership/reuse prevention and anonymous serialization.
+- Six desktop/mobile browser checks passed for Student, Teacher and Admin login and the versioned logo.
+- Two desktop/mobile end-to-end flows passed for circular revision completion/undo/persistence, image-only question upload and display, assigned-teacher access, anonymous denial and unrelated-student denial.
+- Additive image migration applied to both local and isolated test databases. No database reset or reseeding performed.
+- Final isolated production build passed after the complete change.
+

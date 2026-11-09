@@ -22,29 +22,43 @@ export const authOptions: NextAuthOptions = {
           c.password.length > 128
         )
           return null;
-        await limit(
-          `login-ip:${hashToken(
-            String(req.headers?.["x-forwarded-for"] || "local")
-              .split(",")[0]
-              .trim(),
-          )}`,
-          60,
-        );
-        const email = c.email.toLowerCase().trim();
-        await limit(`login:${email}`, 10);
-        const u = await db.user.findUnique({ where: { email } });
-        const ok = await compare(
-          c.password,
-          u?.passwordHash ||
-            "$2b$12$abcdefghijklmnopqrstuuCglqTiZtqj/G.c7AlMxmAGELqyPG4e",
-        );
-        if (!u || !ok || !u.active) return null;
-        return {
-          id: u.id,
-          name: u.name,
-          email: u.email,
-          version: u.sessionVersion,
-        };
+        try {
+          await limit(
+            `login-ip:${hashToken(
+              String(req.headers?.["x-forwarded-for"] || "local")
+                .split(",")[0]
+                .trim(),
+            )}`,
+            60,
+          );
+          const email = c.email.toLowerCase().trim();
+          await limit(`login:${email}`, 10);
+          const u = await db.user.findUnique({ where: { email } });
+          const ok = await compare(
+            c.password,
+            u?.passwordHash ||
+              "$2b$12$abcdefghijklmnopqrstuuCglqTiZtqj/G.c7AlMxmAGELqyPG4e",
+          );
+          if (!u || !ok || !u.active) return null;
+          return {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            version: u.sessionVersion,
+          };
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            /database server|P1001|P1002|P1017|connection/i.test(error.message)
+          )
+            throw new Error("DatabaseUnavailable");
+          if (
+            error instanceof Error &&
+            error.message.includes("Too many requests")
+          )
+            throw new Error("TooManyAttempts");
+          throw error;
+        }
       },
     }),
   ],

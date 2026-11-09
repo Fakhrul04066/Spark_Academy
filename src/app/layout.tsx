@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "Structured lessons, chapter exams, anonymous recorded Q&A and smart revision for better learning.",
   applicationName: "Spark Academy",
-  icons: { icon: "/spark-mark.svg" },
+  icons: { icon: "/spark-mark.svg?v=4" },
 };
 export default function RootLayout({
   children,

@@ -1944,3 +1944,118 @@ body {
 .auth-story .eyebrow {
   color: #8be3ad;
 }
+
+/* Revision dates are real keyboard-accessible circular checkboxes. */
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.revision-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+  cursor: pointer;
+}
+.revision-date input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  opacity: 0;
+  cursor: pointer;
+}
+.revision-date > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #334155;
+  transition: 0.2s;
+}
+.revision-date strong {
+  font-size: 21px;
+  line-height: 1.2;
+}
+.revision-date small {
+  font-size: 10px;
+}
+.revision-date.is-complete > span {
+  background: #e8f7ed;
+  border-color: #149353;
+  color: #116b34;
+}
+.revision-date.is-complete > span::after {
+  content: "✓";
+  position: absolute;
+  top: -3px;
+  right: 0;
+  border-radius: 50%;
+  background: #149353;
+  color: white;
+  width: 19px;
+  text-align: center;
+}
+.revision-date.is-overdue > span {
+  border-color: #e14747;
+  color: #b42323;
+}
+.revision-date input:focus-visible + span {
+  outline: 3px solid #149353;
+  outline-offset: 4px;
+}
+.doubt-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border: 1px solid #dbe4de;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+.auth-mobile-brand {
+  margin-bottom: 24px;
+}
+.auth-mobile-brand .brand {
+  color: #111827;
+}
+
+.revision-lights {
+  display: inline-flex;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: 24px;
+  background: #f1f5f3;
+  border: 1px solid #dde6e0;
+}
+.revision-light {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #d1d8d4;
+  opacity: 0.4;
+}
+.revision-light.RED.active {
+  background: #dc3c3c;
+  box-shadow: 0 0 0 3px #dc3c3c18;
+  opacity: 1;
+}
+.revision-light.YELLOW.active {
+  background: #eab308;
+  box-shadow: 0 0 0 3px #eab30820;
+  opacity: 1;
+}
+.revision-light.GREEN.active {
+  background: #149353;
+  box-shadow: 0 0 0 3px #14935320;
+  opacity: 1;
+}

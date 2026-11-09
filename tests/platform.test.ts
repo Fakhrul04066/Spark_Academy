@@ -194,40 +194,91 @@ describe("Database-backed permissions and workflows", () => {
       mutate(f.otherTeacher, "attendance", "POST", body),
     ).rejects.toThrow();
   });
-  it("preserves completed revision history while replacing pending dates", async () => {
+  it("automatically advances revision lights, supports undo, and preserves dates", async () => {
     const f = fixtures;
     const result = await mutate(f.student, "revision", "POST", {
       chapterId: f.chapter,
-      name: "Newton’s laws",
+      name: "Automatic revision test",
       learningDate: dhakaDate(),
       status: "RED",
     });
-    let t = await db.revisionTopic.findUniqueOrThrow({
-      where: { id: result.id },
-      include: { schedules: true },
-    });
-    expect(t.schedules).toHaveLength(5);
-    await mutate(f.student, "revision-schedules", "PATCH", {
-      id: t.schedules[0].id,
-    });
-    await mutate(f.student, "revision", "PATCH", {
-      id: t.id,
-      status: "YELLOW",
-    });
-    t = await db.revisionTopic.findUniqueOrThrow({
-      where: { id: t.id },
-      include: { schedules: true },
-    });
-    expect(t.schedules.filter((s) => s.completedAt)).toHaveLength(1);
-    expect(
-      t.schedules.filter((s) => !s.cancelled && !s.completedAt),
-    ).toHaveLength(3);
-    await mutate(f.student, "revision", "PATCH", { id: t.id, status: "GREEN" });
-    expect(
-      await db.revisionSchedule.count({
-        where: { topicId: t.id, cancelled: false, completedAt: null },
+    const read = () =>
+      db.revisionTopic.findUniqueOrThrow({
+        where: { id: result.id },
+        include: { schedules: true },
+      });
+    let topic = await read();
+    expect(topic.status).toBe("RED");
+    expect(topic.schedules).toHaveLength(5);
+    await expect(
+      mutate(f.otherStudent, "revision-schedules", "PATCH", {
+        id: topic.schedules[0].id,
       }),
-    ).toBe(0);
+    ).rejects.toThrow();
+    await mutate(f.student, "revision-schedules", "PATCH", {
+      id: topic.schedules[0].id,
+    });
+    expect((await read()).status).toBe("YELLOW");
+    for (const schedule of topic.schedules.slice(1))
+      await mutate(f.student, "revision-schedules", "PATCH", {
+        id: schedule.id,
+      });
+    topic = await read();
+    expect(topic.status).toBe("GREEN");
+    expect(topic.schedules.filter((s) => s.completedAt)).toHaveLength(5);
+    await mutate(f.student, "revision-schedules", "PATCH", {
+      id: topic.schedules[0].id,
+      completed: false,
+    });
+    expect((await read()).status).toBe("YELLOW");
+    for (const schedule of topic.schedules)
+      await mutate(f.student, "revision-schedules", "PATCH", {
+        id: schedule.id,
+        completed: false,
+      });
+    topic = await read();
+    expect(topic.status).toBe("RED");
+    expect(topic.schedules).toHaveLength(5);
+  });
+  it("allows only owned unattached images and keeps student identity private", async () => {
+    const f = fixtures;
+    const image = await db.audioAttachment.create({
+      data: {
+        ownerId: f.student.id,
+        key: "avatars/" + crypto.randomUUID(),
+        mime: "image/png",
+        bytes: 68,
+      },
+    });
+    await expect(
+      mutate(f.otherStudent, "questions", "POST", {
+        batchId: f.batch,
+        subjectId: f.subject,
+        topic: "Image",
+        text: "",
+        imageId: image.id,
+      }),
+    ).rejects.toThrow();
+    const question = await mutate(f.student, "questions", "POST", {
+      batchId: f.batch,
+      subjectId: f.subject,
+      topic: "Image",
+      text: "",
+      imageId: image.id,
+    });
+    const rows = await getData(f.teacher, "questions", new URLSearchParams());
+    const row = (rows as any[]).find((r) => r.id === question.id);
+    expect(row.imageId).toBe(image.id);
+    expect(row).not.toHaveProperty("userId");
+    await expect(
+      mutate(f.student, "questions", "POST", {
+        batchId: f.batch,
+        subjectId: f.subject,
+        topic: "Reuse",
+        text: "",
+        imageId: image.id,
+      }),
+    ).rejects.toThrow();
   });
   it("creates, resumes, autosaves and grades an exam without leaking answer keys", async () => {
     const f = fixtures;

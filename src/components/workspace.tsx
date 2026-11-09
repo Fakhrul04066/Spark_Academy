@@ -1,4 +1,6 @@
 "use client";
+import { RevisionDate } from "./revision-date";
+import { ImageAttachment } from "./image-attachment";
 import { PremiumDashboard } from "./premium-dashboard";
 
 import Link from "next/link";
@@ -836,6 +838,19 @@ export function Workspace({
                                 <p className="mt-3 whitespace-pre-wrap">
                                   {r.text}
                                 </p>
+                                {r.imageId && (
+                                  <a
+                                    href={`/api/question-images/${r.imageId}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    <img
+                                      className="doubt-image"
+                                      src={`/api/question-images/${r.imageId}`}
+                                      alt="Attached doubt illustration"
+                                    />
+                                  </a>
+                                )}
                                 {r.audioId && (
                                   <div className="mt-3">
                                     <PrivateAudio id={r.audioId} />
@@ -946,25 +961,23 @@ export function Workspace({
                             ) : module === "revision" ? (
                               <>
                                 <div className="row">
+                                  <div
+                                    className="revision-lights"
+                                    aria-label={`Revision progress: ${r.status.toLowerCase()}`}
+                                  >
+                                    {["RED", "YELLOW", "GREEN"].map((color) => (
+                                      <span
+                                        key={color}
+                                        className={`revision-light ${color} ${r.status === color ? "active" : ""}`}
+                                      />
+                                    ))}
+                                  </div>
                                   <span className={`status ${r.status}`}>
                                     {r.status}
                                   </span>
-                                  <select
-                                    className="input"
-                                    aria-label={`Understanding status for ${r.name}`}
-                                    style={{ width: 120 }}
-                                    value={r.status}
-                                    onChange={(e) =>
-                                      act("revision", "PATCH", {
-                                        id: r.id,
-                                        status: e.target.value,
-                                      })
-                                    }
-                                  >
-                                    {["RED", "YELLOW", "GREEN"].map((s) => (
-                                      <option key={s}>{s}</option>
-                                    ))}
-                                  </select>
+                                  <span className="footnote">
+                                    Automatic · based on completed revisions
+                                  </span>
                                 </div>
                                 <h3 className="mt-4">{r.name}</h3>
                                 <p className="text-xs mt-2">
@@ -975,37 +988,23 @@ export function Workspace({
                                   {r.schedules
                                     .filter((s: Row) => !s.cancelled)
                                     .map((s: Row) => (
-                                      <div className="row" key={s.id}>
-                                        <span className="text-xs">
-                                          {s.dueDate}{" "}
-                                          {s.completedAt
-                                            ? "✓ Completed"
-                                            : s.dueDate < dhakaDate()
-                                              ? "· Overdue"
-                                              : s.dueDate === dhakaDate()
-                                                ? "· Today"
-                                                : ""}
-                                        </span>
-                                        {!s.completedAt && (
-                                          <button
-                                            className="btn secondary small"
-                                            onClick={() =>
-                                              act(
-                                                "revision-schedules",
-                                                "PATCH",
-                                                { id: s.id },
-                                              )
-                                            }
-                                          >
-                                            Complete
-                                          </button>
-                                        )}
-                                      </div>
+                                      <RevisionDate
+                                        key={s.id}
+                                        date={s.dueDate}
+                                        topic={r.name}
+                                        completed={!!s.completedAt}
+                                        onSave={(completed) =>
+                                          act("revision-schedules", "PATCH", {
+                                            id: s.id,
+                                            completed,
+                                          })
+                                        }
+                                      />
                                     ))}
                                 </div>
                                 {r.status === "GREEN" && (
                                   <p className="footnote">
-                                    No new reminders. Completed history is
+                                    All revisions complete. Your history is
                                     preserved.
                                   </p>
                                 )}
@@ -1348,6 +1347,8 @@ function RecordForm({
   onSave: (body: Row) => Promise<void>;
   onCancel: () => void;
 }) {
+  const [imageId, setImageId] = useState("");
+  const [imageBusy, setImageBusy] = useState(false);
   const [audioId, setAudioId] = useState(""),
     [busy, setBusy] = useState(false),
     [people, setPeople] = useState<Row>({}),
@@ -1388,6 +1389,7 @@ function RecordForm({
         }
         if (value) body.id = value.id;
         if (audioId) body.audioId = audioId;
+        if (imageId) body.imageId = imageId;
         try {
           await onSave(body);
         } finally {
@@ -1469,8 +1471,16 @@ function RecordForm({
           </label>
         ))}
       </div>
-      {module === "questions" && <VoiceRecorder onUploaded={setAudioId} />}
-      <button className="btn justify-self-start" disabled={busy}>
+      {module === "questions" && (
+        <>
+          <VoiceRecorder onUploaded={setAudioId} />
+          <ImageAttachment
+            onUploaded={setImageId}
+            onBusyChange={setImageBusy}
+          />
+        </>
+      )}
+      <button className="btn justify-self-start" disabled={busy || imageBusy}>
         {busy
           ? "Saving…"
           : "Save " + (module === "revision" ? "topic" : "record")}

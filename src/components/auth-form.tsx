@@ -30,7 +30,11 @@ export function AuthForm({
       const r = await signIn("credentials", { ...values, redirect: false });
       if (r?.error)
         throw new Error(
-          "Email or password is incorrect, or the account is inactive.",
+          r.error === "DatabaseUnavailable"
+            ? "The database is offline. Please start the local database and try again."
+            : r.error === "TooManyAttempts"
+              ? "Too many sign-in attempts. Please try again later."
+              : "Email or password is incorrect, or the account is inactive.",
         );
       const s = await fetch("/api/profile").then((r) => r.json());
       if (!s.data?.role) throw new Error("Could not load your account");
@@ -90,6 +94,9 @@ export function AuthForm({
         <p className="footnote">© Spark Academy. All rights reserved.</p>
       </aside>
       <main className="auth-form">
+        <div className="auth-mobile-brand">
+          <Brand />
+        </div>
         <Link href="/" className="eyebrow mb-8">
           ← BACK TO SPARK ACADEMY
         </Link>

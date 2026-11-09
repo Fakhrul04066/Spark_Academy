@@ -257,6 +257,8 @@ model AnonymousQuestion {
   topic     String
   text      String
   audioId   String?          @unique
+  imageId   String?          @unique
+  image     AudioAttachment? @relation("QuestionImage", fields: [imageId], references: [id], onDelete: Restrict)
   reported  Boolean          @default(false)
   hidden    Boolean          @default(false)
   createdAt DateTime         @default(now()) @db.Timestamptz(3)
@@ -291,6 +293,7 @@ model AudioAttachment {
   owner     User               @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   question  AnonymousQuestion? @relation("QuestionAudio")
   reply     QuestionReply?     @relation("ReplyAudio")
+  imageQuestion AnonymousQuestion? @relation("QuestionImage")
 }
 
 model RevisionTopic {

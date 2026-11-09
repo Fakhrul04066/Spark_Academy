@@ -119,6 +119,63 @@ async function handler(req: Request, ctx: Context) {
       405,
       "Unsupported method",
     );
+    if (resource === "question-images") {
+      if (req.method === "POST") {
+        check(u.role === "STUDENT");
+        const form = await req.formData();
+        const f = form.get("image");
+        check(
+          f instanceof File && f.size > 0 && f.size <= 2 * 1024 * 1024,
+          400,
+          "Image must be under 2 MB",
+        );
+        const bytes = Buffer.from(await f.arrayBuffer());
+        check(
+          (f.type === "image/png" &&
+            bytes
+              .subarray(0, 8)
+              .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) ||
+            (f.type === "image/jpeg" && bytes[0] === 255 && bytes[1] === 216) ||
+            (f.type === "image/webp" &&
+              bytes.subarray(0, 4).toString() === "RIFF" &&
+              bytes.subarray(8, 12).toString() === "WEBP"),
+          400,
+          "Use a valid PNG, JPEG or WebP image",
+        );
+        const key = await uploadAvatar(bytes, f.type);
+        const attachment = await db.audioAttachment.create({
+          data: { ownerId: u.id, key, mime: f.type, bytes: bytes.length },
+          select: { id: true },
+        });
+        return Response.json({ data: attachment }, { status: 201 });
+      }
+      check(
+        req.method === "GET" && path[1],
+        405,
+        "Unsupported image operation",
+      );
+      const attachment = await db.audioAttachment.findUniqueOrThrow({
+        where: { id: path[1] },
+        include: { imageQuestion: true },
+      });
+      check(attachment.mime.startsWith("image/"), 404, "Image not found");
+      const question = attachment.imageQuestion;
+      if (u.role !== "ADMIN" && attachment.ownerId !== u.id) {
+        check(question && !question.hidden);
+        if (u.role === "STUDENT") check(question.userId === u.id);
+        else await academicAccess(u, question.batchId, question.subjectId);
+      }
+      const local = await localAvatar(attachment.key);
+      if (local)
+        return new Response(new Uint8Array(local.bytes), {
+          headers: {
+            "Content-Type": local.mime,
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      return Response.redirect(await audioUrl(attachment.key), 302);
+    }
     if (resource === "avatar") {
       if (req.method === "POST") {
         const form = await req.formData();
@@ -241,6 +298,7 @@ async function handler(req: Request, ctx: Context) {
         where: { id: path[1] },
         include: { question: true, reply: { include: { question: true } } },
       });
+      check(a.mime.startsWith("audio/"), 404, "Recording not found");
       const q = a.question || a.reply?.question;
       if (u.role !== "ADMIN" && a.ownerId !== u.id) {
         check(q && !q.hidden);

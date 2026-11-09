@@ -2,7 +2,7 @@ import Link from "next/link";
 export function Brand() {
   return (
     <Link href="/" className="brand" aria-label="Spark Academy home">
-      <img src="/spark-mark.svg" width="42" height="42" alt="" />
+      <img src="/spark-mark.svg?v=4" width="42" height="42" alt="" />
       <span className="brand-name">
         <span className="brand-line">SPARK</span>
         <span className="brand-line brand-accent">ACADEMY</span>

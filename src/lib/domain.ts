@@ -73,6 +73,7 @@ export function anonymousQuestion(q: {
   topic: string;
   text: string;
   audioId: string | null;
+  imageId?: string | null;
   reported: boolean;
   createdAt: Date;
   replies: {
@@ -87,6 +88,7 @@ export function anonymousQuestion(q: {
     topic: q.topic,
     text: q.text,
     audioId: q.audioId,
+    imageId: q.imageId || null,
     reported: q.reported,
     createdAt: q.createdAt,
     author: "Anonymous Student",
@@ -98,4 +100,18 @@ export function anonymousQuestion(q: {
       author: "Anonymous Teacher",
     })),
   };
+}
+
+export function revisionProgress(
+  schedules: { cancelled: boolean; completedAt: unknown }[],
+  fallback: "RED" | "YELLOW" | "GREEN" = "RED",
+) {
+  const active = schedules.filter((s) => !s.cancelled);
+  if (!active.length) return fallback;
+  const completed = active.filter((s) => s.completedAt).length;
+  return completed === active.length
+    ? "GREEN"
+    : completed > 0
+      ? "YELLOW"
+      : "RED";
 }

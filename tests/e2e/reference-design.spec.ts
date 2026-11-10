@@ -5,6 +5,8 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   await page.goto("/",{waitUntil:"commit"});
   await expect(page.locator(".storm-brand-title")).toContainText("SPARK");
   await expect(page.locator("#coursegrid article:visible")).toHaveCount(4);
+  await expect(page.locator("#features .feature-3d-icon")).toHaveCount(6);
+  await expect(page.locator("#coursegrid")).not.toContainText("ব্যাচের তথ্য অ্যাডমিনের কাছে");
   const mobile=(page.viewportSize()?.width||1440)<=1120;
   await expect(page.locator(".storm-course-stack")).toHaveAttribute(mobile?"data-carousel-mode":"data-orbit-speed",mobile?"swipe":"0.12");
   await page.locator('[data-filter="hsc"]').click();

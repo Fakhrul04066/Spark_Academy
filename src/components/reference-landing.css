@@ -3583,3 +3583,11 @@
  .spark-landing .mobile-slider-controls button:disabled{opacity:.5;cursor:default}
 }
 @media(prefers-reduced-motion:reduce){.spark-landing .mobile-card-slider{scroll-behavior:auto!important}}
+
+/* Consistent shaded vector illustrations replace platform-dependent emoji. */
+.spark-landing #features .feature .ico.feature-illustration{
+ width:76px!important;height:76px!important;display:block!important;background:transparent!important;
+ padding:0;margin-bottom:18px;border:0;box-shadow:none;
+}
+.spark-landing .feature-3d-icon{display:block;width:100%;height:100%;overflow:visible}
+.spark-landing .course-bottom:has(>.textlink:only-child){justify-content:flex-end}

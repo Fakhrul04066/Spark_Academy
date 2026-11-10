@@ -9,3 +9,5 @@ FAQ questions use dark navy text on white/light-blue cards; answers use slate te
 The FAQ now says "QnA কি সরাসরি কল?". Circular motion uses transform-only GPU positioning on desktop and mobile, cached geometry, frame-rate-independent velocity easing, critically damped manual navigation, and fewer redundant style/class writes. CSS transitions no longer compete with per-frame transforms.
 
 On phones and tablets up to 1120px, the two panels now use native horizontal scroll-snap cards rather than 3D orbits. Cards advance every six seconds while visible, with swipe, previous/next, pause, keyboard and reduced-motion support. Resizing between phone and desktop tears down the old controls, observers and timers before mounting the appropriate layout. Desktop circular motion is retained.
+
+The six feature-grid emojis are replaced by consistent shaded vector illustrations: exam/medal, analytics, multimodal Q&A, attendance, private-feedback shield and revision books/clock. The redundant footer admission paragraph and course-card admin labels are removed; the generic footer contact line is replaced with a Spark Academy updates message.

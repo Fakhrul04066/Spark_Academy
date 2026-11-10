@@ -5,7 +5,8 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   await page.goto("/",{waitUntil:"commit"});
   await expect(page.locator(".storm-brand-title")).toContainText("SPARK");
   await expect(page.locator("#coursegrid article:visible")).toHaveCount(4);
-  await expect(page.locator(".storm-course-stack")).toHaveAttribute("data-orbit-speed","0.12");
+  const mobile=(page.viewportSize()?.width||1440)<=1120;
+  await expect(page.locator(".storm-course-stack")).toHaveAttribute(mobile?"data-carousel-mode":"data-orbit-speed",mobile?"swipe":"0.12");
   await page.locator('[data-filter="hsc"]').click();
   await expect(page.locator("#coursegrid article:visible")).toHaveCount(2);
   await page.locator("#coursegrid article:visible [data-course]").first().click();
@@ -22,9 +23,10 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   for(const ratio of ratios)expect(ratio).toBeGreaterThanOrEqual(4.5);
   const pause=page.getByRole("button",{name:"Pause or play courses"});
   await pause.click();await expect(pause).toContainText("Play");
-  const before=await page.locator(".storm-course-stack .is-orbit-current").getAttribute("data-go-grade");
+  const current=page.locator(mobile?".storm-course-stack .is-mobile-current":".storm-course-stack .is-orbit-current");
+  const before=await current.getAttribute("data-go-grade");
   await page.getByRole("button",{name:"Next courses",exact:true}).click();
-  await expect(page.locator(".storm-course-stack .is-orbit-current")).not.toHaveAttribute("data-go-grade",before!);
+  await expect(current).not.toHaveAttribute("data-go-grade",before!);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await expect(page.locator('.nav-actions a[href="/login"]')).toBeVisible();
   await page.emulateMedia({reducedMotion:"reduce"});

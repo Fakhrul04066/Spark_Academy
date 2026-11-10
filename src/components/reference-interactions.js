@@ -43,7 +43,7 @@ export function mountReferenceLanding(root) {
   filterCourses();
   return ()=>{controller.abort();stopOrbits();one('#courseDialog')?.close();};
 }
-function mountOrbits(page,on,motion){
+function mountDesktopOrbits(page,on,motion){
   const TAU=Math.PI*2,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const states=[],observers=[],controls=[];
   let frame=0,previous=0,disposed=false;
@@ -109,4 +109,45 @@ function mountOrbits(page,on,motion){
   }
   on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;states.forEach(s=>s.velocity=0);}else start();});start();
   return ()=>{disposed=true;cancelAnimationFrame(frame);observers.forEach(observer=>observer.disconnect());controls.forEach(control=>control.remove());states.forEach(state=>{delete state.root.dataset.orbitSpeed;state.cards.forEach((card,i)=>{const old=state.originals[i];if(old.style===null)card.removeAttribute('style');else card.setAttribute('style',old.style);card.className=old.className;if(old.tabIndex===null)card.removeAttribute('tabindex');else card.setAttribute('tabindex',old.tabIndex);});});};
+}
+
+// Use native touch scrolling on phones/tablets, while retaining desktop orbits.
+function mountOrbits(page,on,motion){
+ const compact=matchMedia('(max-width:1120px)');let cleanup=()=>{};
+ function refresh(){cleanup();const controller=new AbortController();const listen=(target,type,listener,options={})=>target?.addEventListener(type,listener,{...options,signal:controller.signal});
+  const stop=compact.matches?mountMobileSliders(page,listen,motion):mountDesktopOrbits(page,listen,motion);
+  cleanup=()=>{controller.abort();stop();};
+ }
+ refresh();on(compact,'change',refresh);return ()=>cleanup();
+}
+function mountMobileSliders(page,on,motion){
+ const cleanups=[];
+ for(const [selector,cardSelector,label] of [['.storm-course-stack','.storm-course-tile','courses'],['.storm-feature-stack','.storm-feature-tile','features']]){
+  const root=page.querySelector(selector);if(!root)continue;
+  const cards=[...root.querySelectorAll(cardSelector)];
+  const originalStyle=root.getAttribute('style'),originalLabel=root.getAttribute('aria-label');
+  const originals=cards.map(card=>({style:card.getAttribute('style'),className:card.className,tabIndex:card.getAttribute('tabindex')}));
+  root.classList.add('mobile-card-slider');root.dataset.carouselMode='swipe';root.removeAttribute('data-orbit-speed');
+  root.setAttribute('role','region');root.setAttribute('aria-roledescription','carousel');root.setAttribute('aria-label',label+' swipe cards');root.tabIndex=0;
+  cards.forEach(card=>{card.classList.remove('is-orbit-current');card.tabIndex=0;for(const [key,value] of Object.entries({position:'relative',left:'auto',top:'auto',transform:'none',opacity:'1',zIndex:'auto',pointerEvents:'auto',width:'calc(100% - 42px)',height:'auto',minHeight:'184px',maxWidth:'none',padding:'20px',flex:'0 0 calc(100% - 42px)',transition:'background .22s ease,border-color .22s ease'}))card.style.setProperty(key.replace(/[A-Z]/g,c=>'-'+c.toLowerCase()),value,'important');});
+  let index=0,playing=!motion.matches,visible=false,pauseUntil=0,direction=1,scrollTimer;
+  const controls=document.createElement('div');controls.className='ring-instruction mobile-slider-controls';
+  const count=document.createElement('span'),prev=document.createElement('button'),next=document.createElement('button'),pause=document.createElement('button');
+  count.className='mobile-slider-count';prev.className=next.className='orbit-arrow';pause.className='ring-control';
+  for(const button of [prev,next,pause])button.type='button';
+  prev.textContent='‹';next.textContent='›';prev.setAttribute('aria-label','Previous '+label);next.setAttribute('aria-label','Next '+label);pause.setAttribute('aria-label','Pause or play '+label);
+  function update(){count.textContent=(index+1)+' / '+cards.length;prev.disabled=index===0;next.disabled=index===cards.length-1;pause.disabled=motion.matches;pause.textContent=motion.matches?'Swipe to explore':playing?'Ⅱ Pause':'▶ Play';pause.setAttribute('aria-pressed',String(!playing));cards.forEach((card,i)=>card.classList.toggle('is-mobile-current',i===index));}
+  function go(nextIndex,manual=true){index=Math.max(0,Math.min(cards.length-1,nextIndex));if(manual)pauseUntil=performance.now()+9000;root.scrollTo({left:cards[index].offsetLeft-cards[0].offsetLeft,behavior:motion.matches?'auto':'smooth'});update();}
+  controls.append(count,prev,next,pause);root.insertAdjacentElement('afterend',controls);update();
+  on(prev,'click',()=>go(index-1));on(next,'click',()=>go(index+1));on(pause,'click',()=>{playing=!playing;pauseUntil=0;update();});
+  on(root,'keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();go(index+(event.key==='ArrowRight'?1:-1));}});
+  on(root,'pointerdown',()=>{pauseUntil=performance.now()+9000;},{passive:true});
+  on(root,'focusin',()=>{pauseUntil=Infinity;});on(root,'focusout',event=>{if(!root.contains(event.relatedTarget))pauseUntil=performance.now()+9000;});
+  on(root,'scroll',()=>{clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>{const center=root.scrollLeft+root.clientWidth/2;index=cards.reduce((nearest,card,i)=>Math.abs(card.offsetLeft+card.offsetWidth/2-center)<Math.abs(cards[nearest].offsetLeft+cards[nearest].offsetWidth/2-center)?i:nearest,0);update();},100);},{passive:true});
+  on(motion,'change',()=>{if(motion.matches)playing=false;update();});
+  const observer=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??false;},{threshold:.35});observer.observe(root);
+  const timer=setInterval(()=>{if(!playing||motion.matches||!visible||document.hidden||performance.now()<pauseUntil)return;if(index===cards.length-1)direction=-1;if(index===0)direction=1;go(index+direction,false);},6000);
+  cleanups.push(()=>{clearInterval(timer);clearTimeout(scrollTimer);observer.disconnect();controls.remove();root.classList.remove('mobile-card-slider');delete root.dataset.carouselMode;root.scrollLeft=0;if(originalStyle===null)root.removeAttribute('style');else root.setAttribute('style',originalStyle);if(originalLabel===null)root.removeAttribute('aria-label');else root.setAttribute('aria-label',originalLabel);cards.forEach((card,i)=>{const old=originals[i];card.className=old.className;if(old.style===null)card.removeAttribute('style');else card.setAttribute('style',old.style);if(old.tabIndex===null)card.removeAttribute('tabindex');else card.setAttribute('tabindex',old.tabIndex);});});
+ }
+ return ()=>cleanups.forEach(cleanup=>cleanup());
 }

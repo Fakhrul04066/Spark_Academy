@@ -3547,3 +3547,39 @@
   transition:background .22s ease,border-color .22s ease,box-shadow .22s ease!important;
   will-change:transform,opacity!important;
 }
+
+/* Touch-first phone/tablet cards: native scroll-snap instead of a 3D orbit. */
+@media(max-width:1120px){
+ .spark-landing #home .storm-course-stack.mobile-card-slider,
+ .spark-landing #home .storm-feature-stack.mobile-card-slider{
+  display:flex!important;align-items:stretch!important;gap:14px!important;
+  height:auto!important;min-height:0!important;margin:20px 0 4px!important;
+  padding:10px 22px 18px!important;overflow-x:auto!important;overflow-y:hidden!important;
+  scroll-snap-type:x mandatory;scroll-padding-inline:22px;scroll-behavior:smooth;
+  perspective:none!important;transform:none!important;contain:none!important;
+  touch-action:pan-x pan-y!important;overscroll-behavior-x:contain;scrollbar-width:none;
+ }
+ .spark-landing .mobile-card-slider::-webkit-scrollbar{display:none}
+ .spark-landing #home .mobile-card-slider>.storm-course-tile,
+ .spark-landing #home .mobile-card-slider>.storm-feature-tile{
+  scroll-snap-align:start;scroll-snap-stop:always;border-radius:18px!important;
+  box-shadow:0 6px 18px #173b5314!important;backface-visibility:visible!important;
+  will-change:auto!important;transform-style:flat!important;
+ }
+ .spark-landing #home .mobile-card-slider .storm-course-label strong,
+ .spark-landing #home .mobile-card-slider .storm-feature-text strong{
+  font-size:18px!important;line-height:1.35!important;display:block!important;
+  white-space:normal!important;overflow:visible!important;-webkit-line-clamp:unset!important;
+ }
+ .spark-landing #home .mobile-card-slider .storm-course-label small,
+ .spark-landing #home .mobile-card-slider .storm-feature-text small{
+  font-size:13px!important;line-height:1.5!important;display:block!important;overflow:visible!important;
+ }
+ .spark-landing #home .mobile-card-slider .storm-course-glyph{width:44px!important;height:44px!important;flex-basis:44px!important;font-size:25px!important}
+ .spark-landing #home .mobile-card-slider .storm-feature-index{font-size:16px!important;margin-right:5px}
+ .spark-landing #home .storm-courses,.spark-landing #home .storm-features{min-height:0!important;padding-bottom:20px!important}
+ .spark-landing #home .mobile-slider-controls{display:flex!important;flex-wrap:nowrap!important;gap:10px!important;margin-top:4px!important}
+ .spark-landing #home .mobile-slider-count{display:block!important;flex:1!important;font-size:13px!important;font-weight:700!important;color:#465c70!important}
+ .spark-landing .mobile-slider-controls button:disabled{opacity:.5;cursor:default}
+}
+@media(prefers-reduced-motion:reduce){.spark-landing .mobile-card-slider{scroll-behavior:auto!important}}

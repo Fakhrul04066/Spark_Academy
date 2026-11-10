@@ -11,6 +11,7 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   await page.locator("#coursegrid article:visible [data-course]").first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
+  await expect(page.getByRole("button",{name:"QnA কি সরাসরি কল?",exact:true})).toHaveCount(1);
   await page.locator("#faq .faq-q").first().click();
   await expect(page.locator("#faq .faq-q").first()).toHaveAttribute("aria-expanded","true");
   await expect(page.locator("#faq .faq-a").first()).toBeVisible();

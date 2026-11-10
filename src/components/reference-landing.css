@@ -3540,3 +3540,10 @@
 .spark-landing .storm-strike-mark{color:#245c80!important}
 
 .spark-landing #courses .course-tools #count{color:#465c70!important}
+
+/* Motion positions are owned exclusively by requestAnimationFrame, not CSS easing. */
+.spark-landing .storm-course-stack .storm-course-tile,
+.spark-landing .storm-feature-stack .storm-feature-tile {
+  transition:background .22s ease,border-color .22s ease,box-shadow .22s ease!important;
+  will-change:transform,opacity!important;
+}

@@ -53,9 +53,9 @@ function mountOrbits(page,on,motion){
     const root=page.querySelector(selector);if(!root)continue;
     const cards=[...root.querySelectorAll(cardSelector)];if(!cards.length)continue;
     const originals=cards.map(card=>({style:card.getAttribute('style'),className:card.className,tabIndex:card.getAttribute('tabindex')}));
-    const state={root,cards,originals,direction,label,angle:Math.PI/2,velocity:0,inertia:0,target:null,running:!motion.matches,visible:true,hover:false,keyboard:false,dragging:false,moved:false,activeIndex:0,manualUntil:0,blockUntil:0,radius:90,startX:0,startY:0,lastX:0,lastY:0,lastT:0};
+    const state={root,cards,originals,direction,label,angle:Math.PI/2,velocity:0,inertia:0,target:null,running:!motion.matches,visible:true,hover:false,keyboard:false,dragging:false,moved:false,activeIndex:-1,width:0,height:0,manualUntil:0,blockUntil:0,radius:90,startX:0,startY:0,lastX:0,lastY:0,lastT:0};
     states.push(state);root.dataset.orbitSpeed=String(ORBIT_SPEED);root.tabIndex=0;root.setAttribute('role','group');root.setAttribute('aria-label',label+' circular cards. Drag or use previous and next.');
-    function measure(){state.radius=clamp(Math.min(root.clientWidth*.245,root.clientHeight*.31),72,103);render(state);start();}
+    function measure(){state.width=root.clientWidth;state.height=root.clientHeight;state.radius=clamp(Math.min(state.width*.245,state.height*.31),72,103);cards.forEach(card=>{card.style.setProperty('left','50%','important');card.style.setProperty('top','50%','important');});render(state);start();}
     const resize=new ResizeObserver(measure);resize.observe(root);observers.push(resize);
     const intersection=new IntersectionObserver(entries=>{state.visible=entries[0]?.isIntersecting??true;start();},{rootMargin:'50px'});intersection.observe(root);observers.push(intersection);
     const row=document.createElement('div');row.className='ring-instruction';
@@ -71,9 +71,9 @@ function mountOrbits(page,on,motion){
     on(pause,'click',()=>{state.running=!state.running;state.velocity=state.inertia=0;updatePlay();start();});
     on(motion,'change',()=>{if(motion.matches){state.running=false;state.velocity=state.inertia=0;if(state.target!==null){state.angle=state.target;state.target=null;}}updatePlay();render(state);start();});
     cards.forEach((card,i)=>on(card,'click',event=>{if(performance.now()<state.blockUntil){event.preventDefault();event.stopImmediatePropagation();return;}if(i!==state.activeIndex){event.preventDefault();event.stopImmediatePropagation();focus(i);}},{capture:true}));
-    on(root,'pointerenter',event=>{if(event.pointerType==='mouse'){state.hover=true;state.velocity=0;}});
+    on(root,'pointerenter',event=>{if(event.pointerType==='mouse'){state.hover=true;}});
     on(root,'pointerleave',event=>{if(event.pointerType==='mouse'&&!state.dragging){state.hover=false;start();}});
-    on(root,'focusin',()=>{state.keyboard=true;state.velocity=0;});on(root,'focusout',event=>{if(!root.contains(event.relatedTarget)){state.keyboard=false;start();}});
+    on(root,'focusin',()=>{state.keyboard=true;});on(root,'focusout',event=>{if(!root.contains(event.relatedTarget)){state.keyboard=false;start();}});
     on(root,'keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();focus((state.activeIndex+(event.key==='ArrowRight'?1:-1)+cards.length)%cards.length);}else if(event.key===' '&&event.target===root){event.preventDefault();state.running=!state.running;updatePlay();start();}});
     on(root,'pointerdown',event=>{if(event.button!==0||motion.matches)return;state.dragging=true;state.moved=false;state.startX=state.lastX=event.clientX;state.startY=state.lastY=event.clientY;state.lastT=performance.now();state.inertia=0;state.target=null;state.manualUntil=performance.now()+8000;start();});
     on(root,'pointermove',event=>{if(!state.dragging)return;const dx=event.clientX-state.lastX,dy=event.clientY-state.lastY;
@@ -89,20 +89,20 @@ function mountOrbits(page,on,motion){
     let nearest=0,depthMax=-1;const mobile=innerWidth<=1120;
     state.cards.forEach((card,i)=>{const theta=state.angle+i*TAU/state.cards.length,x=state.radius*Math.cos(theta),y=(mobile?.78:1)*state.radius*Math.sin(theta)+(mobile?-6:0),depth=(Math.sin(theta)+1)/2;
       const scale=mobile?.72+.42*depth:.53+.67*depth*depth;
-      card.style.setProperty('left',mobile?(state.root.clientWidth/2+x).toFixed(2)+'px':'50%','important');
-      card.style.setProperty('top',mobile?(state.root.clientHeight/2+y).toFixed(2)+'px':'50%','important');
-      card.style.transform=mobile?`translate(-50%,-50%) scale(${scale.toFixed(4)})`:`translate3d(calc(-50% + ${x.toFixed(2)}px),calc(-50% + ${y.toFixed(2)}px),${(-48+100*depth).toFixed(2)}px) scale(${scale.toFixed(4)})`;
-      card.style.opacity=(.72+.28*depth*depth).toFixed(3);card.style.zIndex=String(10+Math.round(depth*1000));card.style.pointerEvents=depth>.26?'auto':'none';
+      card.style.transform=`translate3d(calc(-50% + ${x.toFixed(3)}px),calc(-50% + ${y.toFixed(3)}px),${mobile?'0':(-48+100*depth).toFixed(3)}px) scale(${scale.toFixed(5)})`;
+      card.style.opacity=(.72+.28*depth*depth).toFixed(4);
+      const layer=String(10+Math.round(depth*1000));if(card.style.zIndex!==layer)card.style.zIndex=layer;
+      const interactive=depth>.26?'auto':'none';if(card.style.pointerEvents!==interactive)card.style.pointerEvents=interactive;
       if(depth>depthMax){depthMax=depth;nearest=i;}
     });
-    state.activeIndex=nearest;state.cards.forEach((card,i)=>{card.classList.toggle('is-orbit-current',i===nearest);card.tabIndex=i===nearest?0:-1;});
+    if(state.activeIndex!==nearest){state.activeIndex=nearest;state.cards.forEach((card,i)=>{card.classList.toggle('is-orbit-current',i===nearest);card.tabIndex=i===nearest?0:-1;});}
   }
   function animate(now){frame=0;if(disposed||document.hidden)return;const dt=clamp((now-previous)/1000,0,.042);previous=now;let moving=false;
     for(const state of states){if(!state.visible&&state.target===null&&!state.dragging)continue;
-      if(state.target!==null){const delta=state.target-state.angle;state.angle+=delta*(1-Math.exp(-4.5*dt));state.velocity=0;if(Math.abs(delta)<.0008){state.angle=state.target;state.target=null;}moving=true;}
+      if(state.target!==null){const omega=6,offset=state.angle-state.target,decay=Math.exp(-omega*dt),step=(state.velocity+omega*offset)*dt;state.angle=state.target+(offset+step)*decay;state.velocity=(state.velocity-omega*step)*decay;if(Math.abs(state.target-state.angle)<.0008&&Math.abs(state.velocity)<.003){state.angle=state.target;state.target=null;state.velocity=0;}moving=true;}
       else if(state.dragging){state.velocity=0;moving=true;}
-      else if(!motion.matches&&Math.abs(state.inertia)>.003){state.angle+=state.inertia*dt;state.inertia*=Math.exp(-5.2*dt);moving=true;}
-      else{state.inertia=0;const automatic=state.running&&!motion.matches&&!state.keyboard&&!state.hover&&now>state.manualUntil;const desired=automatic?state.direction*ORBIT_SPEED:0;state.velocity+=(desired-state.velocity)*(1-Math.exp(-3*dt));state.angle+=state.velocity*dt;moving=moving||automatic||Math.abs(state.velocity)>.0001||(state.running&&!state.hover&&!state.keyboard&&!motion.matches);}
+      else if(!motion.matches&&Math.abs(state.inertia)>.003){const decay=Math.exp(-5.2*dt);state.angle+=state.inertia*(1-decay)/5.2;state.inertia*=decay;moving=true;}
+      else{state.inertia=0;const automatic=state.running&&!motion.matches&&!state.keyboard&&!state.hover&&now>state.manualUntil;const desired=automatic?state.direction*ORBIT_SPEED:0;const decay=Math.exp(-3*dt),oldVelocity=state.velocity;state.velocity=desired+(oldVelocity-desired)*decay;state.angle+=desired*dt+(oldVelocity-desired)*(1-decay)/3;moving=moving||automatic||Math.abs(state.velocity)>.0001||(state.running&&!state.hover&&!state.keyboard&&!motion.matches);}
       render(state);
     }
     if(moving)frame=requestAnimationFrame(animate);

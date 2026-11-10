@@ -74,7 +74,7 @@ The original prototype remains in this workstation’s ignored legacy/ folder an
 
 ## Visual system
 
-The current reference-informed design uses a black landing page, white header, green actions, Inter/Anek Bangla typography and an original emerald book-and-spark logo. Existing premium Student, Teacher and Admin dashboards use the same identity and action colors. Class filters, program search, course details and FAQ are interactive. See [design notes](docs/DESIGN.md). Existing accounts and academic services are preserved.
+The current reference-informed design uses a black landing page, white header, green actions, Inter/Anek Bangla typography and an original energetic lightning-and-spark logo. Existing premium Student, Teacher and Admin dashboards use the same identity and action colors. Class filters, program search, course details and FAQ are interactive. See [design notes](docs/DESIGN.md). Existing accounts and academic services are preserved.
 
 ### Local startup
 

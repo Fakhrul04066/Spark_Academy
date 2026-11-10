@@ -5,7 +5,7 @@ async function login(page: Page, role: string) {
   await page.goto("/login");
   await expect(page.locator(".auth-form .brand img")).toHaveAttribute(
     "src",
-    "/spark-mark.svg?v=4",
+    "/spark-mark.svg?v=5",
   );
   await page
     .getByLabel("Email address")

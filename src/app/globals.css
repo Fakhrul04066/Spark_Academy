@@ -2059,3 +2059,8 @@ body {
   box-shadow: 0 0 0 3px #14935320;
   opacity: 1;
 }
+
+/* Energetic Spark Academy wordmark. */
+.brand .brand-line:first-child {font-style:italic;font-weight:900;font-size:20px;letter-spacing:-.055em;line-height:1}
+.brand .brand-line.brand-accent {font-size:10px;font-weight:700;letter-spacing:.22em;margin-top:4px}
+.sidebar .brand img {border:0;border-radius:12px}

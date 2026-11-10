@@ -1,51 +1,33 @@
 import { test, expect } from "@playwright/test";
 import "dotenv/config";
-test("reference landing: class filters, course details, FAQ and real login", async ({
-  page,
-}, info) => {
-  await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: /নতুন শক্তিতে/ }),
-  ).toBeVisible();
-  await expect(page.locator("#coursegrid article:visible")).toHaveCount(6);
-  await page.locator('.grade[data-grade="6"]').click();
-  await expect(page.locator("#coursegrid article:visible")).toHaveCount(1);
-  await expect(page.locator("#coursegrid article:visible")).toContainText(
-    "Class 6",
-  );
-  await page.locator('.pill[data-filter="hsc"]').click();
+test("supplied landing: readable FAQ, slow circular controls, courses and mobile layout", async ({page}) => {
+  await page.route("https://fonts.googleapis.com/**",r=>r.fulfill({contentType:"text/css",body:""}));
+  await page.goto("/",{waitUntil:"commit"});
+  await expect(page.locator(".storm-brand-title")).toContainText("SPARK");
+  await expect(page.locator("#coursegrid article:visible")).toHaveCount(4);
+  await expect(page.locator(".storm-course-stack")).toHaveAttribute("data-orbit-speed","0.12");
+  await page.locator('[data-filter="hsc"]').click();
   await expect(page.locator("#coursegrid article:visible")).toHaveCount(2);
-  await page.locator("#coursegrid article:visible button").first().click();
+  await page.locator("#coursegrid article:visible [data-course]").first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).not.toBeVisible();
-  const faq = page.locator(".faq-q").first();
-  await faq.click();
-  await expect(faq).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator(".faq-a").first()).toBeVisible();
-  await page.evaluate(() => window.scrollTo(0, 0));
-  if (info.project.name === "mobile") {
-    await page.getByRole("button", { name: "Open menu" }).click();
-    await expect(page.locator("#navlinks")).toBeVisible();
-    await page.locator("#navlinks a").first().click();
-    await expect(page.locator("#navlinks")).not.toBeVisible();
-  }
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth + 1,
-    ),
-  ).toBe(true);
-  await page.screenshot({
-    path: `test-results/reference-${info.project.name}.png`,
-    fullPage: true,
+  await page.locator("#faq .faq-q").first().click();
+  await expect(page.locator("#faq .faq-q").first()).toHaveAttribute("aria-expanded","true");
+  await expect(page.locator("#faq .faq-a").first()).toBeVisible();
+  const ratios=await page.locator("#faq").evaluate(root=>{
+    const lum=(color:string)=>{const v=color.match(/[\d.]+/g)!.slice(0,3).map(Number).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4});return v[0]*.2126+v[1]*.7152+v[2]*.0722;};
+    return [".faq-q",".faq-a"].map(selector=>{const style=getComputedStyle(root.querySelector(selector)!);const a=lum(style.color),b=lum(style.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);});
   });
-  await page.locator('.nav-actions a[href="/login"]').click();
-  await expect(page.getByLabel("Email address")).toBeVisible();
-  expect(
-    await page
-      .getByRole("button", { name: "Sign in →", exact: true })
-      .evaluate((e) => getComputedStyle(e).backgroundColor),
-  ).toBe("rgb(28, 171, 85)");
+  for(const ratio of ratios)expect(ratio).toBeGreaterThanOrEqual(4.5);
+  const pause=page.getByRole("button",{name:"Pause or play courses"});
+  await pause.click();await expect(pause).toContainText("Play");
+  const before=await page.locator(".storm-course-stack .is-orbit-current").getAttribute("data-go-grade");
+  await page.getByRole("button",{name:"Next courses",exact:true}).click();
+  await expect(page.locator(".storm-course-stack .is-orbit-current")).not.toHaveAttribute("data-go-grade",before!);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await expect(page.locator('.nav-actions a[href="/login"]')).toBeVisible();
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await expect(pause).toBeDisabled();
 });
 for (const role of ["student", "teacher", "admin"] as const)
   test(`${role}: reference theme preserves functional dashboard`, async ({

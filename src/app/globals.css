@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./account-pages.css";
 :root {
   --background: #f8fafc;
   --foreground: #102a43;
@@ -1064,9 +1065,79 @@ th {
   border-bottom: 1px solid #e8edf3;
   padding: 0 36px;
 }
-.topbar > .flex:first-child > span {
-  font-size: 11px;
-  color: #7e8fa3;
+.topbar {
+  gap: 10px;
+}
+.topbar-section,
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.topbar-actions {
+  justify-content: flex-end;
+}
+.topbar-actions > :not(.user-name),
+.topbar-section .mobile-menu {
+  flex: none;
+}
+.topbar-section-name {
+  overflow: hidden;
+  color: #136239;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: .09em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.topbar-qa-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #143a29;
+  font-size: clamp(19px, 2.4vw, 24px);
+  font-weight: 800;
+  letter-spacing: -.045em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.topbar-qa-title > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d2e9d9;
+  border-radius: 10px;
+  background: #eaf6ed;
+  color: #137644;
+}
+@media (max-width: 480px) {
+  .topbar {
+    gap: 5px;
+  }
+  .topbar-section,
+  .topbar-actions {
+    gap: 5px;
+  }
+  .topbar-section-name {
+    font-size: 11px;
+    letter-spacing: .035em;
+  }
+  .topbar-qa-title > span {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  .topbar .topbar-actions .avatar {
+    width: 26px;
+    height: 26px;
+  }
+  .topbar-actions > button {
+    padding-inline: 6px;
+  }
 }
 .topbar .avatar {
   background: #eaf0f6;

@@ -1,3 +1,4 @@
+import { createQaQuestion } from "./qa-access";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { hash } from "bcryptjs";
@@ -90,6 +91,10 @@ const fields = {
       text: z.string().max(10000),
       audioId: id.optional(),
       imageId: id.optional(),
+      shareWithClass: z.boolean().optional(),
+      shareWhilePending: z.boolean().optional(),
+      qaChapterId: id.optional(),
+      imageIds: z.array(id).max(4).optional(),
     })
     .strict(),
   feedback: z
@@ -1027,6 +1032,8 @@ export async function mutate(
           id,
           reported: z.boolean().optional(),
           hidden: z.boolean().optional(),
+          shareWithClass: z.boolean().optional(),
+          shareWhilePending: z.boolean().optional(),
         })
         .strict()
         .parse(body);
@@ -1038,10 +1045,17 @@ export async function mutate(
         if (u.role === "STUDENT") check(q.userId === u.id);
         else await academicAccess(u, q.batchId, q.subjectId);
       }
+      if (data.shareWithClass !== undefined || data.shareWhilePending !== undefined) {
+        check(u.role === "STUDENT" && q.userId === u.id);
+        if (data.shareWhilePending)
+          check(data.shareWithClass ?? q.shareWithClass, 400, "Enable class sharing to share while pending.");
+      }
       await db.anonymousQuestion.update({
         where: { id: q.id },
         data: {
           reported: data.reported,
+          shareWithClass: data.shareWithClass,
+          shareWhilePending: data.shareWithClass === false ? false : data.shareWhilePending,
           ...(u.role === "ADMIN" ? { hidden: data.hidden } : {}),
         },
       });
@@ -1049,13 +1063,17 @@ export async function mutate(
       return { saved: true };
     }
     check(u.role === "STUDENT");
-    const data = fields.questions.parse(body);
+    const { imageIds, ...data } = fields.questions.parse(body);
+    if (data.shareWhilePending) check(data.shareWithClass, 400, "Enable class sharing to share while pending.");
+    if (data.qaChapterId || imageIds) {
+      z.string().trim().min(1).max(120).parse(data.topic);
+      z.string().max(2000).parse(data.text);
+    }
     check(
-      data.text.trim() || data.audioId || data.imageId,
+      data.text.trim() || data.audioId || data.imageId || imageIds?.length,
       400,
       "Add text, a voice recording or an image",
     );
-    await academicAccess(u, data.batchId);
     check(
       await db.teacherAssignment.findFirst({
         where: { batchId: data.batchId, subjectId: data.subjectId },
@@ -1074,24 +1092,7 @@ export async function mutate(
           },
         }),
       );
-    if (data.imageId)
-      check(
-        await db.audioAttachment.findFirst({
-          where: {
-            id: data.imageId,
-            ownerId: u.id,
-            mime: { startsWith: "image/" },
-            question: null,
-            reply: null,
-            imageQuestion: null,
-          },
-        }),
-        400,
-        "Image is unavailable or already attached",
-      );
-    const q = await db.anonymousQuestion.create({
-      data: { ...data, userId: u.id },
-    });
+    const q = await createQaQuestion(u.id, data, imageIds);
     return { id: q.id };
   }
   if (resource === "question-replies") {

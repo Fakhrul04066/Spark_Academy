@@ -1,3 +1,5 @@
+import { QaAccessForm, QaPage } from "@/components/qa-page";
+import { db } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { navigation } from "@/lib/navigation";
@@ -18,14 +20,18 @@ export default async function Page({
   const module = section?.[0] || "dashboard";
   if (!navigation[key].some(([k]) => k === module) && module !== "attempt")
     notFound();
+  const qa = module === "questions";
   return (
     <Shell role={key} name={user.name}>
-      <Workspace
+      {qa && key === "ADMIN" && <QaAccessForm batches={await db.batch.findMany({
+        orderBy: { name: "asc" }, select: { id: true, name: true },
+      })} />}
+      {qa && key !== "ADMIN" ? <QaPage student={key === "STUDENT"} /> : <Workspace
         role={key}
         name={user.name}
         module={module}
         recordId={section?.[1]}
-      />
+      />}
     </Shell>
   );
 }

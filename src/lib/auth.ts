@@ -31,7 +31,10 @@ export const authOptions: NextAuthOptions = {
             )}`,
             60,
           );
-          const email = c.email.toLowerCase().trim();
+          const identifier = c.email.toLowerCase().trim();
+          const email = identifier.includes("@")
+            ? identifier
+            : `${identifier.replace(/[\s()-]/g, "").replace(/^\+?880/, "0")}@phone.spark.invalid`;
           await limit(`login:${email}`, 10);
           const u = await db.user.findUnique({ where: { email } });
           const ok = await compare(

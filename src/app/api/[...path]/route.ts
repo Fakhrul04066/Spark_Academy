@@ -1,3 +1,4 @@
+import { checkQaMedia, manageQaAccess, readQa, readQaDiscussion, saveQa, updateQaSignal, writeQaDiscussion } from "@/services/qa-access";
 import { Prisma } from "@prisma/client";
 import { randomBytes } from "node:crypto";
 import { hash } from "bcryptjs";
@@ -119,6 +120,29 @@ async function handler(req: Request, ctx: Context) {
       405,
       "Unsupported method",
     );
+    if (resource === "qa") {
+      const part = path[1];
+      if (part === "comments") {
+        if (req.method === "GET")
+          return Response.json({ data: await readQaDiscussion(u, url.searchParams.get("questionId") || "", url.searchParams) }, {
+            headers: { "Cache-Control": "private, no-store" },
+          });
+        check(req.method === "POST", 405, "Use POST.");
+        await writeQaDiscussion(u, await req.json());
+        return Response.json({ data: { saved: true } }, { status: 201 });
+      }
+      if (req.method === "GET" && !part)
+        return Response.json({ data: await readQa(u, url.searchParams) }, {
+          headers: { "Cache-Control": "private, no-store" },
+        });
+      check(part === "bookmark" || part === "signal" || part === "access", 404, "Q&A operation not found.");
+      check(req.method === "POST", 405, "Use POST.");
+      const body = await req.json();
+      if (part === "bookmark") await saveQa(u, body);
+      else if (part === "signal") await updateQaSignal(u, body);
+      else await manageQaAccess(u, body);
+      return Response.json({ data: { saved: true } });
+    }
     if (resource === "question-images") {
       if (req.method === "POST") {
         check(u.role === "STUDENT");
@@ -156,14 +180,13 @@ async function handler(req: Request, ctx: Context) {
       );
       const attachment = await db.audioAttachment.findUniqueOrThrow({
         where: { id: path[1] },
-        include: { imageQuestion: true },
+        include: { imageQuestion: true, qaImage: { include: { question: true } } },
       });
       check(attachment.mime.startsWith("image/"), 404, "Image not found");
-      const question = attachment.imageQuestion;
+      const question = attachment.imageQuestion || attachment.qaImage?.question;
       if (u.role !== "ADMIN" && attachment.ownerId !== u.id) {
-        check(question && !question.hidden);
-        if (u.role === "STUDENT") check(question.userId === u.id);
-        else await academicAccess(u, question.batchId, question.subjectId);
+        check(question);
+        await checkQaMedia(u, question);
       }
       const local = await localAvatar(attachment.key);
       if (local)
@@ -301,9 +324,8 @@ async function handler(req: Request, ctx: Context) {
       check(a.mime.startsWith("audio/"), 404, "Recording not found");
       const q = a.question || a.reply?.question;
       if (u.role !== "ADMIN" && a.ownerId !== u.id) {
-        check(q && !q.hidden);
-        if (u.role === "STUDENT") check(q.userId === u.id);
-        else await academicAccess(u, q.batchId, q.subjectId);
+        check(q);
+        await checkQaMedia(u, q);
       }
       const local = await localAudio(a.key);
       if (local) {
@@ -325,8 +347,14 @@ async function handler(req: Request, ctx: Context) {
           { headers: { "Cache-Control": "private, no-store" } },
         );
       }
+      const signedUrl = await audioUrl(a.key);
+      if (url.searchParams.get("stream") === "1")
+        return new Response(null, {
+          status: 302,
+          headers: { Location: signedUrl, "Cache-Control": "private, no-store" },
+        });
       return Response.json(
-        { data: { url: await audioUrl(a.key) } },
+        { data: { url: signedUrl } },
         { headers: { "Cache-Control": "private, no-store" } },
       );
     }

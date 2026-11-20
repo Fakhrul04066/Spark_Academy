@@ -11,6 +11,7 @@ import {
   ChartNoAxesCombined,
   CalendarDays,
   Headphones,
+  MessageCircle,
   Settings,
   Bell,
   Users,
@@ -47,6 +48,11 @@ export function Shell({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const base = "/" + role.toLowerCase();
+  const section = pathname.split("/")[2] || "dashboard";
+  const qaBoard = section === "questions" && role !== "ADMIN";
+  const sectionName = section === "questions"
+    ? "Q&A"
+    : navigation[role].find(([key]) => key === (section === "attempt" ? "exams" : section))?.[1] ?? "Dashboard";
   const [unread, setUnread] = useState(0);
   useEffect(() => {
     let alive = true;
@@ -108,7 +114,7 @@ export function Shell({
       </aside>
       <div>
         <header className="topbar">
-          <div className="flex">
+          <div className="topbar-section">
             <button
               aria-label="Toggle navigation"
               aria-expanded={open}
@@ -117,15 +123,16 @@ export function Shell({
             >
               <Menu size={18} />
             </button>
-            <span className="muted text-xs">
-              Workspace /{" "}
-              {navigation[role].find(
-                ([key]) =>
-                  pathname === (key === "dashboard" ? base : `${base}/${key}`),
-              )?.[1] || "Academic workspace"}
-            </span>
+            {qaBoard ? (
+              <h1 className="topbar-qa-title">
+                <span aria-hidden="true"><MessageCircle size={17} /></span>
+                Q&amp;A
+              </h1>
+            ) : (
+              <span className="topbar-section-name" title={sectionName}>{sectionName}</span>
+            )}
           </div>
-          <div className="flex">
+          <div className="topbar-actions">
             <Link aria-label="Notifications" href={`${base}/notifications`}>
               <span className="flex">
                 <Bell size={19} />

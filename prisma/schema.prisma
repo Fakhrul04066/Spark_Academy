@@ -19,7 +19,35 @@ enum Understanding {
   GREEN
 }
 
+enum QaAccessKind {
+  PAID_STUDENT
+  QNA_ONLY
+}
+
+model QaAccess {
+  userId    String
+  batchId   String
+  kind      QaAccessKind
+  expiresAt DateTime @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  batch     Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@id([userId, batchId, kind])
+}
+
+model QaBookmark {
+  userId     String
+  questionId String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question   AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, questionId])
+}
+
 model User {
+  qaDiscussionComments QaDiscussionComment[]
+  qaThreadFollowUps QaThreadFollowUp[]
+  qaSignals QaQuestionSignal[]
   id               String              @id @default(cuid())
   email            String              @unique
   name             String
@@ -38,6 +66,8 @@ model User {
   guardianContact  String?
   createdAt        DateTime            @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime            @updatedAt @db.Timestamptz(3)
+  qaAccess         QaAccess[]
+  qaBookmarks      QaBookmark[]
   enrollments      Enrollment[]
   assignments      TeacherAssignment[]
   attempts         ExamAttempt[]
@@ -61,6 +91,7 @@ model Batch {
   className   String
   createdAt   DateTime            @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime            @updatedAt @db.Timestamptz(3)
+  qaAccess    QaAccess[]
   enrollments Enrollment[]
   assignments TeacherAssignment[]
   lessons     Lesson[]
@@ -90,6 +121,7 @@ model Subject {
 }
 
 model Chapter {
+  qaQuestions AnonymousQuestion[]
   id        String             @id @default(cuid())
   name      String
   subjectId String
@@ -249,7 +281,35 @@ model LearningProgress {
   @@unique([userId, lessonId])
 }
 
+model QaQuestionImage {
+  attachmentId String @id
+  questionId   String
+  position     Int
+  attachment   AudioAttachment   @relation(fields: [attachmentId], references: [id], onDelete: Restrict)
+  question     AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId, position])
+}
+
+model QaQuestionSignal {
+  userId     String
+  questionId String
+  sameDoubt  Boolean @default(false)
+  understood Boolean @default(false)
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question   AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, questionId])
+  @@index([questionId])
+}
+
 model AnonymousQuestion {
+  qaDiscussionComments QaDiscussionComment[]
+  qaThreadFollowUps QaThreadFollowUp[]
+  qaChapterId String?
+  qaChapter Chapter? @relation(fields: [qaChapterId], references: [id], onDelete: SetNull)
+  qaImages QaQuestionImage[]
+  qaSignals QaQuestionSignal[]
   id        String           @id @default(cuid())
   userId    String
   batchId   String
@@ -259,6 +319,9 @@ model AnonymousQuestion {
   audioId   String?          @unique
   imageId   String?          @unique
   image     AudioAttachment? @relation("QuestionImage", fields: [imageId], references: [id], onDelete: Restrict)
+  shareWithClass Boolean @default(false)
+  shareWhilePending Boolean @default(false)
+  bookmarks QaBookmark[]
   reported  Boolean          @default(false)
   hidden    Boolean          @default(false)
   createdAt DateTime         @default(now()) @db.Timestamptz(3)
@@ -269,6 +332,7 @@ model AnonymousQuestion {
   replies   QuestionReply[]
 
   @@index([batchId, subjectId])
+  @@index([userId, createdAt])
 }
 
 model QuestionReply {
@@ -284,6 +348,7 @@ model QuestionReply {
 }
 
 model AudioAttachment {
+  qaImage QaQuestionImage?
   id        String             @id @default(cuid())
   ownerId   String
   key       String             @unique
@@ -426,4 +491,32 @@ model RateLimit {
   key     String   @id
   count   Int
   resetAt DateTime @db.Timestamptz(3)
+}
+
+
+model QaDiscussionComment {
+  id String @id @default(cuid())
+  questionId String
+  userId String
+  text String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  question AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([questionId, createdAt])
+}
+
+model QaThreadFollowUp {
+  id String @id @default(cuid())
+  questionId String
+  userId String
+  text String
+  answer String?
+  answeredAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  question AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([questionId, answeredAt])
+  @@index([userId, createdAt])
 }

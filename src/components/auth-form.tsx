@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { LoginView } from "./login-view";
 import { Brand } from "./brand";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 const schema = z.object({
-  email: z.email(),
+  email: z.string().trim().min(1, "Enter your email or phone number"),
   password: z.string().min(1).max(128),
 });
 export function AuthForm({
@@ -15,6 +16,7 @@ export function AuthForm({
 }: {
   mode?: "login" | "forgot" | "reset";
 }) {
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(""),
     [success, setSuccess] = useState(""),
     [busy, setBusy] = useState(false);
@@ -34,7 +36,7 @@ export function AuthForm({
             ? "The database is offline. Please start the local database and try again."
             : r.error === "TooManyAttempts"
               ? "Too many sign-in attempts. Please try again later."
-              : "Email or password is incorrect, or the account is inactive.",
+              : "Email, phone number or password is incorrect, or the account is inactive.",
         );
       const s = await fetch("/api/profile").then((r) => r.json());
       if (!s.data?.role) throw new Error("Could not load your account");
@@ -74,6 +76,20 @@ export function AuthForm({
       setBusy(false);
     }
   }
+  if (mode === "login") {
+    return (
+      <LoginView
+        register={register}
+        errors={errors}
+        submit={handleSubmit(login)}
+        busy={busy}
+        error={error}
+        showPassword={showPassword}
+        toggle={() => setShowPassword((visible) => !visible)}
+      />
+    );
+  }
+
   return (
     <div className="auth-shell" lang="en">
       <aside className="auth-story">
@@ -100,18 +116,8 @@ export function AuthForm({
         <Link href="/" className="eyebrow mb-8">
           ← BACK TO SPARK ACADEMY
         </Link>
-        <h2>
-          {mode === "login"
-            ? "Welcome back."
-            : mode === "forgot"
-              ? "Forgot your password?"
-              : "A fresh start."}
-        </h2>
-        <p>
-          {mode === "login"
-            ? "Sign in to your learning space."
-            : "Keep your Spark Academy account secure."}
-        </p>
+        <h2>{mode === "forgot" ? "Forgot your password?" : "A fresh start."}</h2>
+        <p>Keep your Spark Academy account secure.</p>
         {error && (
           <div role="alert" className="error space">
             {error}
@@ -122,82 +128,43 @@ export function AuthForm({
             {success}
           </div>
         )}
-        {mode === "login" ? (
-          <form className="form" onSubmit={handleSubmit(login)}>
+        <form className="form" onSubmit={reset}>
+          {mode === "forgot" ? (
             <label className="label">
               Email address
               <input
                 className="input"
                 type="email"
+                name="email"
+                required
                 autoComplete="email"
-                {...register("email")}
               />
-              {errors.email && (
-                <span className="text-red-700">Enter a valid email</span>
-              )}
             </label>
+          ) : (
             <label className="label">
-              Password
+              New password
               <input
                 className="input"
                 type="password"
-                autoComplete="current-password"
-                {...register("password")}
+                name="password"
+                required
+                minLength={12}
+                maxLength={128}
+                autoComplete="new-password"
               />
-              {errors.password && (
-                <span className="text-red-700">Password is required</span>
-              )}
             </label>
-            <Link className="text-slate-700 text-xs" href="/forgot-password">
-              Forgot password?
-            </Link>
-            <button className="btn" disabled={busy}>
-              {busy ? "Signing in…" : "Sign in →"}
-            </button>
-            <p className="footnote">
-              Your coaching administrator provides your account. Contact them if
-              you need access.
-            </p>
-          </form>
-        ) : (
-          <form className="form" onSubmit={reset}>
-            {mode === "forgot" ? (
-              <label className="label">
-                Email address
-                <input
-                  className="input"
-                  type="email"
-                  name="email"
-                  required
-                  autoComplete="email"
-                />
-              </label>
-            ) : (
-              <label className="label">
-                New password
-                <input
-                  className="input"
-                  type="password"
-                  name="password"
-                  required
-                  minLength={12}
-                  maxLength={128}
-                  autoComplete="new-password"
-                />
-              </label>
-            )}
-            <button className="btn" disabled={busy}>
-              {busy
-                ? "Please wait…"
-                : mode === "forgot"
-                  ? "Send reset link"
-                  : "Update password"}
-            </button>
-            <Link href="/login" className="text-slate-700">
-              Back to sign in
-            </Link>
-          </form>
-        )}
+          )}
+          <button className="btn" disabled={busy}>
+            {busy
+              ? "Please wait…"
+              : mode === "forgot"
+                ? "Send reset link"
+                : "Update password"}
+          </button>
+          <Link href="/login" className="text-slate-700">
+            Back to sign in
+          </Link>
+        </form>
       </main>
     </div>
   );

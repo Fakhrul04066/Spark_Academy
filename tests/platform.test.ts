@@ -1,3 +1,4 @@
+import { manageQaAccess, readQa, readQaDiscussion, saveQa, updateQaSignal, writeQaDiscussion } from "../src/services/qa-access";
 import { beforeAll, afterAll, describe, it, expect, vi } from "vitest";
 import { hash } from "bcryptjs";
 import { db } from "../src/lib/db";
@@ -56,6 +57,9 @@ beforeAll(async () => {
   fixtures.chapter = chapter.id;
   await db.enrollment.create({
     data: { userId: fixtures.student.id, batchId: b.id },
+  });
+  await db.qaAccess.create({
+    data: { userId: fixtures.student.id, batchId: b.id, kind: "PAID_STUDENT", expiresAt: new Date(Date.now() + 86_400_000) },
   });
   await db.teacherAssignment.create({
     data: { userId: fixtures.teacher.id, batchId: b.id, subjectId: subject.id },
@@ -279,6 +283,75 @@ describe("Database-backed permissions and workflows", () => {
         imageId: image.id,
       }),
     ).rejects.toThrow();
+  });
+  it("attaches up to four distinct images and records the selected chapter", async () => {
+    const f = fixtures;
+    const attachments = await Promise.all(Array.from({ length: 5 }, () =>
+      db.audioAttachment.create({ data: {
+        ownerId: f.student.id, key: "avatars/" + crypto.randomUUID(), mime: "image/png", bytes: 68,
+      } }),
+    ));
+    const images = attachments.map(({ id }) => id);
+    const form = { batchId: f.batch, subjectId: f.subject, qaChapterId: f.chapter, topic: "Diagram set", text: "" };
+    await expect(mutate(f.student, "questions", "POST", { ...form, imageIds: images })).rejects.toThrow();
+    await expect(mutate(f.student, "questions", "POST", { ...form, imageIds: [images[0], images[0]] })).rejects.toMatchObject({ status: 400 });
+    const question = await mutate(f.student, "questions", "POST", { ...form, imageIds: images.slice(0, 4) });
+    const board = await readQa(f.student, new URLSearchParams({ q: "Motion" }));
+    expect(board.items.find((item) => item.id === question.id)).toMatchObject({
+      chapter: "Motion", images: images.slice(0, 4),
+    });
+    await expect(mutate(f.student, "questions", "POST", { ...form, imageId: images[3], text: "Reuse" })).rejects.toMatchObject({ status: 400 });
+  });
+  it("enforces a single monthly Q&A quota for a Q&A-only subscriber under concurrent submissions", async () => {
+    const f = fixtures;
+    const question = { batchId: f.batch, subjectId: f.subject, topic: "Quota boundaries", text: "How does force change?" };
+    await expect(mutate(f.otherStudent, "questions", "POST", question)).rejects.toMatchObject({ status: 403 });
+    const expiresOn = dhakaDate(new Date(Date.now() + 86_400_000));
+    const access = { email: f.otherStudent.email, batchId: f.batch, kind: "QNA_ONLY", expiresOn };
+    await expect(manageQaAccess(f.otherStudent, access)).rejects.toMatchObject({ status: 403 });
+    await manageQaAccess(f.admin, access);
+    await expect(academicAccess(f.otherStudent, f.batch)).rejects.toMatchObject({ status: 403 });
+    const month = dhakaDate().slice(0, 7);
+    const boundary = new Date(month + "-01T00:00:00+06:00");
+    await db.anonymousQuestion.createMany({ data: [
+      { ...question, userId: f.otherStudent.id, createdAt: new Date(+boundary - 1) },
+      ...Array.from({ length: 29 }, () => ({ ...question, userId: f.otherStudent.id, createdAt: boundary })),
+    ] });
+    const requests = await Promise.allSettled([1, 2].map(() => mutate(f.otherStudent, "questions", "POST", { ...question, shareWithClass: true })));
+    const [accepted] = requests.filter((result) => result.status === "fulfilled");
+    const [blocked] = requests.filter((result) => result.status === "rejected");
+    expect(requests.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(blocked?.reason).toMatchObject({ status: 429 });
+    expect((await readQa(f.otherStudent, new URLSearchParams())).remaining).toBe(0);
+    const questionId = accepted.value.id;
+    if (!questionId) throw new Error("The accepted submission did not return a question ID.");
+    await expect(saveQa(f.student, { questionId, saved: true })).rejects.toMatchObject({ status: 403 });
+    const voterQuota = (await readQa(f.student, new URLSearchParams())).remaining;
+    await expect(updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true })).rejects.toMatchObject({ status: 403 });
+    await mutate(f.otherStudent, "questions", "PATCH", { id: questionId, shareWithClass: true, shareWhilePending: true });
+    await updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true });
+    const pending = await readQa(f.student, new URLSearchParams());
+    expect(pending.items.find((item) => item.id === questionId)).toMatchObject({
+      mine: false, replies: [], sameDoubtCount: 1, sameDoubt: true,
+    });
+    expect(pending.remaining).toBe(voterQuota);
+    await updateQaSignal(f.student, { questionId, action: "sameDoubt", value: false });
+    expect((await readQa(f.student, new URLSearchParams())).items.find((item) => item.id === questionId)).toMatchObject({ sameDoubt: false, sameDoubtCount: 0 });
+    await mutate(f.otherStudent, "questions", "PATCH", { id: questionId, shareWhilePending: false });
+    expect((await readQa(f.student, new URLSearchParams())).items.some((item) => item.id === questionId)).toBe(false);
+
+    await mutate(f.teacher, "question-replies", "POST", { questionId, text: "By Newton's second law." });
+    await saveQa(f.student, { questionId, saved: true });
+    await updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true });
+    await updateQaSignal(f.student, { questionId, action: "understood", value: true });
+    const saved = await readQa(f.student, new URLSearchParams({ tab: "saved" }));
+    expect(saved.items.find((item) => item.id === questionId)).toMatchObject({ mine: false, saved: true, sameDoubtCount: 1, understood: true });
+    await writeQaDiscussion(f.student, { questionId, text: "This solved my doubt." });
+    const comments = await readQaDiscussion(f.otherStudent, questionId, new URLSearchParams());
+    expect(comments.items[0]).toMatchObject({ author: "Anonymous student", text: "This solved my doubt." });
+    expect((await readQa(f.student, new URLSearchParams())).remaining).toBe(voterQuota);
+    await manageQaAccess(f.admin, { ...access, expiresOn: null });
+    await expect(mutate(f.otherStudent, "questions", "POST", question)).rejects.toMatchObject({ status: 403 });
   });
   it("creates, resumes, autosaves and grades an exam without leaking answer keys", async () => {
     const f = fixtures;

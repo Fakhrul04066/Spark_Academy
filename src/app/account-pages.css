@@ -1,0 +1,1576 @@
+.spark-login {
+  color: #0a185e;
+  background: radial-gradient(at 85% 60%, #e5edff 0, transparent 58%), #f8faff;
+  min-height: 100svh;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.login-header {
+  background: #fcfdff;
+  border-bottom: 1px solid #e4e9f6;
+  justify-content: space-between;
+  align-items: center;
+  height: 88px;
+  padding: 0 3.25% 0 4.1%;
+  display: flex;
+  position: relative;
+}
+
+.login-discovery, .login-nav {
+  align-items: center;
+  gap: 52px;
+  display: flex;
+}
+
+.login-explore {
+  color: #0060ff;
+  align-items: center;
+  gap: 5px;
+  font-size: 21px;
+  font-weight: 600;
+  display: flex;
+}
+
+.login-search {
+  color: #39456b;
+  border: 2px solid #dce0ec;
+  border-radius: 18px;
+  align-items: center;
+  gap: 13px;
+  width: 393px;
+  height: 51px;
+  padding: 0 18px;
+  display: flex;
+}
+
+.login-search input {
+  color: #39456b;
+  background: none;
+  border: 0;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  font-size: 16px;
+}
+
+.login-search input::placeholder {
+  color: #39456b;
+  opacity: 1;
+}
+
+.login-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.login-logo img {
+  object-fit: contain;
+  width: 222px;
+  height: 69px;
+  display: block;
+}
+
+.login-nav {
+  color: #0060ff;
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.login-nav-signup {
+  color: #fff;
+  background: #0560ff;
+  border-radius: 14px;
+  place-items: center;
+  width: 140px;
+  height: 56px;
+  display: grid;
+}
+
+.login-main {
+  grid-template-columns: minmax(0, 1.625fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 15px;
+  min-height: calc(100svh - 88px);
+  padding-right: 2.9%;
+  display: grid;
+}
+
+.login-art {
+  align-self: stretch;
+  align-items: center;
+  display: flex;
+  overflow: hidden;
+}
+
+.login-art img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.login-card {
+  background: #fffe;
+  border-radius: 40px;
+  margin: 50px 0;
+  padding: 58px 36px 45px;
+  box-shadow: 0 22px 40px #3d63d318;
+}
+
+.login-card h1 {
+  letter-spacing: -1.7px;
+  color: #081c75;
+  margin: 0 0 40px;
+  font-size: clamp(30px, 3vw, 50px);
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.login-fields {
+  flex-direction: column;
+  gap: 18px;
+  display: flex;
+}
+
+.login-input {
+  width: 100%;
+  height: 85px;
+  font: inherit;
+  color: #17244b;
+  background: none;
+  border: 2px solid #d5d7df;
+  border-radius: 12px;
+  padding: 0 25px;
+  font-size: 22px;
+}
+
+.login-input::placeholder {
+  color: #9396a3;
+  opacity: 1;
+}
+
+.login-password {
+  position: relative;
+}
+
+.login-password .login-input {
+  padding-right: 65px;
+}
+
+.login-password button {
+  color: #898d99;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 5px;
+  position: absolute;
+  top: 50%;
+  right: 19px;
+  transform: translateY(-50%);
+}
+
+.login-options {
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 24px;
+  font-size: clamp(14px, 1.3vw, 22px);
+  display: flex;
+}
+
+.login-options label {
+  color: #898d9b;
+  cursor: pointer;
+  white-space: nowrap;
+  align-items: center;
+  gap: 12px;
+  display: flex;
+}
+
+.login-options input {
+  appearance: none;
+  cursor: pointer;
+  border: 2px solid #7f8593;
+  border-radius: 5px;
+  width: 29px;
+  height: 29px;
+  margin: 0;
+}
+
+.login-options input:checked {
+  appearance: auto;
+  accent-color: #0560ff;
+}
+
+.login-options a, .login-register a {
+  color: #0060ff;
+}
+
+.login-submit {
+  color: #fff;
+  width: 100%;
+  height: 78px;
+  font: inherit;
+  cursor: pointer;
+  background: linear-gradient(105deg, #093a9f, #0059f9 50%, #09399b);
+  border: 1px solid #0746d3;
+  border-radius: 12px;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 600;
+  display: grid;
+}
+
+.login-submit:hover {
+  filter: brightness(1.08);
+}
+
+.login-submit:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.login-register {
+  text-align: center;
+  color: #1d2541;
+  border-top: 1px solid #e0e4ee;
+  margin: 32px 0 0;
+  padding-top: 23px;
+  font-size: clamp(15px, 1.32vw, 22px);
+  font-weight: 500;
+}
+
+.login-field-error {
+  color: #b42318;
+  margin-top: 6px;
+  font-size: 14px;
+  display: block;
+}
+
+.spark-login :is(a, button, input):focus-visible {
+  outline-offset: 4px;
+  outline: 3px solid #45a5ff;
+}
+
+@media (min-width: 1500px) {
+  .login-main {
+    gap: 15px;
+  }
+
+  .login-card {
+    padding-top: 60px;
+    padding-bottom: 48px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .login-discovery {
+    gap: 24px;
+  }
+
+  .login-search {
+    width: 290px;
+  }
+
+  .login-logo img {
+    width: 190px;
+  }
+
+  .login-nav {
+    gap: 24px;
+  }
+
+  .login-card {
+    border-radius: 30px;
+    padding: 38px 26px;
+  }
+
+  .login-input {
+    height: 66px;
+    font-size: 18px;
+  }
+
+  .login-card h1 {
+    margin-bottom: 30px;
+  }
+
+  .login-options {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .login-options label {
+    gap: 7px;
+  }
+
+  .login-options input {
+    width: 22px;
+    height: 22px;
+  }
+
+  .login-submit {
+    height: 64px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 950px) {
+  .login-search {
+    display: none;
+  }
+
+  .login-main {
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .login-options {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .login-card {
+    padding: 32px 22px;
+  }
+}
+
+@media (max-width: 700px) {
+  .login-header {
+    height: 78px;
+    padding: 0 20px;
+  }
+
+  .login-discovery {
+    display: none;
+  }
+
+  .login-logo {
+    position: static;
+    transform: none;
+  }
+
+  .login-logo img {
+    width: 166px;
+    height: auto;
+  }
+
+  .login-nav {
+    gap: 16px;
+    font-size: 15px;
+  }
+
+  .login-nav-signup {
+    border-radius: 10px;
+    width: 86px;
+    height: 43px;
+  }
+
+  .login-main {
+    justify-content: center;
+    min-height: calc(100svh - 78px);
+    padding: 30px 18px;
+    display: flex;
+  }
+
+  .login-art {
+    display: none;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 480px;
+    margin: 0;
+    padding: 36px 26px;
+  }
+
+  .login-card h1 {
+    letter-spacing: -1px;
+    font-size: 34px;
+  }
+
+  .login-input {
+    height: 66px;
+  }
+
+  .login-options {
+    justify-content: space-between;
+    font-size: 14px;
+  }
+
+  .login-register {
+    font-size: 15px;
+  }
+
+  .login-header {
+    flex-wrap: wrap;
+    gap: 14px;
+    height: auto;
+    min-height: 132px;
+    padding: 14px 18px;
+  }
+
+  .login-logo {
+    order: 0;
+  }
+
+  .login-nav {
+    order: 1;
+  }
+
+  .login-discovery {
+    order: 2;
+    gap: 16px;
+    width: 100%;
+    display: flex;
+  }
+
+  .login-explore {
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+
+  .login-search {
+    border-radius: 12px;
+    flex: 1;
+    gap: 7px;
+    width: auto;
+    height: 42px;
+    padding: 0 10px;
+    display: flex;
+  }
+
+  .login-search input {
+    font-size: 12px;
+  }
+
+  .login-search svg {
+    flex-shrink: 0;
+    width: 18px;
+  }
+
+  .login-main {
+    flex-direction: column;
+    gap: 0;
+    min-height: calc(100svh - 132px);
+    padding: 0 0 32px;
+  }
+
+  .login-art {
+    align-self: auto;
+    width: 100%;
+    display: flex;
+    overflow: visible;
+  }
+
+  .login-art img {
+    object-fit: contain;
+    width: 100%;
+    height: auto;
+  }
+
+  .login-card {
+    width: calc(100% - 36px);
+    margin: 0 18px;
+  }
+}
+
+@media (min-width: 701px) {
+  .login-art {
+    display: flex;
+  }
+}
+
+.spark-login {
+  background: #f8faff;
+}
+
+.login-header {
+  height: 76px;
+}
+
+.login-discovery, .login-nav {
+  gap: 30px;
+}
+
+.login-nav-signup {
+  border-radius: 12px;
+  width: 118px;
+  height: 48px;
+}
+
+.login-main {
+  max-width: 1440px;
+  min-height: calc(100svh - 76px);
+  margin-inline: auto;
+}
+
+.login-card {
+  border-radius: 30px;
+  margin: 32px 0;
+  padding: 40px 30px 32px;
+}
+
+.login-card h1 {
+  letter-spacing: -1px;
+  margin-bottom: 28px;
+  font-size: clamp(28px, 2.7vw, 42px);
+}
+
+.login-input {
+  height: 66px;
+  padding-inline: 21px;
+  font-size: 18px;
+}
+
+.login-options {
+  margin: 4px 0 14px;
+  font-size: 16px;
+}
+
+.login-submit {
+  height: 60px;
+  font-size: 23px;
+}
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .login-search {
+    width: 240px;
+  }
+
+  .login-card {
+    padding: 28px 22px;
+  }
+
+  .login-options, .login-register {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .login-header {
+    gap: 10px;
+    height: auto;
+    min-height: 116px;
+    padding: 10px 16px;
+  }
+
+  .login-logo img {
+    width: 145px;
+    height: 48px;
+  }
+
+  .login-nav {
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .login-nav-signup {
+    width: 78px;
+    height: 39px;
+  }
+
+  .login-discovery {
+    gap: 12px;
+  }
+
+  .login-explore {
+    font-size: 14px;
+  }
+
+  .login-search {
+    width: auto;
+    height: 38px;
+  }
+
+  .login-search input {
+    font-size: 11px;
+  }
+
+  .login-main {
+    min-height: calc(100svh - 116px);
+    padding-bottom: 26px;
+  }
+
+  .login-art {
+    max-width: 360px;
+    margin-inline: auto;
+  }
+
+  .login-card {
+    border-radius: 24px;
+    width: calc(100% - 32px);
+    max-width: 400px;
+    margin: 0 16px;
+    padding: 26px 22px;
+  }
+
+  .login-card h1 {
+    margin-bottom: 23px;
+    font-size: 28px;
+  }
+
+  .login-input {
+    height: 54px;
+    font-size: 16px;
+  }
+
+  .login-password svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .login-options {
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .login-options input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .login-submit {
+    height: 52px;
+    font-size: 20px;
+  }
+
+  .login-register {
+    margin-top: 20px;
+    padding-top: 17px;
+    font-size: 14px;
+  }
+}
+
+.login-header {
+  height: 68px;
+  padding-inline: max(24px, 50vw - 600px);
+}
+
+.login-logo img {
+  width: 172px;
+  height: 54px;
+}
+
+.login-explore, .login-nav {
+  font-size: 16px;
+}
+
+.login-search {
+  border-radius: 12px;
+  width: 290px;
+  height: 40px;
+}
+
+.login-search input {
+  font-size: 12px;
+}
+
+.login-nav-signup {
+  width: 100px;
+  height: 42px;
+}
+
+.login-main {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  min-height: calc(100svh - 68px);
+  padding: 24px;
+}
+
+.login-art {
+  align-self: center;
+}
+
+.login-card {
+  border-radius: 26px;
+  justify-self: center;
+  width: 100%;
+  max-width: 440px;
+  margin: 0;
+  padding: 30px 26px 25px;
+}
+
+.login-card h1 {
+  margin-bottom: 25px;
+  font-size: 30px;
+}
+
+.login-fields {
+  gap: 14px;
+}
+
+.login-input {
+  border-width: 1.5px;
+  border-radius: 10px;
+  height: 54px;
+  padding-inline: 17px;
+  font-size: 16px;
+}
+
+.login-password svg {
+  width: 23px;
+  height: 23px;
+}
+
+.login-password button {
+  right: 13px;
+}
+
+.login-options {
+  gap: 8px;
+  margin: 2px 0 10px;
+  font-size: 13px;
+}
+
+.login-options label {
+  gap: 8px;
+}
+
+.login-options input {
+  width: 19px;
+  height: 19px;
+}
+
+.login-submit {
+  border-radius: 10px;
+  height: 50px;
+  font-size: 20px;
+}
+
+.login-register {
+  margin-top: 22px;
+  padding-top: 17px;
+  font-size: 14px;
+}
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .login-header {
+    padding-inline: 24px;
+  }
+
+  .login-search {
+    width: 225px;
+  }
+
+  .login-main {
+    gap: 20px;
+  }
+
+  .login-card {
+    padding: 26px 22px;
+  }
+}
+
+@media (max-width: 700px) {
+  .login-header {
+    height: auto;
+    min-height: 110px;
+    padding: 8px 16px;
+  }
+
+  .login-logo img {
+    width: 138px;
+    height: 46px;
+  }
+
+  .login-nav {
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .login-nav-signup {
+    width: 74px;
+    height: 36px;
+  }
+
+  .login-search {
+    width: auto;
+    height: 35px;
+  }
+
+  .login-search input {
+    font-size: 11px;
+  }
+
+  .login-explore {
+    font-size: 13px;
+  }
+
+  .login-main {
+    gap: 0;
+    min-height: calc(100svh - 110px);
+    padding: 8px 16px 24px;
+  }
+
+  .login-art {
+    width: 100%;
+    max-width: 290px;
+  }
+
+  .login-card {
+    border-radius: 22px;
+    width: 100%;
+    max-width: 350px;
+    margin: 0;
+    padding: 24px 22px;
+  }
+
+  .login-card h1 {
+    margin-bottom: 20px;
+    font-size: 26px;
+  }
+
+  .login-input {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .login-fields {
+    gap: 12px;
+  }
+
+  .login-submit {
+    height: 46px;
+    font-size: 18px;
+  }
+
+  .login-register {
+    margin-top: 18px;
+    padding-top: 15px;
+    font-size: 12px;
+  }
+
+  .login-options {
+    font-size: 12px;
+  }
+}
+
+.spark-signup {
+  background: radial-gradient(at 75% 70%, #dceaff, #0000 65%), #f7f9ff;
+}
+
+.signup-main {
+  grid-template-columns: minmax(0, .78fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 26px;
+  max-width: 1160px;
+  min-height: calc(100svh - 68px);
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+}
+
+.signup-art img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.login-art img,
+.signup-art img {
+  mask-image:
+    linear-gradient(to bottom, #000 88%, transparent),
+    linear-gradient(to right, transparent, #000 4%, #000 95%, transparent);
+  mask-composite: intersect;
+}
+
+.signup-card {
+  background: #ffffffdc;
+  border-radius: 30px;
+  padding: 28px 34px 30px;
+  box-shadow: 0 16px 45px #487dd522;
+}
+
+.signup-back {
+  color: #05f;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 15px;
+  font-weight: 650;
+  display: inline-flex;
+}
+
+.signup-card h1 {
+  color: #080e32;
+  letter-spacing: -1px;
+  margin-bottom: 6px;
+  font-size: 32px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.signup-intro {
+  color: #56658b;
+  margin-bottom: 25px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.signup-fields {
+  flex-direction: column;
+  gap: 18px;
+  display: flex;
+}
+
+.signup-field label {
+  color: #080e32;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 700;
+  display: block;
+}
+
+.signup-input {
+  width: 100%;
+  height: 44px;
+  font: inherit;
+  color: #17244b;
+  background: none;
+  border: 1.5px solid #b8c5e0;
+  border-radius: 10px;
+  padding: 0 15px;
+  font-size: 15px;
+}
+
+.signup-input::placeholder {
+  color: #56658b;
+  opacity: 1;
+}
+
+.signup-field .login-password input {
+  padding-right: 52px;
+}
+
+.signup-error {
+  color: #b42318;
+  margin-top: 5px;
+  font-size: 13px;
+  display: block;
+}
+
+.signup-card > .signup-error {
+  margin-bottom: 15px;
+}
+
+.signup-hint {
+  color: #56658b;
+  margin-top: -12px;
+  font-size: 12px;
+}
+
+.signup-submit {
+  color: #fff;
+  height: 49px;
+  font: inherit;
+  cursor: pointer;
+  background: linear-gradient(110deg, #00b4f5, #0061ff 52%, #003fc3);
+  border: 1px solid #0064ed;
+  border-radius: 12px;
+  margin-top: 4px;
+  font-size: 21px;
+  font-weight: 650;
+}
+
+.signup-submit:hover {
+  filter: brightness(1.07);
+}
+
+.signup-footer {
+  color: #111b3d;
+  text-align: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 27px;
+  font-size: 15px;
+  display: flex;
+}
+
+.signup-footer:before, .signup-footer:after {
+  content: "";
+  background: #c8d2e6;
+  flex: 1;
+  height: 1px;
+}
+
+.signup-footer a {
+  color: #05f;
+  margin-left: 7px;
+  font-weight: 700;
+}
+
+@media (min-width: 701px) and (max-width: 950px) {
+  .spark-signup .login-search {
+    display: none;
+  }
+
+  .signup-main {
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .signup-card {
+    padding: 24px;
+  }
+
+  .signup-card h1 {
+    font-size: 26px;
+  }
+
+  .signup-intro {
+    font-size: 14px;
+  }
+
+  .signup-footer {
+    gap: 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 700px) {
+  .spark-signup .login-header {
+    justify-content: center;
+    min-height: 106px;
+  }
+
+  .spark-signup .login-logo {
+    order: 0;
+  }
+
+  .spark-signup .login-discovery {
+    order: 1;
+  }
+
+  .signup-main {
+    flex-direction: column;
+    gap: 0;
+    padding: 0 16px 24px;
+    display: flex;
+  }
+
+  .signup-art {
+    max-width: 240px;
+  }
+
+  .signup-card {
+    border-radius: 24px;
+    width: 100%;
+    max-width: 400px;
+    padding: 25px 22px;
+  }
+
+  .signup-card h1 {
+    font-size: 27px;
+  }
+
+  .signup-intro {
+    margin-bottom: 22px;
+    font-size: 14px;
+  }
+
+  .signup-back {
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  .signup-fields {
+    gap: 15px;
+  }
+
+  .signup-field label {
+    font-size: 14px;
+  }
+
+  .signup-input {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .signup-submit {
+    font-size: 19px;
+  }
+
+  .signup-footer {
+    gap: 10px;
+    font-size: 13px;
+  }
+}
+
+.spark-signup .login-header {
+  justify-content: flex-start;
+  gap: 28px;
+  padding-inline: 20px;
+}
+
+.spark-signup .login-logo {
+  flex-shrink: 0;
+  order: 0;
+  position: static;
+  transform: none;
+}
+
+.spark-signup .login-discovery {
+  order: 1;
+}
+
+@media (max-width: 700px) {
+  .spark-signup .login-header {
+    justify-content: flex-start;
+    gap: 10px;
+    padding-inline: 16px;
+  }
+
+  .spark-signup .login-discovery {
+    width: 100%;
+  }
+}
+
+.spark-signup .login-header {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.spark-signup .login-logo {
+  order: 2;
+  margin-left: auto;
+}
+
+.spark-signup .login-discovery {
+  order: 0;
+  width: auto;
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .spark-signup .login-header {
+    min-height: 68px;
+  }
+
+  .spark-signup .login-discovery {
+    flex: 1;
+  }
+
+  .spark-signup .login-search {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .spark-login .login-art, .spark-signup .signup-art {
+    display: none;
+  }
+
+  .spark-login .login-header {
+    flex-wrap: nowrap;
+    gap: 12px;
+    height: 68px;
+    min-height: 68px;
+    padding: 8px 16px;
+  }
+
+  .spark-login .login-logo {
+    flex-shrink: 0;
+    position: static;
+    transform: none;
+  }
+
+  .spark-login .login-logo img {
+    width: 138px;
+    height: 46px;
+  }
+
+  .spark-login .login-discovery {
+    display: none;
+  }
+
+  .spark-login .login-nav {
+    gap: 14px;
+    margin-left: auto;
+    font-size: 14px;
+  }
+
+  .spark-login .login-nav-signup {
+    width: 80px;
+    min-height: 44px;
+  }
+
+  .spark-signup .login-discovery {
+    flex: 1;
+    width: auto;
+    display: flex;
+  }
+
+  .spark-signup .login-search {
+    display: none;
+  }
+
+  .spark-signup .login-logo {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .spark-login .login-main, .spark-signup .signup-main {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    min-height: calc(100svh - 68px);
+    margin: 0 auto;
+    padding: 24px 16px;
+    display: flex;
+  }
+
+  .spark-login .login-card, .spark-signup .signup-card {
+    border-radius: 22px;
+    align-self: center;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 28px 22px;
+  }
+
+  .spark-login .login-card {
+    max-width: 420px;
+  }
+
+  .spark-signup .signup-card {
+    max-width: 480px;
+  }
+
+  .spark-login .login-card h1, .spark-signup .signup-card h1 {
+    overflow-wrap: break-word;
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .spark-login .login-card h1 {
+    margin-bottom: 24px;
+  }
+
+  .spark-signup .signup-intro {
+    margin-bottom: 22px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .spark-signup .signup-back {
+    min-height: 44px;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+
+  .spark-login .login-input, .spark-signup .signup-input {
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .spark-login .login-password button {
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    right: 5px;
+  }
+
+  .spark-login .login-fields, .spark-signup .signup-fields {
+    gap: 16px;
+  }
+
+  .spark-signup .signup-field label {
+    font-size: 14px;
+  }
+
+  .spark-login .login-options {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 0 0 6px;
+    font-size: 13px;
+  }
+
+  .spark-login .login-options label, .spark-login .login-options a {
+    align-items: center;
+    min-height: 44px;
+    display: flex;
+  }
+
+  .spark-login .login-options input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .spark-login .login-submit, .spark-signup .signup-submit {
+    min-height: 50px;
+    font-size: 19px;
+  }
+
+  .spark-login .login-register {
+    margin-top: 22px;
+    padding-top: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .spark-signup .signup-footer {
+    gap: 10px;
+    margin-top: 24px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 359px) {
+  .spark-login .login-header {
+    padding-inline: 12px;
+  }
+
+  .spark-login .login-nav {
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .spark-login .login-nav-signup {
+    width: 70px;
+  }
+
+  .spark-login .login-main, .spark-signup .signup-main {
+    padding: 20px 12px;
+  }
+
+  .spark-login .login-card, .spark-signup .signup-card {
+    padding: 24px 18px;
+  }
+
+  .spark-login .login-card h1, .spark-signup .signup-card h1 {
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 768px) {
+  .spark-login .login-header {
+    height: 64px;
+    min-height: 64px;
+  }
+
+  .spark-login .login-logo img {
+    width: 158px;
+    height: 49px;
+  }
+
+  .spark-login .login-main {
+    gap: 26px;
+    max-width: 1080px;
+    min-height: calc(100svh - 64px);
+    padding: 24px;
+  }
+
+  .spark-login .login-card {
+    border-radius: 24px;
+    max-width: 400px;
+    padding: 27px 24px 23px;
+  }
+
+  .spark-login .login-card h1 {
+    margin-bottom: 22px;
+    font-size: 28px;
+  }
+
+  .spark-login .login-input {
+    height: 49px;
+    font-size: 15px;
+  }
+
+  .spark-login .login-fields {
+    gap: 13px;
+  }
+
+  .spark-login .login-submit {
+    height: 46px;
+    font-size: 18px;
+  }
+
+  .spark-login .login-register {
+    margin-top: 20px;
+    padding-top: 15px;
+    font-size: 13px;
+  }
+
+  .spark-signup .signup-main {
+    gap: 24px;
+    max-width: 1040px;
+    min-height: calc(100svh - 64px);
+    padding: 24px;
+  }
+
+  .spark-signup .signup-card {
+    border-radius: 26px;
+    padding: 25px 30px 26px;
+  }
+
+  .spark-signup .signup-back {
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  .spark-signup .signup-card h1 {
+    font-size: 29px;
+  }
+
+  .spark-signup .signup-intro {
+    margin-bottom: 21px;
+    font-size: 15px;
+  }
+
+  .spark-signup .signup-fields {
+    gap: 15px;
+  }
+
+  .spark-signup .signup-field label {
+    font-size: 15px;
+  }
+
+  .spark-signup .signup-input {
+    height: 41px;
+    font-size: 14px;
+  }
+
+  .spark-signup .signup-submit {
+    height: 45px;
+    font-size: 19px;
+  }
+
+  .spark-signup .signup-footer {
+    margin-top: 23px;
+    font-size: 14px;
+  }
+}
+
+.spark-login .login-card h1 {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.spark-signup .signup-card h1 {
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.spark-login .login-input {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.spark-signup .signup-input {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.spark-signup .signup-field label {
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.spark-signup .signup-intro {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.spark-login .login-options {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spark-login .login-submit, .spark-signup .signup-submit {
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.spark-login .login-register, .spark-signup .signup-footer {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spark-signup .signup-back {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .spark-login .login-card h1, .spark-signup .signup-card h1 {
+    font-size: 26px;
+  }
+
+  .spark-login .login-input, .spark-signup .signup-input {
+    font-size: 16px;
+  }
+
+  .spark-signup .signup-field label {
+    font-size: 13px;
+  }
+
+  .spark-signup .signup-intro {
+    font-size: 14px;
+  }
+
+  .spark-login .login-register, .spark-signup .signup-footer {
+    font-size: 13px;
+  }
+}
+
+@font-face {
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/poppins-400.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/poppins-500.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/poppins-600.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/poppins-700.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/poppins-800.ttf") format("truetype");
+}
+
+.spark-login {
+  font-family: Poppins, Arial, sans-serif;
+}
+
+.spark-login .login-card h1, .spark-signup .signup-card h1 {
+  font-weight: 600;
+}
+
+.spark-login .login-input, .spark-signup .signup-input {
+  font-weight: 400;
+}
+
+.spark-signup .signup-field label, .spark-login .login-submit, .spark-signup .signup-submit {
+  font-weight: 600;
+}

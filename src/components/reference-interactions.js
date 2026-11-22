@@ -7,6 +7,11 @@ export function mountReferenceLanding(root) {
   const one = selector => root.querySelector(selector);
   const all = selector => [...root.querySelectorAll(selector)];
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  one('.storm-intro')?.remove();
+  all('.storm-headline, .storm-subheadline, .storm-hero-pills').forEach(element=>element.remove());
+  const brandPrefix=one('.storm-brand-prefix'),strikeMark=one('.storm-strike-mark');
+  if(brandPrefix)brandPrefix.replaceChildren(...(strikeMark?[strikeMark]:[]));
+  all('.storm-join-text > span, .storm-feature-arrow').forEach(element=>element.remove());
   const scrollToCourses = () => one('#courses')?.scrollIntoView({behavior:motion.matches?'auto':'smooth'});
   let category='all', grade='';
   const search=one('#courseSearch');
@@ -63,7 +68,7 @@ function mountDesktopOrbits(page,on,motion){
     const prev=document.createElement('button'),next=document.createElement('button'),pause=document.createElement('button');
     prev.className=next.className='orbit-arrow';pause.className='ring-control';
     for(const button of [prev,next,pause])button.type='button';
-    prev.textContent='‹';next.textContent='›';prev.setAttribute('aria-label','Previous '+label);next.setAttribute('aria-label','Next '+label);pause.setAttribute('aria-label','Pause or play '+label);
+    prev.textContent='';next.textContent='';prev.setAttribute('aria-label','Previous '+label);next.setAttribute('aria-label','Next '+label);pause.setAttribute('aria-label','Pause or play '+label);
     function updatePlay(){pause.textContent=motion.matches?'Reduced motion':state.running?'Ⅱ Pause':'▶ Play';pause.disabled=motion.matches;pause.setAttribute('aria-pressed',String(!state.running));}
     updatePlay();row.append(hint,prev,next,pause);root.insertAdjacentElement('afterend',row);controls.push(row);
     function focus(index){const target=Math.PI/2-index*TAU/cards.length;state.target=target+Math.round((state.angle-target)/TAU)*TAU;state.manualUntil=performance.now()+8000;state.inertia=state.velocity=0;if(motion.matches){state.angle=state.target;state.target=null;render(state);}else start();}
@@ -135,8 +140,8 @@ function mountMobileSliders(page,on,motion){
   const count=document.createElement('span'),prev=document.createElement('button'),next=document.createElement('button'),pause=document.createElement('button');
   count.className='mobile-slider-count';prev.className=next.className='orbit-arrow';pause.className='ring-control';
   for(const button of [prev,next,pause])button.type='button';
-  prev.textContent='‹';next.textContent='›';prev.setAttribute('aria-label','Previous '+label);next.setAttribute('aria-label','Next '+label);pause.setAttribute('aria-label','Pause or play '+label);
-  function update(){count.textContent=(index+1)+' / '+cards.length;prev.disabled=index===0;next.disabled=index===cards.length-1;pause.disabled=motion.matches;pause.textContent=motion.matches?'Swipe to explore':playing?'Ⅱ Pause':'▶ Play';pause.setAttribute('aria-pressed',String(!playing));cards.forEach((card,i)=>card.classList.toggle('is-mobile-current',i===index));}
+  prev.textContent='';next.textContent='';prev.setAttribute('aria-label','Previous '+label);next.setAttribute('aria-label','Next '+label);pause.setAttribute('aria-label','Pause or play '+label);
+  function update(){count.textContent=(index+1)+' / '+cards.length;prev.disabled=index===0;next.disabled=index===cards.length-1;pause.disabled=motion.matches;pause.textContent=motion.matches?'Swipe to explore':playing?'Ⅱ Pause':'Play';pause.setAttribute('aria-pressed',String(!playing));cards.forEach((card,i)=>card.classList.toggle('is-mobile-current',i===index));}
   function go(nextIndex,manual=true){index=Math.max(0,Math.min(cards.length-1,nextIndex));if(manual)pauseUntil=performance.now()+9000;root.scrollTo({left:cards[index].offsetLeft-cards[0].offsetLeft,behavior:motion.matches?'auto':'smooth'});update();}
   controls.append(count,prev,next,pause);root.insertAdjacentElement('afterend',controls);update();
   on(prev,'click',()=>go(index-1));on(next,'click',()=>go(index+1));on(pause,'click',()=>{playing=!playing;pauseUntil=0;update();});

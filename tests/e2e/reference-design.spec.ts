@@ -4,6 +4,9 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   await page.route("https://fonts.googleapis.com/**",r=>r.fulfill({contentType:"text/css",body:""}));
   await page.goto("/",{waitUntil:"commit"});
   await expect(page.locator(".storm-brand-title")).toContainText("SPARK");
+  await expect(page.locator(".storm-intro, .storm-headline, .storm-subheadline, .storm-hero-pills")).toHaveCount(0);
+  await expect(page.locator(".storm-brand-prefix")).toHaveText("⚡");
+  await expect(page.locator(".storm-join-text > span, .storm-feature-arrow")).toHaveCount(0);
   await expect(page.locator("#coursegrid article:visible")).toHaveCount(4);
   await expect(page.locator("#features .feature-3d-icon")).toHaveCount(6);
   await expect(page.locator("#coursegrid")).not.toContainText("ব্যাচের তথ্য অ্যাডমিনের কাছে");
@@ -25,6 +28,10 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   for(const ratio of ratios)expect(ratio).toBeGreaterThanOrEqual(4.5);
   const pause=page.getByRole("button",{name:"Pause or play courses"});
   await pause.click();await expect(pause).toContainText("Play");
+  await expect(page.getByRole("button",{name:"Previous courses",exact:true})).toHaveText("");
+  await expect(page.getByRole("button",{name:"Next courses",exact:true})).toHaveText("");
+  const buttonMotion=await page.locator(".spark-landing button, .spark-landing .btn, .spark-landing .storm-join").evaluateAll(elements=>elements.some(element=>{const style=getComputedStyle(element);return style.animationName!=="none"||style.transitionDuration.split(",").some(duration=>parseFloat(duration)>0);}));
+  expect(buttonMotion).toBe(false);
   const current=page.locator(mobile?".storm-course-stack .is-mobile-current":".storm-course-stack .is-orbit-current");
   const before=await current.getAttribute("data-go-grade");
   await page.getByRole("button",{name:"Next courses",exact:true}).click();

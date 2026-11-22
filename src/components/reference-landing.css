@@ -3548,6 +3548,28 @@
   will-change:transform,opacity!important;
 }
 
+.spark-landing button,
+.spark-landing .btn,
+.spark-landing .storm-join,
+.spark-landing button *,
+.spark-landing .btn *,
+.spark-landing .storm-join *,
+.spark-landing button::before,
+.spark-landing button::after,
+.spark-landing .btn::before,
+.spark-landing .btn::after,
+.spark-landing .storm-join::before,
+.spark-landing .storm-join::after,
+.spark-landing button *::before,
+.spark-landing button *::after,
+.spark-landing .btn *::before,
+.spark-landing .btn *::after,
+.spark-landing .storm-join *::before,
+.spark-landing .storm-join *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
 /* Touch-first phone/tablet cards: native scroll-snap instead of a 3D orbit. */
 @media(max-width:1120px){
  .spark-landing #home .storm-course-stack.mobile-card-slider,

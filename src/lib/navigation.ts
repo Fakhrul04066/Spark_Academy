@@ -33,6 +33,7 @@ export const navigation = {
   ADMIN: [
     ["dashboard", "Dashboard"],
     ["students", "Student management"],
+    ["payments", "Student payments"],
     ["teachers", "Teacher management"],
     ["batches", "Batch management"],
     ["enrollments", "Enrollments"],

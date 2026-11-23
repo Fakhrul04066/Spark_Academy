@@ -2,6 +2,8 @@
 import { RevisionDate } from "./revision-date";
 import { ImageAttachment } from "./image-attachment";
 import { PremiumDashboard } from "./premium-dashboard";
+import { StudentBilling } from "./billing";
+import { BLOOD_GROUPS } from "@/lib/profile";
 
 import Link from "next/link";
 
@@ -297,6 +299,8 @@ export function Workspace({
     try {
       setError("");
       await api(resource, method, body);
+      if (resource === "profile")
+        window.dispatchEvent(new CustomEvent("profile-updated", { detail: { name: (body as Row).name } }));
       if (resource === "notifications")
         window.dispatchEvent(new Event("notifications-updated"));
       setSuccess("Saved successfully.");
@@ -1549,7 +1553,7 @@ function Profile({
   const [image, setImage] = useState(data.hasAvatar ? "/api/avatar" : ""),
     [uploadStatus, setUploadStatus] = useState("");
   return (
-    <div className="grid two">
+    <div className="grid two profile-details">
       <form
         className="card form"
         onSubmit={async (e) => {
@@ -1559,12 +1563,13 @@ function Profile({
             name: f.get("name"),
             phone: f.get("phone"),
             school: f.get("school"),
+            bloodGroup: f.get("bloodGroup"),
             emailReminders: f.get("emailReminders") === "on",
           });
         }}
       >
         <h3>Personal information</h3>
-        <div className="flex">
+        <div className="flex profile-photo-field">
           {image && (
             <img
               src={image}
@@ -1591,7 +1596,9 @@ function Profile({
                   });
                   const result = await res.json();
                   if (!res.ok) throw new Error(result.error);
-                  setImage("/api/avatar?t=" + Date.now());
+                  const avatar = "/api/avatar?t=" + Date.now();
+                  setImage(avatar);
+                  window.dispatchEvent(new CustomEvent("profile-updated", { detail: { avatar } }));
                   setUploadStatus("Photo saved.");
                 } catch (e) {
                   setUploadStatus((e as Error).message);
@@ -1616,6 +1623,12 @@ function Profile({
             />
           </label>
         ))}
+        <label className="label">Blood group
+          <select className="input" aria-label="Blood group" name="bloodGroup" defaultValue={data.bloodGroup || ""}>
+            <option value="">Not specified</option>
+            {BLOOD_GROUPS.map((group) => <option key={group}>{group}</option>)}
+          </select>
+        </label>
         <label className="flex">
           <input
             name="emailReminders"
@@ -1650,6 +1663,7 @@ function Profile({
           Reset password securely
         </Link>
       </div>
+      {data.role === "STUDENT" && <StudentBilling />}
     </div>
   );
 }

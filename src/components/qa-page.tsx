@@ -139,9 +139,9 @@ function QaDiscussion({ questionId, canPost, onChange }: {
   </section>;
 }
 
-export function QaPage({ student }: { student: boolean }) {
+export function QaPage({ student, admin = false }: { student: boolean; admin?: boolean }) {
   const [board, setBoard] = useState<Board>();
-  const [tab, setTab] = useState("timeline");
+  const [tab, setTab] = useState(admin ? "queue" : "timeline");
   const [term, setTerm] = useState("");
   const [subject, setSubject] = useState("");
   const [page, setPage] = useState(1);
@@ -182,7 +182,7 @@ export function QaPage({ student }: { student: boolean }) {
   }, [dialog]);
 
   const batches = new Map(board?.assignments.map((item) => [item.batchId, item.batch.name]));
-  const subjects = new Map(board?.assignments.map((item) => [item.subjectId, item.subject.name]));
+  const subjects = new Map(board?.subjects.map(({ id, name }) => [id, name]));
   const open = (next: "ask" | Question) => {
     if (busy) return;
     setAudio(""); setFormError("");
@@ -213,13 +213,17 @@ export function QaPage({ student }: { student: boolean }) {
   return <section className="sq-board" aria-label="Questions and answers">
     <header className="sq-hero">
       <div>
-        <p lang="bn">তোমার প্রশ্ন করো, সমাধান খুঁজে নাও, আর সহপাঠীদের সঙ্গে শেখো।</p>
+        {admin
+          ? <p>Review incoming questions, answer them, or publish them to teachers.</p>
+          : student
+            ? <p lang="bn">তোমার প্রশ্ন করো, সমাধান খুঁজে নাও, আর সহপাঠীদের সঙ্গে শেখো।</p>
+            : <p>Answer questions published by an admin.</p>}
         {student && board?.active && <span className="sq-quota"><CircleCheck size={16} /> <span><strong>{board.used}/{board.limit} questions used this month</strong> · {board.remaining} left · resets {board.resetsOn}</span></span>}
       </div>
       {student && <button className="sq-primary" type="button" onClick={() => open("ask")} disabled={!board?.active || !board.remaining || !batches.size || busy}><Plus size={18} /> Add Question</button>}
     </header>
-    {student && board && !board.active && <p className="sq-notice">Active paid-student or monthly Q&amp;A access is required to ask questions. <a href="/#qa-course">View the Q&amp;A plan</a></p>}
-    {student && board?.active && !batches.size && <p className="sq-notice">Your batch does not have an assigned Q&amp;A teacher yet.</p>}
+    {student && board && !board.active && <p className="sq-notice">Batch enrollment or active Q&amp;A access is required to ask questions. <a href="/#qa-course">View the Q&amp;A plan</a></p>}
+    {student && board?.active && !batches.size && <p className="sq-notice">No subjects are available yet. Ask an admin to add a subject.</p>}
     <label className="sq-search"><Search size={19} /><input ref={search} type="search" placeholder="Search questions or topics…" aria-label="Search questions or topics" maxLength={100} value={term} onChange={(e) => { setTerm(e.target.value); setPage(1); }} /><kbd>/</kbd></label>
     <div className="sq-stats">
       <div><CircleCheck size={34} /><span><strong>{board?.answeredCount ?? "–"}</strong>Questions Answered</span></div>
@@ -227,7 +231,7 @@ export function QaPage({ student }: { student: boolean }) {
       {student && <div><Bookmark size={34} /><span><strong>{board?.savedCount ?? "–"}</strong>Saved Explanations</span></div>}
     </div>
     <nav className="sq-tabs" aria-label="Question views">
-      {(student ? [["timeline", "Timeline"], ["mine", "My Questions"], ["saved", "Saved"]] : [["timeline", "Timeline"], ["queue", "Teacher Queue"]]).map(([id, label]) =>
+      {(student ? [["timeline", "Timeline"], ["mine", "My Questions"], ["saved", "Saved"]] : [["timeline", admin ? "All Questions" : "Timeline"], ["queue", admin ? "Admin Inbox" : "Teacher Queue"]]).map(([id, label]) =>
         <button type="button" key={id} aria-pressed={tab === id} onClick={() => { setTab(id); setPage(1); }}>{label}</button>)}
     </nav>
     <div className="sq-filters" aria-label="Subjects">
@@ -242,13 +246,15 @@ export function QaPage({ student }: { student: boolean }) {
       {!loading && !error && !board?.items.length && <p className="sq-empty">No questions in this view yet.</p>}
       {!loading && board?.items.map((item) => {
         const answered = item.replies.length > 0;
+        const pendingLabel = student ? "In teacher’s queue" : item.publishedToTeachers ? "With teachers" : "With admin";
+        const statusTime = student ? item.replies[0]?.createdAt : item.createdAt;
         const Subject = subjectIcon(item.subject);
         return <article className={answered ? "sq-card sq-card-answered" : "sq-card sq-card-pending"} key={item.id}>
         <div className="sq-card-header">
           <span className="sq-subject-icon"><Subject size={19} /></span>
           <div><strong>{item.className} · {item.subject}</strong>{item.chapter && <small>Chapter: {item.chapter}</small>}</div>
-          <div className="sq-card-status"><span className={answered ? "sq-answered" : "sq-pending"}>{answered ? "Answered" : "Pending"}</span>
-            <time dateTime={new Date(item.createdAt).toISOString()}>{timeAgo(item.createdAt)}</time>
+          <div className="sq-card-status"><span className={answered ? "sq-answered" : "sq-pending"}>{item.hidden ? "Hidden" : answered ? "Answered" : pendingLabel}</span>
+            {statusTime && <time dateTime={new Date(statusTime).toISOString()}>{timeAgo(statusTime)}</time>}
           </div>
         </div>
         <h2>{item.topic}</h2>
@@ -264,32 +270,32 @@ export function QaPage({ student }: { student: boolean }) {
             ? <button type="button" aria-pressed={item.sameDoubt} disabled={busy} onClick={() => act("qa/signal", { questionId: item.id, action: "sameDoubt", value: !item.sameDoubt })}><Users size={16} /> Same doubt <strong>{item.sameDoubtCount}</strong></button>
             : <><Users size={16} /><strong>{item.sameDoubtCount}</strong> {item.sameDoubtCount === 1 ? "student shares" : "students share"} this doubt</>}
         </div>
-        <ol className="sq-progress" aria-label="Question progress">
+        {!student && <ol className="sq-progress" aria-label="Question progress">
           <li className="sq-step-done"><strong>Asked</strong><small>{timeAgo(item.createdAt)}</small></li>
-          <li className={answered ? "sq-step-done" : undefined} aria-current={answered ? undefined : "step"}><strong>With teacher</strong><small>{answered ? "Reviewed" : "In queue"}</small></li>
+          <li className={answered ? "sq-step-done" : undefined} aria-current={answered ? undefined : "step"}><strong>{pendingLabel}</strong><small>{answered ? "Reviewed" : "In queue"}</small></li>
           <li className={answered ? "sq-step-done" : undefined} aria-current={answered && !item.understood ? "step" : undefined}><strong>Answered</strong>{answered && <small>{timeAgo(item.replies[0].createdAt)}</small>}</li>
           <li className={item.understood ? "sq-step-done" : undefined} aria-current={item.understood ? "step" : undefined}><strong>Understood</strong>{item.understood && <small>You</small>}</li>
-        </ol>
-        {!answered && <p className="sq-card-notice">{item.mine
-          ? <><span lang="bn">তোমার প্রশ্নটি শিক্ষকের কাছে পৌঁছেছে।</span> Your question is with the teacher and will be answered soon.</>
-          : "This question is waiting for the teacher’s answer."}</p>}
+        </ol>}
         {item.replies.map((reply) => <div className="sq-answer" key={reply.id}>
-          <strong><CircleCheck size={17} /> Teacher’s answer</strong><small>{timeAgo(reply.createdAt)}</small>
-          {reply.text && <p>{reply.text}</p>}{reply.audioId && <audio controls preload="none" aria-label="Teacher recording" src={"/api/audio/" + reply.audioId + "?stream=1"} />}
+          <strong><CircleCheck size={17} /> {student ? "Answer" : reply.author === "Admin" ? "Admin’s answer" : "Teacher’s answer"}</strong>
+          {!student && <small>{timeAgo(reply.createdAt)}</small>}
+          {reply.text && <p>{reply.text}</p>}{reply.audioId && <audio controls preload="none" aria-label="Answer recording" src={"/api/audio/" + reply.audioId + "?stream=1"} />}
         </div>)}
         {student && answered && <div className="sq-understood">
           <span>{item.understood ? "Marked as understood" : "Did this clear your doubt?"}</span>
           <button type="button" disabled={busy} onClick={() => act("qa/signal", { questionId: item.id, action: "understood", value: !item.understood })}>{item.understood ? "Undo" : "Got it"}</button>
         </div>}
         {(!student || answered) && <div className={answered ? "sq-actions sq-answer-actions" : "sq-actions"}>
-          {answered && <button type="button" aria-expanded={openComments === item.id} onClick={() => setOpenComments(openComments === item.id ? null : item.id)}>
+          {answered && !item.hidden && <button type="button" aria-expanded={openComments === item.id} onClick={() => setOpenComments(openComments === item.id ? null : item.id)}>
             <MessageSquare size={16} /> Comments ({item.commentCount})
           </button>}
           {student && answered && <button type="button" disabled={busy} aria-pressed={item.saved} onClick={() => act("qa/bookmark", { questionId: item.id, saved: !item.saved })}><Bookmark size={16} /> {item.saved ? "Saved" : "Save Question"}</button>}
           {(!student || (item.mine && answered)) && <button type="button" disabled={busy || item.reported} onClick={() => act("questions", { id: item.id, reported: true }, "PATCH")}><Flag size={16} /> {item.reported ? "Reported" : "Report"}</button>}
-          {!student && <button type="button" disabled={busy} onClick={() => open(item)}><MessageCircle size={16} /> Answer</button>}
+          {!student && !item.hidden && <button type="button" disabled={busy} onClick={() => open(item)}><MessageCircle size={16} /> Answer</button>}
+          {admin && !item.hidden && !item.publishedToTeachers && <button type="button" disabled={busy} onClick={() => act("questions", { id: item.id, publishToTeachers: true }, "PATCH")}>Publish to Teachers</button>}
+          {admin && <button type="button" disabled={busy} onClick={() => act("questions", { id: item.id, hidden: !item.hidden }, "PATCH")}>{item.hidden ? "Restore Question" : "Hide Question"}</button>}
         </div>}
-        {answered && openComments === item.id && <QaDiscussion
+        {answered && !item.hidden && openComments === item.id && <QaDiscussion
           key={refresh}
           questionId={item.id}
           canPost={!student || !!board.active}

@@ -3591,3 +3591,193 @@
 }
 .spark-landing .feature-3d-icon{display:block;width:100%;height:100%;overflow:visible}
 .spark-landing .course-bottom:has(>.textlink:only-child){justify-content:flex-end}
+/* Ambient decoration stays static; motion is reserved for interactive cards. */
+.spark-landing .storm-cloud {
+ animation:none!important; filter:none!important; will-change:auto!important;
+}
+.spark-landing .storm-light-flash { animation:none!important; opacity:0!important; }
+.spark-landing .storm-blackwind { animation:none!important; filter:none!important; }
+.spark-landing .storm-spark-word { animation:none!important; }
+.spark-landing .storm-main-bolt { animation:none!important; filter:none!important; }
+.spark-landing .storm-central-glow { animation:none!important; }
+.spark-landing .storm-branch { animation:none!important; stroke-dashoffset:0; filter:none!important; opacity:.65; }
+.spark-landing .storm-hero.is-motion-paused *,
+.spark-landing .storm-hero.is-motion-paused *::before,
+.spark-landing .storm-hero.is-motion-paused *::after { animation-play-state:paused!important; }
+@media(max-width:1120px) {
+ .spark-landing .storm-energy-ring { animation:none!important; }
+ .spark-landing .storm-electric-svg { filter:none!important; }
+}
+/* Buttons and links respond immediately, without motion on interaction. */
+.spark-landing { scroll-behavior:auto!important; }
+.spark-landing :is(a,button),
+.spark-landing :is(a,button) *,
+.spark-landing :is(a,button)::before,
+.spark-landing :is(a,button)::after,
+.spark-landing :is(a,button) *::before,
+.spark-landing :is(a,button) *::after {
+ animation:none!important; transition:none!important;
+}
+.spark-landing :is(.btn,.textlink,.orbit-arrow,.faq-q,.menu-btn):is(:hover,:active) { transform:none!important; }
+.spark-landing .mobile-card-slider { scroll-behavior:auto!important; }
+.spark-landing .storm-hero-actions { opacity:1!important; animation:none!important; }
+html:has(.spark-landing) { scroll-behavior:auto!important; }
+.spark-landing .storm-center-copy { animation:none!important; opacity:1!important; }
+
+/* Retain only the approved Unslop colors; original type, spacing and layout.
+   Color guidance: Damir Sokolovsky, https://github.com/heydamir/unslop (CC BY 4.0). */
+.spark-landing {--brand:#175f70;--ink:#172b40;--muted:#465c70;}
+.spark-landing .storm-hero {background:#f5f8fb!important;}
+.spark-landing .storm-courses,.spark-landing .storm-features {background:#eaf3fb!important;border-color:#d4e1ec!important;box-shadow:0 8px 24px #11182708!important;}
+.spark-landing .section,.spark-landing .storm-about,.spark-landing .app-section {background:#fbfcfe!important;}
+.spark-landing .section.gray,.spark-landing #faq {background:#f3f6f9!important;}
+.spark-landing .course .cover {background:#213f59!important;}
+.spark-landing .course,.spark-landing .feature,.spark-landing .step {box-shadow:0 2px 8px #11182705!important;border-color:#dce4eb!important;}
+.spark-landing .statband {background:#eaf0f5!important;border:0!important;}
+.spark-landing .stat-grid strong {color:#172b40!important;}
+.spark-landing .stat-grid p {color:#465c70!important;}
+.spark-landing .storm-join {background:#173b53!important;box-shadow:none!important;border-color:#173b53!important;}
+.spark-landing .storm-join::after {background:#173b53!important;}
+.spark-landing .storm-blackwind {background:none!important;}
+.spark-landing .course-info p,.spark-landing .feature p,.spark-landing .step p,.spark-landing .section-head p {color:#465c70!important;}
+.spark-landing header .nav-actions>.spark-login-button {background:transparent!important;color:#172b40!important;border-color:transparent!important;box-shadow:none!important;}
+.spark-landing .nav-actions>.spark-enroll {background:#175f70!important;color:#fff!important;border-color:#175f70!important;}
+.spark-landing .spark-coming-soon {background:#edf2f6!important;color:#172b40!important;border-color:#d3dfe8!important;box-shadow:none!important;}
+.spark-landing .coming-soon-wrap small {color:#465c70!important;}
+/* Landing preview: the familiar Spark layout, with a softer page background. */
+.spark-landing {--page:#f0f4f8;--surface:#f8fafc;--ink:#173047;--muted:#536a7c;--brand:#17667b;background:var(--page);}
+.spark-landing .storm-hero {background:#edf3f8!important;}
+.spark-landing .storm-courses,.spark-landing .storm-features {background:#e4f0f9!important;border:1px solid #d2e2ed!important;box-shadow:0 10px 28px rgba(27,60,88,.06)!important;}
+.spark-landing .storm-panel-head {color:#526b7f!important;letter-spacing:.08em!important;}
+.spark-landing .storm-courses h2,.spark-landing .storm-features h2 {color:#243f56!important;}
+.spark-landing .storm-panel-desc,.spark-landing .storm-subheadline {color:#526b7f!important;}
+.spark-landing .storm-course-stack .storm-course-tile {box-shadow:0 5px 16px rgba(28,57,78,.09)!important;}
+.spark-landing .storm-feature-stack .storm-feature-tile {box-shadow:0 5px 16px rgba(28,57,78,.12)!important;}
+.spark-landing .storm-course-glyph {font-size:11px!important;letter-spacing:0!important;font-weight:700!important;font-variant-numeric:tabular-nums;}
+.spark-landing .storm-join {background:#173b53!important;border-color:#173b53!important;box-shadow:none!important;}
+.spark-landing .storm-join::after {background:#173b53!important;}
+.spark-landing .storm-blackwind {display:none!important;}
+.spark-landing .section,.spark-landing .storm-about,.spark-landing .app-section {background:#f7f9fb!important;}
+.spark-landing .section.gray,.spark-landing #faq {background:#eef3f8!important;}
+.spark-landing .course,.spark-landing .feature,.spark-landing .step {border-color:#d8e2eb!important;box-shadow:0 3px 14px rgba(29,56,77,.045)!important;}
+.spark-landing .course .cover {background:#244863!important;}
+.spark-landing .course .cover::after,.spark-landing .course .cover::before {display:none!important;}
+.spark-landing .course .cover h3 {max-width:90%;}
+.spark-landing .course-info,.spark-landing .feature,.spark-landing .step {line-height:1.65;}
+.spark-landing .statband {background:#e3ebf2!important;}
+.spark-landing .stat-grid strong {color:#173047!important;}
+.spark-landing .stat-grid p {color:#536a7c!important;}
+.spark-landing .app-list>div {position:relative;padding-left:20px;line-height:1.8;}
+.spark-landing .app-list>div::before {content:'';position:absolute;left:2px;top:.68em;width:6px;height:6px;border-radius:50%;background:#37897d;}
+.spark-landing .spark-coming-soon {background:#e7eef4!important;color:#173b53!important;border:1px solid #d4e1eb!important;box-shadow:none!important;}
+.spark-landing .spark-soon-dot {display:none!important;}
+.spark-landing :is(a,button,input):focus-visible {outline:2px solid #17667b;outline-offset:3px;}
+/* Spark Academy course discovery, inspired by the reference's bold category cards. */
+.spark-landing #home.storm-hero{background:radial-gradient(ellipse at 50% 0%,#dceefb 0%,#edf4fa 48%,#f1f5f9 100%)!important;padding:78px 24px 74px!important;overflow:hidden}
+.spark-landing .spark-discover{max-width:1120px;margin:auto;text-align:center}.spark-landing .spark-discover-label{display:inline-block;color:#467088;font:700 12px Inter,sans-serif;letter-spacing:.12em}.spark-landing .spark-discover-copy h1{font-size:clamp(38px,4.5vw,64px)!important;line-height:1.3!important;letter-spacing:0!important;color:#17344e!important;margin:18px 0 8px!important;font-weight:750!important}.spark-landing .spark-discover-copy h1 span{background:linear-gradient(90deg,#146aa2,#159580);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}.spark-landing .spark-discover-copy p{font-size:19px;color:#526b7f;line-height:1.7;margin:0}
+.spark-landing .spark-grade-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;max-width:860px;margin:42px auto 32px}.spark-landing .spark-grade{appearance:none;font:inherit;cursor:pointer;background:#f9fbfd;border:1px solid #d2e2ee;border-radius:22px;padding:12px 12px 18px;display:flex;flex-direction:column;align-items:center;gap:3px;color:#17344e;box-shadow:0 6px 20px #274a6810}.spark-landing .spark-grade:focus-visible{outline:3px solid #17758b;outline-offset:3px}.spark-landing .spark-grade-art{width:100%;height:138px;border-radius:15px;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;margin-bottom:10px}.spark-landing .spark-grade-art small{font:800 15px Inter,sans-serif;letter-spacing:.05em}.spark-landing .spark-grade-art strong{font:850 45px Inter,sans-serif;letter-spacing:-.04em}.spark-landing .spark-grade-art i{position:absolute;right:16px;bottom:13px;font-style:normal;font-size:26px}.spark-landing .spark-grade-nine .spark-grade-art{background:linear-gradient(145deg,#61c2e4,#3384ca)}.spark-landing .spark-grade-ten .spark-grade-art{background:linear-gradient(145deg,#48bdb3,#238e8c)}.spark-landing .spark-grade-eleven .spark-grade-art{background:linear-gradient(145deg,#879ee8,#596fc1)}.spark-landing .spark-grade-twelve .spark-grade-art{background:linear-gradient(145deg,#e7af67,#cf8351)}.spark-landing .spark-grade b{font-size:18px}.spark-landing .spark-grade>span:last-child{font:500 12px Inter,sans-serif;color:#62778a}.spark-landing .spark-discover-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 26px;background:#176b77;color:white!important;border-radius:9px;text-decoration:none;font-weight:700}
+@media(max-width:700px){.spark-landing #home.storm-hero{padding:52px 20px 48px!important}.spark-landing .spark-discover-copy h1{font-size:36px!important}.spark-landing .spark-discover-copy p{font-size:15px}.spark-landing .spark-grade-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:28px auto}.spark-landing .spark-grade{padding:8px 8px 12px;border-radius:16px}.spark-landing .spark-grade-art{height:110px;border-radius:11px}.spark-landing .spark-grade-art strong{font-size:36px}.spark-landing .spark-grade b{font-size:16px}}
+/* Lightweight Spark atmosphere: only transform and opacity animate. */
+.spark-landing #home.storm-hero{position:relative;isolation:isolate}
+.spark-landing .spark-discover{position:relative;z-index:1}
+.spark-landing .spark-atmosphere{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.spark-landing .spark-sky-orbit{position:absolute;width:min(1100px,130vw);height:530px;top:-300px;left:50%;margin-left:-550px;border:1px solid #b4d8ee;border-radius:50%;background:radial-gradient(ellipse at center,transparent 60%,#c7e4f540 74%,transparent 76%);animation:spark-sky-drift 22s ease-in-out infinite alternate}
+.spark-landing .spark-sky-lines{width:100%;height:100%;position:absolute;inset:0}
+.spark-landing .sky-bolt{animation:spark-bolt-drift 16s ease-in-out infinite alternate;transform-origin:950px 140px}
+.spark-landing .spark-glints{animation:spark-glint 7s ease-in-out infinite alternate}
+.spark-landing .spark-dots{animation:spark-glint 9s ease-in-out -3s infinite alternate}
+@keyframes spark-sky-drift{from{transform:translate3d(-18px,-8px,0) rotate(-3deg);opacity:.55}to{transform:translate3d(26px,20px,0) rotate(3deg);opacity:.9}}
+@keyframes spark-bolt-drift{from{transform:translate3d(0,0,0);opacity:.55}to{transform:translate3d(-10px,12px,0);opacity:1}}
+@keyframes spark-glint{from{opacity:.2}to{opacity:.7}}
+/* Course-specific vector artwork rather than decorative emoji. */
+.spark-landing #courses .cover{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(120deg,#193b55,#2c5b78)!important}
+.spark-landing #courses .cover h3{max-width:66%;position:relative;z-index:1;font-size:26px!important;line-height:1.2!important}
+.spark-landing #courses .cover p{position:relative;z-index:1;letter-spacing:.04em}
+.spark-landing .course-art{position:absolute;width:134px;height:120px;right:8px;bottom:6px;pointer-events:none;transform:rotate(-5deg);transition:transform 220ms ease-out}
+.spark-landing #courses .course:nth-child(2) .cover{background:linear-gradient(120deg,#1f414e,#386974)!important}
+.spark-landing #courses .course:nth-child(3) .cover{background:linear-gradient(120deg,#253b61,#42628a)!important}
+.spark-landing #courses .course:nth-child(4) .cover{background:linear-gradient(120deg,#244458,#3a6777)!important}
+.spark-landing #courses .course{transition:transform 200ms ease-out,border-color 200ms ease-out!important}
+@media(hover:hover) and (pointer:fine){
+ .spark-landing #courses .course:hover,.spark-landing #courses .course:focus-within{transform:translate3d(0,-3px,0)!important;border-color:#9ebfd3!important}
+ .spark-landing #courses .course:hover .course-art{transform:translate3d(0,-3px,0) rotate(-2deg)}
+ .spark-landing #home .spark-grade{transition:transform 200ms ease-out,border-color 200ms ease-out!important}
+ .spark-landing #home .spark-grade:hover{transform:translate3d(0,-3px,0)!important;border-color:#94bfd7}
+}
+.spark-landing .grade-artwork{width:62px;height:58px;position:absolute;right:5px;bottom:5px;pointer-events:none}
+.spark-landing .spark-grade-art strong{position:relative;z-index:1}
+/* Keep the login link stable on hover, press and keyboard focus. */
+.spark-landing header .nav .nav-actions>a.spark-login-button,
+.spark-landing header .nav .nav-actions>a.spark-login-button:is(:hover,:active,:focus,:focus-visible){background:transparent!important;background-image:none!important;color:#172b40!important;border-color:#244c66!important;box-shadow:none!important;-webkit-tap-highlight-color:transparent}
+.spark-landing header .nav .nav-actions>a.spark-login-button::before,
+.spark-landing header .nav .nav-actions>a.spark-login-button::after{background:none!important;box-shadow:none!important}
+@media(max-width:700px){.spark-landing .spark-sky-orbit{left:0;margin-left:-300px;opacity:.5}.spark-landing #courses .cover h3{font-size:25px!important;max-width:65%}.spark-landing .course-art{width:116px;right:5px}.spark-landing .grade-artwork{width:50px;height:48px}}
+@media(prefers-reduced-motion:reduce){.spark-landing .spark-sky-orbit,.spark-landing .sky-bolt,.spark-landing .spark-glints,.spark-landing .spark-dots{animation:none!important}.spark-landing #courses .course,.spark-landing .course-art,.spark-landing #home .spark-grade{transition:none!important}.spark-landing #courses .course:hover,.spark-landing #home .spark-grade:hover{transform:none!important}}
+.spark-landing header .nav .nav-actions>a.spark-login-button::before,
+.spark-landing header .nav .nav-actions>a.spark-login-button::after{display:none!important;content:none!important}
+/* Readable ambient Spark branding, kept behind the course content. */
+.spark-landing #home.storm-hero{background:radial-gradient(ellipse at 28% 12%,#dceafb 0%,#eaf0fb 38%,#edf4fa 68%,#f1f5f9 100%)!important}
+.spark-landing .spark-background-brand{position:absolute;left:clamp(20px,3vw,48px);top:43%;display:flex;flex-direction:column;align-items:center;opacity:.22;animation:spark-brand-drift 14s ease-in-out infinite alternate;user-select:none}
+.spark-landing .spark-background-brand>span{font:800 30px/1 Arial,sans-serif;letter-spacing:-1px;background:linear-gradient(90deg,#008cff,#8137e8);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.spark-landing .spark-background-brand>small{font:600 10px/1.6 Arial,sans-serif;letter-spacing:4px;color:#3b4f9b;margin-left:4px}
+.spark-landing .spark-sky-orbit{border-color:#8cb8e4;background:radial-gradient(ellipse at center,transparent 59%,#b4d0f23d 72%,transparent 76%);animation-duration:16s}
+.spark-landing .spark-sky-lines{animation:spark-lines-drift 18s ease-in-out infinite alternate;}
+.spark-landing .spark-glints{animation-duration:5s}
+.spark-landing .spark-dots{animation-duration:7s}
+@keyframes spark-brand-drift{from{transform:translate3d(0,-7px,0);opacity:.16}to{transform:translate3d(9px,8px,0);opacity:.27}}
+@keyframes spark-lines-drift{from{transform:translate3d(-12px,-5px,0)}to{transform:translate3d(14px,10px,0)}}
+/* A filled login link, with no nested border or press-color change. */
+.spark-landing header .nav .nav-actions>a.spark-login-button,
+.spark-landing header .nav .nav-actions>a.spark-login-button:is(:hover,:active,:focus,:focus-visible){background:#e2edf9!important;background-image:none!important;border:0!important;outline:0!important;box-shadow:none!important;color:#203f60!important;}
+.spark-landing header .nav .nav-actions>a.spark-login-button:focus-visible{outline:2px solid #4686b5!important;outline-offset:3px!important}
+@media(max-width:1120px){.spark-landing .spark-background-brand{left:22px;top:20px}.spark-landing .spark-background-brand>span{font-size:21px}.spark-landing .spark-background-brand>small{font-size:8px;letter-spacing:2px}}
+@media(prefers-reduced-motion:reduce){.spark-landing .spark-background-brand,.spark-landing .spark-sky-lines{animation:none!important}.spark-landing .spark-background-brand{opacity:.22}}
+/* Small floating brain and SPARK label; the primary logo stays intact. */
+.spark-landing .spark-brain{display:block;width:76px;height:70px;margin-bottom:5px;animation:spark-brain-tilt 11s ease-in-out infinite alternate;transform-origin:center}
+.spark-landing .spark-background-brand>span{font-size:23px}
+.spark-landing .sky-bolt-left{animation-delay:-7s;transform-origin:142px 455px}
+.spark-landing .footer-grid .spark-contact-email{display:inline!important;overflow-wrap:anywhere}
+@keyframes spark-brain-tilt{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@media(max-width:1120px){.spark-landing .spark-brain{width:42px;height:38px;margin-bottom:1px}.spark-landing .spark-background-brand{top:10px;left:12px}.spark-landing .spark-background-brand>span{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.spark-landing .spark-brain{animation:none!important}}
+@media(max-width:1120px){.spark-landing .spark-background-brand{top:2px}}
+/* Isolated sparks and drifting particles replace the connecting background lines. */
+.spark-landing .ambient-spark{position:absolute;color:#4d91d4;opacity:.28;pointer-events:none;animation:ambient-spark-float 12s ease-in-out infinite alternate}
+.spark-landing .ambient-spark svg{display:block;width:100%;height:100%}
+.spark-landing .ambient-spark-left{left:9%;top:55%;width:62px;height:82px;animation-delay:-6s}
+.spark-landing .ambient-spark-right{right:10%;top:8%;width:82px;height:108px}
+.spark-landing .ambient-light{position:absolute;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,#a5cdfb38 0%,#b8d8f714 45%,transparent 70%);animation:ambient-light-breathe 15s ease-in-out infinite alternate}
+.spark-landing .ambient-light-left{left:-170px;top:12%}
+.spark-landing .ambient-light-right{right:-130px;bottom:-170px;animation-delay:-7s}
+.spark-landing .ambient-twinkle{position:absolute;width:15px;height:15px;color:#4d91d4;animation:ambient-twinkle 6s ease-in-out infinite alternate}
+.spark-landing .ambient-twinkle svg{display:block;width:100%;height:100%}
+.spark-landing .ambient-twinkle-one{left:19%;top:16%;animation-delay:-2s}
+.spark-landing .ambient-twinkle-two{right:6%;top:64%;width:11px;height:11px;animation-delay:-4s}
+.spark-landing .ambient-twinkle-three{left:28%;bottom:9%;width:9px;height:9px}
+.spark-landing .ambient-particles{position:absolute;inset:0;animation:ambient-particle-rise 18s ease-in-out infinite alternate}
+.spark-landing .ambient-particles i{position:absolute;width:4px;height:4px;background:#4d91d4;border-radius:50%;opacity:.3}
+.spark-landing .ambient-particles i:nth-child(1){left:6%;top:23%}.spark-landing .ambient-particles i:nth-child(2){left:24%;top:42%;width:3px;height:3px}.spark-landing .ambient-particles i:nth-child(3){left:12%;bottom:14%}.spark-landing .ambient-particles i:nth-child(4){right:22%;top:16%}.spark-landing .ambient-particles i:nth-child(5){right:5%;top:42%;width:3px;height:3px}.spark-landing .ambient-particles i:nth-child(6){right:26%;bottom:10%}
+@keyframes ambient-spark-float{from{transform:translate3d(0,-8px,0) rotate(-3deg)}to{transform:translate3d(6px,12px,0) rotate(3deg)}}
+@keyframes ambient-light-breathe{from{opacity:.4;transform:scale(.94)}to{opacity:.8;transform:scale(1.04)}}
+@keyframes ambient-twinkle{from{opacity:.12;transform:scale(.8)}to{opacity:.55;transform:scale(1)}}
+@keyframes ambient-particle-rise{from{transform:translate3d(0,10px,0)}to{transform:translate3d(7px,-14px,0)}}
+@media(max-width:700px){.spark-landing .ambient-spark-left{left:1%;top:60%;width:40px;height:52px}.spark-landing .ambient-spark-right{right:2%;top:5%;width:48px;height:63px}.spark-landing .ambient-light{width:300px;height:300px}.spark-landing .ambient-twinkle-one{left:6%;top:9%}.spark-landing .ambient-twinkle-three{left:8%;bottom:10%}}
+@media(prefers-reduced-motion:reduce){.spark-landing .ambient-spark,.spark-landing .ambient-light,.spark-landing .ambient-twinkle,.spark-landing .ambient-particles{animation:none!important}.spark-landing .ambient-twinkle{opacity:.3}}
+/* Layered blue lightning and short, drifting light grains. */
+.spark-landing .spark-atmosphere{inset:-18px;transform:translate3d(var(--spark-depth-x,0px),var(--spark-depth-y,0px),0);transition:transform 850ms cubic-bezier(.2,.65,.3,1)}
+.spark-landing .ambient-spark{opacity:.85}
+.spark-landing .ambient-spark-left{width:170px;height:170px;left:2%;top:46%;animation-duration:14s}
+.spark-landing .ambient-spark-right{width:195px;height:195px;right:4%;top:2%;animation-duration:16s;animation-delay:-4s}
+.spark-landing .spark-satellites{transform-origin:90px 90px;animation:spark-satellite-sway 18s ease-in-out infinite alternate}
+.spark-landing .spark-charge{animation:spark-charge-glow 5s ease-in-out infinite alternate}
+.spark-landing .ambient-light-left{background:radial-gradient(circle,#90bcec42,transparent 68%);width:600px;height:600px;left:-250px;top:4%}
+.spark-landing .ambient-light-right{background:radial-gradient(circle,#a2d9ee38,transparent 68%);width:650px;height:650px;right:-270px;bottom:-240px}
+.spark-landing .spark-drifting-grains{position:absolute;inset:0;pointer-events:none}
+.spark-landing .spark-drifting-grains i{position:absolute;width:19px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#7eb7e3);opacity:0;animation:spark-grain-drift 9s ease-in-out infinite}
+.spark-landing .spark-drifting-grains i:nth-child(1){left:15%;top:27%;animation-delay:-2s}.spark-landing .spark-drifting-grains i:nth-child(2){right:18%;top:32%;animation-delay:-6s}.spark-landing .spark-drifting-grains i:nth-child(3){left:8%;bottom:14%;animation-delay:-4s}.spark-landing .spark-drifting-grains i:nth-child(4){right:9%;bottom:18%;animation-delay:-8s}
+@keyframes spark-satellite-sway{from{transform:rotate(-8deg)}to{transform:rotate(13deg)}}
+@keyframes spark-charge-glow{from{opacity:.22}to{opacity:.9}}
+@keyframes spark-grain-drift{0%,70%,100%{opacity:0;transform:translate3d(0,0,0) rotate(-40deg)}30%,45%{opacity:.6}60%{opacity:0;transform:translate3d(35px,-28px,0) rotate(-40deg)}}
+@media(max-width:700px){.spark-landing .ambient-spark-left{width:100px;height:100px;left:-25px;top:60%;opacity:.6}.spark-landing .ambient-spark-right{width:125px;height:125px;right:-16px;top:2%;opacity:.65}.spark-landing .ambient-light-left,.spark-landing .ambient-light-right{width:380px;height:380px}.spark-landing .spark-drifting-grains i{width:13px;height:2px}}
+@media(prefers-reduced-motion:reduce){.spark-landing .spark-atmosphere{transform:none;transition:none}.spark-landing .spark-satellites,.spark-landing .spark-charge,.spark-landing .spark-drifting-grains i{animation:none!important}.spark-landing .spark-drifting-grains i{display:none}}
+.spark-landing .container { width: var(--site-content-width) !important; }

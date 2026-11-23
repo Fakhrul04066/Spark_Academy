@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { LoginView } from "./login-view";
-import { Brand } from "./brand";
+import { PublicHeader } from "./public-header";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,6 +20,18 @@ export function AuthForm({
   const [error, setError] = useState(""),
     [success, setSuccess] = useState(""),
     [busy, setBusy] = useState(false);
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("error");
+    if (!code) return;
+    const messages: Record<string, string> = {
+      GoogleEmailUnverified: "Use a Google account with a verified email address.",
+      GoogleLinkRequired: "This email already has an account. Please sign in with your existing password.",
+      AccountInactive: "This account is inactive. Please contact the academy.",
+      GoogleUnavailable: "Google sign-in is temporarily unavailable. Please try again or use your password.",
+      AccessDenied: "Google sign-in was not completed. Please try again.",
+    };
+    setError(messages[code] || "Google sign-in could not be completed. Please try again or use your password.");
+  }, []);
   const {
     register,
     handleSubmit,
@@ -91,32 +103,11 @@ export function AuthForm({
   }
 
   return (
-    <div className="auth-shell" lang="en">
-      <aside className="auth-story">
-        <Brand />
-        <div>
-          <span className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
-          <h1>
-            A little spark.
-            <br />A lifetime of
-            <br />
-            <span style={{ color: "#c0d3e3" }}>possibilities.</span>
-          </h1>
-          <p>
-            A focused space to learn, practice and become a little better every
-            day.
-          </p>
-        </div>
-        <p className="footnote">© Spark Academy. All rights reserved.</p>
-      </aside>
-      <main className="auth-form">
-        <div className="auth-mobile-brand">
-          <Brand />
-        </div>
-        <Link href="/" className="eyebrow mb-8">
-          ← BACK TO SPARK ACADEMY
-        </Link>
-        <h2>{mode === "forgot" ? "Forgot your password?" : "A fresh start."}</h2>
+    <div className="spark-login" lang="en">
+      <PublicHeader />
+      <main className="site-container recovery-main">
+        <section className="login-card recovery-card" aria-labelledby="recovery-title">
+        <h1 id="recovery-title">{mode === "forgot" ? "Forgot your password?" : "A fresh start."}</h1>
         <p>Keep your Spark Academy account secure.</p>
         {error && (
           <div role="alert" className="error space">
@@ -133,7 +124,7 @@ export function AuthForm({
             <label className="label">
               Email address
               <input
-                className="input"
+                className="login-input"
                 type="email"
                 name="email"
                 required
@@ -144,7 +135,7 @@ export function AuthForm({
             <label className="label">
               New password
               <input
-                className="input"
+                className="login-input"
                 type="password"
                 name="password"
                 required
@@ -154,17 +145,16 @@ export function AuthForm({
               />
             </label>
           )}
-          <button className="btn" disabled={busy}>
+          <button className="login-submit" disabled={busy}>
             {busy
               ? "Please wait…"
               : mode === "forgot"
                 ? "Send reset link"
                 : "Update password"}
           </button>
-          <Link href="/login" className="text-slate-700">
-            Back to sign in
-          </Link>
         </form>
+        <Link href="/login" className="recovery-back">Back to sign in</Link>
+        </section>
       </main>
     </div>
   );

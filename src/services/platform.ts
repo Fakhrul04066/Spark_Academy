@@ -1,6 +1,8 @@
-import { createQaQuestion } from "./qa-access";
+import { checkQaStaffAccess, createQaQuestion } from "./qa-access";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { BLOOD_GROUPS } from "@/lib/profile";
+import { readBilling, recordFee, recordPayment } from "./billing";
 import { hash } from "bcryptjs";
 import { db } from "@/lib/db";
 import { academicAccess, batchIds, type Actor } from "@/lib/auth";
@@ -153,6 +155,8 @@ export async function getData(
   const q = (params.get("q") || "").slice(0, 100);
   const academic = await academicWhere(u);
   switch (resource) {
+    case "billing":
+      return readBilling(u, params.get("studentId"));
     case "catalog": {
       const subjects = await db.subject.findMany({
         where:
@@ -202,6 +206,7 @@ export async function getData(
           email: true,
           phone: true,
           school: true,
+          bloodGroup: true,
           studentCode: true,
           className: true,
           group: true,
@@ -529,10 +534,6 @@ export async function getData(
       });
     }
     case "questions": {
-      const assignments =
-        u.role === "TEACHER"
-          ? await db.teacherAssignment.findMany({ where: { userId: u.id } })
-          : [];
       const rows = await db.anonymousQuestion.findMany({
         where:
           u.role === "ADMIN"
@@ -541,10 +542,7 @@ export async function getData(
               ? { userId: u.id, hidden: false }
               : {
                   hidden: false,
-                  OR: assignments.map((a) => ({
-                    batchId: a.batchId,
-                    subjectId: a.subjectId,
-                  })),
+                  publishedToTeachersAt: { not: null },
                 },
         include: { replies: { orderBy: { createdAt: "asc" } } },
         orderBy: { createdAt: "desc" },
@@ -720,6 +718,8 @@ export async function mutate(
   body: unknown,
 ): Promise<{ id?: string; saved?: boolean }> {
   const methods: Record<string, string[]> = {
+    "fee-charges": ["POST"],
+    "fee-payments": ["POST"],
     profile: ["PATCH"],
     students: ["POST", "PATCH"],
     teachers: ["POST", "PATCH"],
@@ -748,12 +748,15 @@ export async function mutate(
   );
   const raw = z.object({ id: id.optional() }).passthrough().parse(body);
   const target = raw.id;
+  if (resource === "fee-charges") return recordFee(u, body);
+  if (resource === "fee-payments") return recordPayment(u, body);
   if (resource === "profile") {
     const data = z
       .object({
         name: str,
         phone: z.string().max(30).optional(),
         school: z.string().max(200).optional(),
+        bloodGroup: z.enum([...BLOOD_GROUPS, ""]).transform((value) => value || null).optional(),
         emailReminders: z.boolean().optional(),
       })
       .strict()
@@ -1034,6 +1037,7 @@ export async function mutate(
           hidden: z.boolean().optional(),
           shareWithClass: z.boolean().optional(),
           shareWhilePending: z.boolean().optional(),
+          publishToTeachers: z.literal(true).optional(),
         })
         .strict()
         .parse(body);
@@ -1041,9 +1045,33 @@ export async function mutate(
         where: { id: data.id },
       });
       if (u.role !== "ADMIN") {
-        check(data.hidden === undefined);
+        check(data.hidden === undefined && data.publishToTeachers === undefined);
         if (u.role === "STUDENT") check(q.userId === u.id);
-        else await academicAccess(u, q.batchId, q.subjectId);
+        else {
+          check(!q.hidden);
+          checkQaStaffAccess(u, q);
+        }
+      }
+      if (data.publishToTeachers) {
+        check(data.hidden === undefined && data.reported === undefined &&
+          data.shareWithClass === undefined && data.shareWhilePending === undefined,
+          400, "Publish the question separately from moderation changes.");
+        await db.$transaction(async (tx) => {
+          const published = await tx.anonymousQuestion.updateMany({
+            where: { id: q.id, publishedToTeachersAt: null, hidden: false },
+            data: { publishedToTeachersAt: new Date() },
+          });
+          if (published.count) {
+            await tx.auditLog.create({
+              data: { actorId: u.id, action: "question.publish", resource: q.id },
+            });
+          } else {
+            check(await tx.anonymousQuestion.count({
+              where: { id: q.id, hidden: false, publishedToTeachersAt: { not: null } },
+            }), 400, "Restore this question before publishing.");
+          }
+        });
+        return { saved: true };
       }
       if (data.shareWithClass !== undefined || data.shareWhilePending !== undefined) {
         check(u.role === "STUDENT" && q.userId === u.id);
@@ -1074,11 +1102,7 @@ export async function mutate(
       400,
       "Add text, a voice recording or an image",
     );
-    check(
-      await db.teacherAssignment.findFirst({
-        where: { batchId: data.batchId, subjectId: data.subjectId },
-      }),
-    );
+    check(await db.subject.count({ where: { id: data.subjectId } }), 400, "Choose a valid subject.");
     if (data.audioId)
       check(
         await db.audioAttachment.findFirst({
@@ -1110,7 +1134,7 @@ export async function mutate(
       where: { id: data.questionId },
     });
     check(!q.hidden);
-    await academicAccess(u, q.batchId, q.subjectId);
+    checkQaStaffAccess(u, q);
     if (data.audioId)
       check(
         await db.audioAttachment.findFirst({
@@ -1124,16 +1148,17 @@ export async function mutate(
           },
         }),
       );
-    const reply = await db.questionReply.create({
-      data: { ...data, userId: u.id },
-    });
-    await db.notification.create({
-      data: {
-        userId: q.userId,
-        title: "Q&A answer received",
-        message: "An anonymous teacher replied to your question.",
-        path: "/student/questions",
-      },
+    const reply = await db.$transaction(async (tx) => {
+      const answer = await tx.questionReply.create({ data: { ...data, userId: u.id } });
+      await tx.notification.create({
+        data: {
+          userId: q.userId,
+          title: "Q&A answer received",
+          message: u.role === "ADMIN" ? "An admin answered your question." : "An anonymous teacher answered your question.",
+          path: "/student/questions",
+        },
+      });
+      return answer;
     });
     return { id: reply.id };
   }

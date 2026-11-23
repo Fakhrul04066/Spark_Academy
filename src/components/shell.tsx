@@ -39,13 +39,27 @@ const icons: Record<string, typeof BookOpen> = {
 export function Shell({
   role,
   name,
+  initialAvatar,
   children,
 }: {
   role: keyof typeof navigation;
   name: string;
+  initialAvatar?: string;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [avatar, setAvatar] = useState(initialAvatar || "");
+  const [displayName, setDisplayName] = useState(name);
+  useEffect(() => { setAvatar(initialAvatar || ""); setDisplayName(name); }, [initialAvatar, name]);
+  useEffect(() => {
+    const update = (event: Event) => {
+      const detail = (event as CustomEvent<{ avatar?: string; name?: string }>).detail;
+      if (detail?.avatar) setAvatar(detail.avatar);
+      if (detail?.name) setDisplayName(detail.name);
+    };
+    window.addEventListener("profile-updated", update);
+    return () => window.removeEventListener("profile-updated", update);
+  }, []);
   const pathname = usePathname();
   const base = "/" + role.toLowerCase();
   const section = pathname.split("/")[2] || "dashboard";
@@ -149,9 +163,11 @@ export function Shell({
                 )}
               </span>
             </Link>
-            <span className="avatar">{name.slice(0, 1)}</span>
+            <Link className="avatar" href={`${base}/${role === "ADMIN" ? "settings" : "profile"}`} aria-label="My profile">
+              {avatar ? <img src={avatar} alt="Your profile photo" onError={() => setAvatar("")} /> : displayName.slice(0, 1)}
+            </Link>
             <div className="user-name">
-              <strong className="text-xs">{name}</strong>
+              <strong className="text-xs">{displayName}</strong>
               <p className="text-[10px] capitalize">{role.toLowerCase()}</p>
             </div>
             <button

@@ -50,6 +50,7 @@ model User {
   qaSignals QaQuestionSignal[]
   id               String              @id @default(cuid())
   email            String              @unique
+  googleSubject    String?             @unique
   name             String
   passwordHash     String
   role             Role
@@ -58,6 +59,7 @@ model User {
   emailReminders   Boolean             @default(true)
   phone            String?
   school           String?
+  bloodGroup       String?
   avatarKey        String?
   studentCode      String?             @unique
   className        String?
@@ -83,6 +85,35 @@ model User {
   resets           PasswordReset[]
   audio            AudioAttachment[]
   audit            AuditLog[]
+  fees             StudentFee[]
+}
+
+model StudentFee {
+  id          String       @id @default(cuid())
+  requestId   String       @unique
+  userId      String
+  title       String
+  amountMinor Int
+  dueDate     String
+  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  payments    FeePayment[]
+
+  @@index([userId, dueDate])
+}
+
+model FeePayment {
+  id          String     @id @default(cuid())
+  requestId   String     @unique
+  feeId       String
+  amountMinor Int
+  paidAt      DateTime   @db.Timestamptz(3)
+  method      String
+  reference   String?
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  fee         StudentFee @relation(fields: [feeId], references: [id], onDelete: Restrict)
+
+  @@index([feeId, paidAt])
 }
 
 model Batch {
@@ -321,6 +352,7 @@ model AnonymousQuestion {
   image     AudioAttachment? @relation("QuestionImage", fields: [imageId], references: [id], onDelete: Restrict)
   shareWithClass Boolean @default(false)
   shareWhilePending Boolean @default(false)
+  publishedToTeachersAt DateTime? @db.Timestamptz(3)
   bookmarks QaBookmark[]
   reported  Boolean          @default(false)
   hidden    Boolean          @default(false)
@@ -476,6 +508,15 @@ model AuditLog {
   resource  String
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   actor     User     @relation(fields: [actorId], references: [id], onDelete: Restrict)
+}
+
+model SignupVerification {
+  email     String   @id
+  nonce     String
+  codeHash  String
+  expiresAt DateTime @db.Timestamptz(3)
+
+  @@index([expiresAt])
 }
 
 model PasswordReset {

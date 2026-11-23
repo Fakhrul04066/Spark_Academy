@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./account-pages.css";
+@import "./public-site.css";
 :root {
   --background: #f8fafc;
   --foreground: #102a43;
@@ -2143,3 +2144,32 @@ body {
 .sidebar .brand .brand-line.brand-accent,.auth-story .brand .brand-line.brand-accent {color:#c3b5e0}
 .brand:hover img {filter:drop-shadow(0 0 6px #8e70e855)}
 @media(prefers-reduced-motion:reduce){.brand:hover img{filter:none}}
+
+/* Profile and account payments share the existing workspace cards. */
+.topbar .avatar { flex-shrink: 0; overflow: hidden; }
+.topbar .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.profile-details { align-items: start; }
+.profile-details > *, .billing-summary > *, .billing-admin-forms > * { min-width: 0; }
+.profile-details .row strong { overflow-wrap: anywhere; text-align: right; }
+.profile-billing { grid-column: 1 / -1; min-width: 0; }
+.profile-photo-field { align-items: center; flex-wrap: wrap; }
+.profile-photo-field > img { flex-shrink: 0; }
+.profile-photo-field .label { flex: 1 1 220px; min-width: 0; }
+.profile-photo-field input { width: 100%; min-width: 0; }
+.billing-totals > div { background: #f2f6fa; border-radius: 12px; padding: 18px; }
+.billing-totals strong { display: block; margin-top: 6px; font-size: 26px; color: #20384f; }
+.billing-summary .table-scroll { max-width: 100%; }
+.billing-summary table { min-width: 650px; }
+.billing-summary td { white-space: nowrap; }
+.billing-summary td:last-child { overflow-wrap: anywhere; }
+.billing-scroll-hint { display: none; }
+.billing-admin-forms fieldset { border: 0; min-width: 0; padding: 0; }
+.billing-admin-forms fieldset:disabled { opacity: .65; }
+@media (max-width: 700px) {
+  .billing-admin-forms, .billing-admin-forms .grid.two { grid-template-columns: minmax(0, 1fr); }
+  .billing-totals.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .billing-totals > div { padding: 13px; }
+  .billing-totals strong { font-size: 21px; }
+  .billing-totals .muted { display: block; min-height: 2.8em; }
+  .billing-scroll-hint { display: block; }
+}

@@ -81,6 +81,7 @@ export function anonymousQuestion(q: {
     text: string;
     audioId: string | null;
     createdAt: Date;
+    user?: { role: string };
   }[];
 }) {
   return {
@@ -97,7 +98,7 @@ export function anonymousQuestion(q: {
       text: r.text,
       audioId: r.audioId,
       createdAt: r.createdAt,
-      author: "Anonymous Teacher",
+      author: r.user?.role === "ADMIN" ? "Admin" : "Anonymous Teacher",
     })),
   };
 }

@@ -1,13 +1,20 @@
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import { GoogleSignInError, resolveGoogleStudent } from "@/services/google-signin";
 import { compare } from "bcryptjs";
 import { db } from "./db";
 import { check, limit, hashToken } from "./security";
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/login" },
   providers: [
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: { params: { scope: "openid email profile", prompt: "select_account" } },
+    })] : []),
     Credentials({
       name: "Spark Academy",
       credentials: {
@@ -66,7 +73,28 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ account, profile }) {
+      if (account?.provider !== "google") return true;
+      try {
+        await resolveGoogleStudent(profile);
+        return true;
+      } catch (error) {
+        const code = error instanceof GoogleSignInError ? error.message : "GoogleUnavailable";
+        return "/login?error=" + encodeURIComponent(code);
+      }
+    },
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === "google") {
+        const local = await db.user.findUniqueOrThrow({ where: { googleSubject: String((profile as { sub?: string })?.sub || "") } });
+        check(local.active, 403, "Account inactive");
+        token.uid = local.id;
+        token.sub = local.id;
+        token.version = local.sessionVersion;
+        token.name = local.name;
+        token.email = local.email;
+        delete token.picture;
+        return token;
+      }
       if (user) {
         token.uid = user.id;
         token.version = (user as unknown as { version: number }).version;

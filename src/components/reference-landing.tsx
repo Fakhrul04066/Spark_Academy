@@ -1,12 +1,14 @@
-"use client";
-import {useEffect,useRef} from "react";
-import {landingMarkup} from "./reference-markup";
-import {mountReferenceLanding} from "./reference-interactions";
+import { landingMarkup } from "./reference-markup";
+import { LandingInteractions } from "./landing-interactions";
+import { PublicHeader } from "./public-header";
 import "./reference-landing.css";
 
-// This markup is the reviewed, local reference document, never runtime user input.
-export function ReferenceLanding(){
- const root=useRef<HTMLDivElement>(null);
- useEffect(()=>root.current?mountReferenceLanding(root.current):undefined,[]);
- return <div ref={root} dangerouslySetInnerHTML={{__html:landingMarkup}}/>;
+// The static reference stays on the server; only interaction code ships as JS.
+const pageMarkup = landingMarkup.replace(/<header>[\s\S]*?<\/header>/, "");
+export function ReferenceLanding() {
+  return <div id="spark-landing-root">
+    <PublicHeader />
+    <div dangerouslySetInnerHTML={{ __html: pageMarkup }} />
+    <LandingInteractions />
+  </div>;
 }

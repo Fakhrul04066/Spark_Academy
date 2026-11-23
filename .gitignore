@@ -11,3 +11,6 @@ test-results/
 legacy/
 
 .next-design-check/
+.vercel/
+
+.next-perf/

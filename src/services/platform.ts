@@ -340,21 +340,29 @@ export async function getData(
         skip,
         take,
       });
-    case "routines":
+    case "routines": {
+      const selectedDay = params.get("date") ? day.parse(params.get("date")) : null;
+      const startsAt = selectedDay ? new Date(selectedDay + "T00:00:00+06:00") : null;
       return db.classRoutine.findMany({
         where: {
           batchId: { in: ids },
           ...(u.role === "TEACHER" ? { teacherId: u.id } : {}),
+          ...(startsAt ? {
+            startsAt: { lt: new Date(+startsAt + 86_400_000) },
+            endsAt: { gt: startsAt },
+          } : {}),
         },
         orderBy: { startsAt: "asc" },
         skip,
         take,
       });
+    }
     case "exams":
       return db.exam.findMany({
         where: {
           ...academic,
           ...(u.role === "STUDENT" ? { published: true } : {}),
+          ...(params.get("open") === "true" ? { published: true, endsAt: { gte: new Date() } } : {}),
           title: { contains: q, mode: "insensitive" },
         },
         select: {
@@ -658,6 +666,13 @@ export async function getData(
           lessons.filter((l) => l.progress.length).length,
           lessons.length,
         ),
+        completedLessons: lessons.filter((l) => l.progress.length).length,
+        attendanceSummary: {
+          total: attendance.length,
+          present: attendance.filter((a) => a.present).length,
+          absent: attendance.filter((a) => !a.present).length,
+        },
+        resultCount: results.length,
         attendance: percentage(
           attendance.filter((a) => a.present).length,
           attendance.length,

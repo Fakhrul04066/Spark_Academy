@@ -1,7 +1,9 @@
 "use client";
 import { RevisionDate } from "./revision-date";
 import { ImageAttachment } from "./image-attachment";
-import { PremiumDashboard } from "./premium-dashboard";
+import { StudyDashboard } from "./study-dashboard";
+import { StudentBilling } from "./billing";
+import { BLOOD_GROUPS } from "@/lib/profile";
 
 import Link from "next/link";
 
@@ -239,17 +241,15 @@ export function Workspace({
       if (module === "dashboard") {
         const [
           progress,
-          routines,
+          attendance,
           exams,
-          notifications,
           results,
           revisions,
           questions,
         ] = await Promise.all([
           api("progress"),
-          api("routines"),
-          api("exams"),
-          api("notifications"),
+          api("attendance"),
+          api("exams?open=true"),
           api("results"),
           api("revision-schedules"),
           api("questions"),
@@ -258,9 +258,8 @@ export function Workspace({
           setCatalog({
             ...c,
             progress,
-            routines,
+            attendance,
             exams,
-            notifications,
             results,
             revisions,
             questions,
@@ -297,6 +296,8 @@ export function Workspace({
     try {
       setError("");
       await api(resource, method, body);
+      if (resource === "profile")
+        window.dispatchEvent(new CustomEvent("profile-updated", { detail: { name: (body as Row).name } }));
       if (resource === "notifications")
         window.dispatchEvent(new Event("notifications-updated"));
       setSuccess("Saved successfully.");
@@ -322,7 +323,7 @@ export function Workspace({
 
   return (
     <>
-      <div className="page-head row">
+      {module !== "dashboard" && <div className="page-head row">
         <div>
           <span className="eyebrow">SPARK ACADEMY / {role.toLowerCase()}</span>
           <h1 className="mt-2">{title}</h1>
@@ -357,7 +358,7 @@ export function Workspace({
                     : "new"}
           </button>
         )}
-      </div>
+      </div>}
 
       {error && (
         <div role="alert" className="error mb-5">
@@ -445,7 +446,7 @@ export function Workspace({
         data && (
           <>
             {module === "dashboard" ? (
-              <PremiumDashboard
+              <StudyDashboard
                 role={role}
                 name={name}
                 data={data}
@@ -1233,66 +1234,7 @@ export function Workspace({
           </>
         )
       )}
-      {!loading && module === "dashboard" && data && (
-        <DashboardActivity catalog={catalog} base={base} />
-      )}
     </>
-  );
-}
-
-function DashboardActivity({ catalog, base }: { catalog: Row; base: string }) {
-  return (
-    <div className="grid three mt-6 premium-activity">
-      <div className="card">
-        <h3>Latest results</h3>
-        {catalog.results?.slice(0, 3).map((r: Row) => (
-          <div className="row border-b border-slate-100 py-3" key={r.id}>
-            <div>
-              <strong className="text-xs">{r.title}</strong>
-              <p className="footnote">Position #{r.position}</p>
-            </div>
-            <span className="status">{r.percentage}%</span>
-          </div>
-        ))}
-        {!catalog.results?.length && (
-          <p className="mt-4">Released results will appear here.</p>
-        )}
-      </div>
-      <div className="card">
-        <h3>Revision timeline</h3>
-        <div className="timeline">
-          {catalog.revisions
-            ?.filter((r: Row) => !r.completedAt)
-            .slice(0, 4)
-            .map((r: Row) => (
-              <div key={r.id}>
-                <strong className="text-xs">{r.topic.name}</strong>
-                <p className="footnote">{r.dueDate}</p>
-              </div>
-            ))}
-        </div>
-        {!catalog.revisions?.length && (
-          <p className="mt-4">No scheduled revisions.</p>
-        )}
-      </div>
-      <div className="card">
-        <h3>Recent Q&amp;A</h3>
-        {catalog.questions?.slice(0, 3).map((q: Row) => (
-          <div className="border-b border-slate-100 py-3" key={q.id}>
-            <strong className="text-xs">{q.topic}</strong>
-            <p className="footnote">
-              {q.replies.length ? "Answered" : "Awaiting a reply"}
-            </p>
-          </div>
-        ))}
-        {!catalog.questions?.length && (
-          <p className="mt-4">No questions yet.</p>
-        )}
-        <Link href={`${base}/questions`} className="text-slate-700 text-xs">
-          Open anonymous Q&amp;A →
-        </Link>
-      </div>
-    </div>
   );
 }
 
@@ -1549,7 +1491,7 @@ function Profile({
   const [image, setImage] = useState(data.hasAvatar ? "/api/avatar" : ""),
     [uploadStatus, setUploadStatus] = useState("");
   return (
-    <div className="grid two">
+    <div className="grid two profile-details">
       <form
         className="card form"
         onSubmit={async (e) => {
@@ -1559,12 +1501,13 @@ function Profile({
             name: f.get("name"),
             phone: f.get("phone"),
             school: f.get("school"),
+            bloodGroup: f.get("bloodGroup"),
             emailReminders: f.get("emailReminders") === "on",
           });
         }}
       >
         <h3>Personal information</h3>
-        <div className="flex">
+        <div className="flex profile-photo-field">
           {image && (
             <img
               src={image}
@@ -1591,7 +1534,9 @@ function Profile({
                   });
                   const result = await res.json();
                   if (!res.ok) throw new Error(result.error);
-                  setImage("/api/avatar?t=" + Date.now());
+                  const avatar = "/api/avatar?t=" + Date.now();
+                  setImage(avatar);
+                  window.dispatchEvent(new CustomEvent("profile-updated", { detail: { avatar } }));
                   setUploadStatus("Photo saved.");
                 } catch (e) {
                   setUploadStatus((e as Error).message);
@@ -1616,6 +1561,12 @@ function Profile({
             />
           </label>
         ))}
+        <label className="label">Blood group
+          <select className="input" aria-label="Blood group" name="bloodGroup" defaultValue={data.bloodGroup || ""}>
+            <option value="">Not specified</option>
+            {BLOOD_GROUPS.map((group) => <option key={group}>{group}</option>)}
+          </select>
+        </label>
         <label className="flex">
           <input
             name="emailReminders"
@@ -1650,6 +1601,7 @@ function Profile({
           Reset password securely
         </Link>
       </div>
+      {data.role === "STUDENT" && <StudentBilling />}
     </div>
   );
 }

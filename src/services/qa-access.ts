@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
-import { academicAccess, type Actor } from "@/lib/auth";
+import type { Actor } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { anonymousQuestion, dhakaDate } from "@/lib/domain";
 import { check } from "@/lib/security";
@@ -9,17 +9,14 @@ const MONTHLY_LIMIT = 30;
 const PAGE_SIZE = 20;
 
 async function activeBatches(userId: string, now: Date, tx: Prisma.TransactionClient = db) {
-  const grants = await tx.qaAccess.findMany({
-    where: {
-      userId, expiresAt: { gt: now },
-      OR: [
-        { kind: "QNA_ONLY" },
-        { kind: "PAID_STUDENT", batch: { enrollments: { some: { userId } } } },
-      ],
-    },
-    select: { batchId: true },
-  });
-  return [...new Set(grants.map(({ batchId }) => batchId))];
+  const [enrollments, grants] = await Promise.all([
+    tx.enrollment.findMany({ where: { userId }, select: { batchId: true } }),
+    tx.qaAccess.findMany({
+      where: { userId, kind: "QNA_ONLY", expiresAt: { gt: now } },
+      select: { batchId: true },
+    }),
+  ]);
+  return [...new Set([...enrollments, ...grants].map(({ batchId }) => batchId))];
 }
 
 function monthBounds(now: Date) {
@@ -73,15 +70,23 @@ export async function createQaQuestion(
 const classQuestions = (batchIds: string[]): Prisma.AnonymousQuestionWhereInput => ({
   batchId: { in: batchIds },
   shareWithClass: true,
-  OR: [{ shareWhilePending: true }, { replies: { some: {} } }],
+  OR: [
+    { shareWhilePending: true, publishedToTeachersAt: { not: null } },
+    { replies: { some: {} } },
+  ],
 });
 
+export function checkQaStaffAccess(u: Actor, question: { publishedToTeachersAt: Date | null }) {
+  check(u.role === "ADMIN" || (u.role === "TEACHER" && question.publishedToTeachersAt),
+    403, "This question is awaiting admin review.");
+}
+
 export async function checkQaMedia(u: Actor, question: {
-  id: string; batchId: string; subjectId: string; userId: string; hidden: boolean;
+  id: string; userId: string; hidden: boolean; publishedToTeachersAt: Date | null;
 }) {
   check(!question.hidden);
   if (u.role !== "STUDENT") {
-    await academicAccess(u, question.batchId, question.subjectId);
+    checkQaStaffAccess(u, question);
     return;
   }
   if (question.userId === u.id) return;
@@ -93,20 +98,24 @@ export async function checkQaMedia(u: Actor, question: {
 }
 
 export async function readQa(u: Actor, query: URLSearchParams) {
-  check(u.role === "STUDENT" || u.role === "TEACHER");
   const student = u.role === "STUDENT";
+  const admin = u.role === "ADMIN";
   const now = new Date();
   const batchIds = student ? await activeBatches(u.id, now) : [];
-  const assignments = await db.teacherAssignment.findMany({
-    where: student ? { batchId: { in: batchIds } } : { userId: u.id },
-    select: { batchId: true, subjectId: true, batch: { select: { name: true, className: true } }, subject: { select: { name: true, chapters: { orderBy: { name: "asc" }, select: { id: true, name: true } } } } },
-    distinct: ["batchId", "subjectId"],
-  });
+  const [batches, subjects] = await Promise.all([
+    db.batch.findMany({ where: { id: { in: batchIds } }, orderBy: { name: "asc" },
+      select: { id: true, name: true, className: true } }),
+    db.subject.findMany({ orderBy: { name: "asc" },
+      select: { id: true, name: true, chapters: { orderBy: { name: "asc" }, select: { id: true, name: true } } } }),
+  ]);
+  const assignments = batches.flatMap((batch) => subjects.map((subject) => ({
+    batchId: batch.id, subjectId: subject.id, batch, subject,
+  })));
   const own = { userId: u.id };
   const visible: Prisma.AnonymousQuestionWhereInput = student
     ? { OR: [own, classQuestions(batchIds)] }
-    : { OR: assignments.map(({ batchId, subjectId }) => ({ batchId, subjectId })) };
-  const base: Prisma.AnonymousQuestionWhereInput = { hidden: false, AND: [visible] };
+    : admin ? {} : { publishedToTeachersAt: { not: null } };
+  const base: Prisma.AnonymousQuestionWhereInput = { hidden: admin ? undefined : false, AND: [visible] };
   const answered = { replies: { some: {} } };
   const pending = { replies: { none: {} } };
   const bookmarked = { bookmarks: { some: { userId: u.id } } };
@@ -118,7 +127,7 @@ export async function readQa(u: Actor, query: URLSearchParams) {
     base,
     student && tab === "mine" ? own : {},
     student && tab === "saved" ? bookmarked : {},
-    !student && tab === "queue" ? pending : {},
+    !student && tab === "queue" ? { ...pending, hidden: false, ...(admin ? { publishedToTeachersAt: null } : {}) } : {},
     subject ? { subjectId: subject } : {},
     term ? { OR: [
       { topic: { contains: term, mode: "insensitive" } },
@@ -141,7 +150,7 @@ export async function readQa(u: Actor, query: URLSearchParams) {
         qaImages: { orderBy: { position: "asc" }, select: { attachmentId: true } },
         qaSignals: { where: { userId: u.id }, select: { sameDoubt: true, understood: true } },
         _count: { select: { qaDiscussionComments: true, qaSignals: { where: { sameDoubt: true } } } },
-        replies: { orderBy: { createdAt: "asc" } },
+        replies: { orderBy: { createdAt: "asc" }, include: { user: { select: { role: true } } } },
         bookmarks: { where: { userId: u.id }, select: { userId: true } },
       },
     }),
@@ -152,6 +161,7 @@ export async function readQa(u: Actor, query: URLSearchParams) {
   ]);
   return {
     assignments,
+    subjects: subjects.map(({ id, name }) => ({ id, name })),
     active: student && batchIds.length > 0,
     remaining: Math.max(0, MONTHLY_LIMIT - used),
     used,
@@ -161,6 +171,8 @@ export async function readQa(u: Actor, query: URLSearchParams) {
     hasMore: rows.length > PAGE_SIZE,
     items: rows.slice(0, PAGE_SIZE).map((row) => ({
       ...anonymousQuestion(row), className: row.batch.className, subject: row.subject.name, mine: row.userId === u.id,
+      publishedToTeachers: row.publishedToTeachersAt !== null,
+      hidden: row.hidden,
       saved: row.bookmarks.length > 0,
       chapter: row.qaChapter?.name,
       images: [row.imageId, ...row.qaImages.map(({ attachmentId }) => attachmentId)].filter((id): id is string => !!id),
@@ -248,10 +260,9 @@ export async function updateQaSignal(u: Actor, body: unknown) {
 
 
 async function discussionQuestion(u: Actor, questionId: string) {
-  check(u.role === "STUDENT" || u.role === "TEACHER");
   const question = await db.anonymousQuestion.findFirst({
     where: { id: questionId, hidden: false, replies: { some: {} } },
-    select: { id: true, batchId: true, subjectId: true, userId: true, hidden: true },
+    select: { id: true, batchId: true, userId: true, hidden: true, publishedToTeachersAt: true },
   });
   check(question, 404, "Answered question not found.");
   await checkQaMedia(u, question);
@@ -271,7 +282,7 @@ export async function readQaDiscussion(u: Actor, questionId: string, query: URLS
   return {
     items: rows.slice(0, PAGE_SIZE).map((row) => ({
       id: row.id, text: row.text, createdAt: row.createdAt,
-      author: row.userId === u.id ? "You" : row.user.role === "TEACHER" ? "Teacher" : "Anonymous student",
+      author: row.userId === u.id ? "You" : row.user.role === "ADMIN" ? "Admin" : row.user.role === "TEACHER" ? "Teacher" : "Anonymous student",
     })),
     hasMore: rows.length > PAGE_SIZE,
   };

@@ -65,6 +65,7 @@ export function PerformanceChart({
             formatter={(value) => [`${value}%`, "Score"]}
           />
           <Area
+            isAnimationActive={false}
             type="monotone"
             dataKey="percentage"
             stroke="#149353"

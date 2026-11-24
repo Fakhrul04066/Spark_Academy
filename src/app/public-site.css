@@ -1,0 +1,76 @@
+:root {
+  --site-max-width: 1160px;
+  --site-gutter: 24px;
+  --site-content-width: min(var(--site-max-width), calc(100% - var(--site-gutter) * 2));
+  --site-header-height: 76px;
+}
+.site-container { width: var(--site-content-width); margin-inline: auto; }
+.site-header { position: sticky; top: 0; z-index: 60; background: #fff; border-bottom: 1px solid #dce5ef; color: #20384f; font: 600 13px/1.4 Inter, "Anek Bangla", Arial, sans-serif; }
+.site-nav-row { min-height: var(--site-header-height); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.site-logo { display: flex; flex: 0 0 auto; }
+.site-logo img { display: block; width: 174px; height: 52px; object-fit: contain; }
+.site-links { display: flex; align-items: center; gap: 18px; }
+.site-links a { white-space: nowrap; padding-block: 12px; }
+.site-header a { color: inherit; text-decoration: none; }
+.site-header :is(a, button, input):focus-visible { outline: 2px solid #17667b; outline-offset: 4px; }
+.site-actions { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.site-header .site-login, .site-header .site-enroll { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 24px; padding: 11px 17px; font-weight: 700; white-space: nowrap; }
+.site-header .site-login, .site-header .site-login:is(:hover, :active) { background: #e2edfb; color: #244668; box-shadow: none; }
+.site-header .site-enroll { color: #fff; background: #175f70; box-shadow: 0 3px 0 #173047; }
+.site-menu-toggle { display: none; align-items: center; justify-content: center; width: 40px; height: 42px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #20384f; cursor: pointer; }
+.site-program-search { display: none; align-items: center; min-width: 0; width: 250px; border: 1px solid #d6e0ed; border-radius: 24px; background: #fff; }
+.site-program-search button { display: grid; place-items: center; flex: none; color: #536a7c; border: 0; padding: 10px 0 10px 13px; background: transparent; cursor: pointer; }
+.site-program-search input { width: 100%; min-width: 0; height: 42px; padding: 10px 12px; border: 0; outline: 0; background: transparent; color: #20384f; font-size: 13px; }
+@media (max-width: 1199px) {
+  .site-program-search { display: flex; }
+  .site-menu-toggle { display: inline-flex; }
+  .site-links { display: none; }
+  .site-links.is-open { display: flex; position: absolute; top: 100%; inset-inline: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 10px var(--site-gutter); background: white; border-bottom: 1px solid #dce5ef; box-shadow: 0 12px 22px #20384f0d; }
+  .site-links a { padding: 13px max(0px, calc((100% - var(--site-max-width)) / 2)); }
+}
+@media (max-width: 720px) {
+  :root { --site-gutter: 16px; --site-header-height: 68px; }
+  .site-nav-row { gap: 12px; }
+  .site-logo img { width: 138px; height: 46px; }
+  .site-program-search { display: none; }
+  .site-actions { gap: 8px; }
+  .site-header .site-login, .site-header .site-enroll { min-height: 40px; padding: 10px 14px; font-size: 12px; }
+}
+@media (max-width: 520px) {
+  .site-header .site-enroll { display: none; }
+}
+@media (max-width: 360px) {
+  .site-logo img { width: 124px; }
+  .site-header .site-login { gap: 6px; padding-inline: 12px; }
+}
+
+/* Page gutters match the navigation; card typography stays unchanged. */
+.spark-login .login-main, .spark-signup .signup-main {
+  width: var(--site-content-width); max-width: none; margin-inline: auto;
+  min-height: calc(100svh - var(--site-header-height)); padding: 28px 0;
+}
+.spark-login .login-main { grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 32px; }
+.spark-login .login-card { width: 100%; margin: 0; }
+.spark-signup .signup-main { grid-template-columns: minmax(0, .85fr) minmax(0, 1fr); gap: 32px; }
+.spark-signup .signup-card { width: 100%; margin: 0; }
+.spark-login .recovery-main { min-height: calc(100svh - var(--site-header-height)); padding-block: 32px; display: flex; align-items: center; justify-content: center; }
+.spark-login .recovery-card { width: 100%; max-width: 440px; }
+.recovery-card h1 { margin-bottom: 12px; }
+.recovery-card > p { color: #536a7c; margin-bottom: 24px; font-size: 14px; }
+.recovery-card .form { margin-top: 22px; }
+.recovery-card .label { font-size: 14px; }
+.recovery-card .login-input { height: 50px; font-size: 15px; margin-top: 5px; }
+.recovery-card .login-submit { height: 48px; font-size: 16px; }
+.recovery-back { display: inline-block; margin-top: 24px; color: #0560ff; font-size: 14px; }
+.google-signin { margin-top: 20px; }
+.auth-divider { display: flex; align-items: center; gap: 14px; color: #8290a3; font-size: 12px; margin-bottom: 16px; }
+.auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: #dde4ef; }
+.google-signin-button { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 46px; padding: 11px 16px; border: 1px solid #d5dce8; border-radius: 10px; background: #fff; color: #20384f; font: 500 14px/1.5 Poppins, Arial, sans-serif; cursor: pointer; }
+.google-signin-button svg { flex-shrink: 0; }
+.google-signin-button:disabled { opacity: .65; cursor: wait; }
+.google-signin-error { margin-top: 12px; color: #a52a37; font-size: 13px; line-height: 1.6; }
+@media (max-width: 767px) {
+  .spark-login .login-main, .spark-signup .signup-main { padding-block: 28px; display: flex; align-items: center; justify-content: center; }
+  .spark-login .login-card { max-width: 420px; }
+  .spark-signup .signup-card { max-width: 480px; }
+}

@@ -12,13 +12,10 @@ import {
   CalendarDays,
   Headphones,
   MessageCircle,
-  Settings,
-  Bell,
   Users,
   Files,
   LogOut,
   Menu,
-  Search,
   ArrowUpRight,
 } from "lucide-react";
 import { navigation } from "@/lib/navigation";
@@ -30,22 +27,34 @@ const icons: Record<string, typeof BookOpen> = {
   attendance: CalendarDays,
   routines: CalendarDays,
   questions: Headphones,
-  notifications: Bell,
   students: Users,
   teachers: Users,
   resources: Files,
-  settings: Settings,
 };
 export function Shell({
   role,
   name,
+  initialAvatar,
   children,
 }: {
   role: keyof typeof navigation;
   name: string;
+  initialAvatar?: string;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [avatar, setAvatar] = useState(initialAvatar || "");
+  const [displayName, setDisplayName] = useState(name);
+  useEffect(() => { setAvatar(initialAvatar || ""); setDisplayName(name); }, [initialAvatar, name]);
+  useEffect(() => {
+    const update = (event: Event) => {
+      const detail = (event as CustomEvent<{ avatar?: string; name?: string }>).detail;
+      if (detail?.avatar) setAvatar(detail.avatar);
+      if (detail?.name) setDisplayName(detail.name);
+    };
+    window.addEventListener("profile-updated", update);
+    return () => window.removeEventListener("profile-updated", update);
+  }, []);
   const pathname = usePathname();
   const base = "/" + role.toLowerCase();
   const section = pathname.split("/")[2] || "dashboard";
@@ -53,25 +62,6 @@ export function Shell({
   const sectionName = section === "questions"
     ? "Q&A"
     : navigation[role].find(([key]) => key === (section === "attempt" ? "exams" : section))?.[1] ?? "Dashboard";
-  const [unread, setUnread] = useState(0);
-  useEffect(() => {
-    let alive = true;
-    const refresh = () =>
-      fetch("/api/notifications")
-        .then((r) => r.json())
-        .then((d) => {
-          if (alive) setUnread(d.unreadCount || 0);
-        })
-        .catch(() => {
-          if (alive) setUnread(-1);
-        });
-    refresh();
-    window.addEventListener("notifications-updated", refresh);
-    return () => {
-      alive = false;
-      window.removeEventListener("notifications-updated", refresh);
-    };
-  }, [pathname]);
   return (
     <div className="app-shell" lang="en">
       <aside className={`sidebar ${open ? "open" : ""}`}>
@@ -86,7 +76,7 @@ export function Shell({
         </button>
         <div className="eyebrow px-3">{role.toLowerCase()} workspace</div>
         <nav>
-          {navigation[role].map(([key, label]) => {
+          {navigation[role].filter(([key]) => !["settings", "notifications", "attendance", "progress", "routines"].includes(key)).map(([key, label]) => {
             const Icon = icons[key] || BookOpen;
             const href = key === "dashboard" ? base : `${base}/${key}`;
             return (
@@ -133,25 +123,11 @@ export function Shell({
             )}
           </div>
           <div className="topbar-actions">
-            <Link aria-label="Notifications" href={`${base}/notifications`}>
-              <span className="flex">
-                <Bell size={19} />
-                {unread < 0 && (
-                  <span title="Notification count unavailable">!</span>
-                )}
-                {unread > 0 && (
-                  <span
-                    className="pill"
-                    aria-label={`${unread} unread notifications`}
-                  >
-                    {unread}
-                  </span>
-                )}
-              </span>
+            <Link className="avatar" href={`${base}/${role === "ADMIN" ? "settings" : "profile"}`} aria-label="My profile">
+              {avatar ? <img src={avatar} alt="Your profile photo" onError={() => setAvatar("")} /> : displayName.slice(0, 1)}
             </Link>
-            <span className="avatar">{name.slice(0, 1)}</span>
             <div className="user-name">
-              <strong className="text-xs">{name}</strong>
+              <strong className="text-xs">{displayName}</strong>
               <p className="text-[10px] capitalize">{role.toLowerCase()}</p>
             </div>
             <button

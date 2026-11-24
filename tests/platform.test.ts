@@ -159,21 +159,24 @@ describe("Database-backed permissions and workflows", () => {
       text: "Why does this happen?",
     });
     f.question = q.id!;
-    await mutate(f.teacher, "question-replies", "POST", {
+    const reply = {
       questionId: f.question,
       text: "Inertia resists changes in motion.",
-    });
+    };
+    const publish = { id: f.question, publishToTeachers: true };
+    expect((await readQa(f.admin, new URLSearchParams({ tab: "queue" }))).items
+      .some((item) => item.id === f.question)).toBe(true);
+    expect((await readQa(f.otherTeacher, new URLSearchParams())).items
+      .some((item) => item.id === f.question)).toBe(false);
+    await expect(mutate(f.otherTeacher, "question-replies", "POST", reply)).rejects.toMatchObject({ status: 403 });
+    await expect(mutate(f.teacher, "questions", "PATCH", publish)).rejects.toMatchObject({ status: 403 });
+    await mutate(f.admin, "questions", "PATCH", publish);
+    await mutate(f.otherTeacher, "question-replies", "POST", reply);
     const rows = await getData(f.teacher, "questions", new URLSearchParams());
     const json = JSON.stringify(rows);
     expect(json).not.toContain(f.student.id);
-    expect(json).not.toContain(f.teacher.id);
+    expect(json).not.toContain(f.otherTeacher.id);
     expect(json).toContain("Anonymous Teacher");
-    await expect(
-      mutate(f.otherTeacher, "question-replies", "POST", {
-        questionId: f.question,
-        text: "No access",
-      }),
-    ).rejects.toThrow();
   });
   it("upserts attendance without duplicate student records", async () => {
     const f = fixtures;
@@ -270,6 +273,11 @@ describe("Database-backed permissions and workflows", () => {
       text: "",
       imageId: image.id,
     });
+    await mutate(f.admin, "question-replies", "POST", { questionId: question.id, text: "Admin explanation." });
+    const studentBoard = await readQa(f.student, new URLSearchParams());
+    expect(studentBoard.items.find((item) => item.id === question.id)?.replies[0]?.author).toBe("Admin");
+    expect((await readQa(f.teacher, new URLSearchParams())).items.some((item) => item.id === question.id)).toBe(false);
+    await mutate(f.admin, "questions", "PATCH", { id: question.id, publishToTeachers: true });
     const rows = await getData(f.teacher, "questions", new URLSearchParams());
     const row = (rows as any[]).find((r) => r.id === question.id);
     expect(row.imageId).toBe(image.id);
@@ -329,6 +337,8 @@ describe("Database-backed permissions and workflows", () => {
     const voterQuota = (await readQa(f.student, new URLSearchParams())).remaining;
     await expect(updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true })).rejects.toMatchObject({ status: 403 });
     await mutate(f.otherStudent, "questions", "PATCH", { id: questionId, shareWithClass: true, shareWhilePending: true });
+    await expect(updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true })).rejects.toMatchObject({ status: 403 });
+    await mutate(f.admin, "questions", "PATCH", { id: questionId, publishToTeachers: true });
     await updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true });
     const pending = await readQa(f.student, new URLSearchParams());
     expect(pending.items.find((item) => item.id === questionId)).toMatchObject({
@@ -340,7 +350,7 @@ describe("Database-backed permissions and workflows", () => {
     await mutate(f.otherStudent, "questions", "PATCH", { id: questionId, shareWhilePending: false });
     expect((await readQa(f.student, new URLSearchParams())).items.some((item) => item.id === questionId)).toBe(false);
 
-    await mutate(f.teacher, "question-replies", "POST", { questionId, text: "By Newton's second law." });
+    await mutate(f.admin, "question-replies", "POST", { questionId, text: "By Newton's second law." });
     await saveQa(f.student, { questionId, saved: true });
     await updateQaSignal(f.student, { questionId, action: "sameDoubt", value: true });
     await updateQaSignal(f.student, { questionId, action: "understood", value: true });

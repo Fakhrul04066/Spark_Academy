@@ -1,0 +1,17 @@
+.git/
+.vercel/
+node_modules/
+.next*/
+.local/
+.env
+.env.*
+!.env.example
+legacy/
+dist/
+previews/
+test-results/
+playwright-report/
+/*.png
+/*.zip
+/*.tar.gz
+*.tsbuildinfo

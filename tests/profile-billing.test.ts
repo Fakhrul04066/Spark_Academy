@@ -25,7 +25,99 @@ afterAll(async () => {
   await db.$disconnect();
 });
 
-describe("Student profile and payment records", () => {
+describe("Profiles and payment records", () => {
+  it("totals teacher earnings once per class and credited Q&A answer", async () => {
+    const key = crypto.randomUUID();
+    const batchId = `batch-${key}`;
+    const subjectId = `subject-${key}`;
+    const params = new URLSearchParams({ teacherId: teacher.id });
+    try {
+      await db.batch.create({ data: { id: batchId, name: batchId, className: "Test class" } });
+      await db.subject.create({ data: { id: subjectId, name: subjectId } });
+      const entries = Array.from({ length: 10 }, (_, index) => index);
+      await db.teacherClassRecord.createMany({
+        data: entries.map((index) => ({
+          teacherId: teacher.id, batchId, subjectId, date: "2026-11-15", classNumber: index + 1,
+          paid: index < 4, amountMinor: index < 4 ? 2500 : 4000,
+        })),
+      });
+      await db.anonymousQuestion.createMany({
+        data: entries.map((index) => ({
+          id: `${key}-${index}`, userId: student.id, batchId, subjectId, topic: "Test Q&A", text: "Question",
+        })),
+      });
+      await db.questionReply.createMany({
+        data: entries.map((index) => ({
+          id: `reply-${key}-${index}`, questionId: `${key}-${index}`, userId: teacher.id,
+          text: "Answer", createdAt: new Date("2026-11-15T09:00:00Z"),
+        })),
+      });
+      const followUp = await db.questionReply.create({
+        data: { questionId: `${key}-0`, userId: teacher.id, text: "Another reply", createdAt: new Date("2026-11-15T10:00:00Z") },
+      });
+      const update = { id: `reply-${key}-0`, kind: "qna", paid: true };
+      await expect(mutate(teacher, "teacher-payments", "PATCH", update)).rejects.toThrow("Access denied");
+      await expect(getData(student, "teacher-payments", params)).rejects.toThrow("Access denied");
+      await expect(mutate(admin, "teacher-payments", "PATCH", { ...update, id: followUp.id })).rejects.toThrow("credited teacher answer");
+      await mutate(admin, "teacher-payments", "PATCH", update);
+      const classInfo = {
+        teacherId: teacher.id, batchId, subjectId, date: "2026-11-15", classNumber: 11,
+        amountTaka: "31.25", payment: "Unpaid", adminComment: "",
+      };
+      await expect(mutate(teacher, "class-records", "POST", classInfo)).rejects.toThrow("Access denied");
+      await expect(mutate(admin, "class-records", "POST", { ...classInfo, amountTaka: "31.255" })).rejects.toThrow();
+      const created = await mutate(admin, "class-records", "POST", classInfo);
+      await mutate(admin, "class-records", "PATCH", { ...classInfo, id: created.id, amountTaka: "32.50" });
+      const expected = { totalMinor: 40250, paidMinor: 10300, dueMinor: 29950, classCount: 11, answerCount: 10, classTotalMinor: 37250, answerRate: 300 };
+      expect(await getData(admin, "teacher-payments", params)).toMatchObject(expected);
+      expect(await getData(teacher, "teacher-payments", new URLSearchParams({ teacherId: admin.id }))).toMatchObject(expected);
+    } finally {
+      await db.questionReply.deleteMany({ where: { question: { subjectId } } });
+      await db.anonymousQuestion.deleteMany({ where: { subjectId } });
+      await db.teacherClassRecord.deleteMany({ where: { subjectId } });
+      await db.subject.deleteMany({ where: { id: subjectId } });
+      await db.batch.deleteMany({ where: { id: batchId } });
+    }
+  });
+  it("lists each assigned subject once on the teacher profile", async () => {
+    const key = crypto.randomUUID();
+    const subjectId = `subject-${key}`;
+    const batchIds = [`batch-a-${key}`, `batch-b-${key}`];
+    expect(await getData(teacher, "profile", new URLSearchParams())).toMatchObject({ subjects: [] });
+    try {
+      const subject = await db.subject.create({ data: { id: subjectId, name: subjectId } });
+      await db.batch.createMany({
+        data: batchIds.map((id) => ({ id, name: id, className: "Test class" })),
+      });
+      await db.teacherAssignment.createMany({
+        data: batchIds.map((batchId) => ({ userId: teacher.id, subjectId, batchId })),
+      });
+      expect(await getData(teacher, "profile", new URLSearchParams())).toMatchObject({ subjects: [subject] });
+      expect(await getData(student, "profile", new URLSearchParams())).not.toHaveProperty("subjects");
+    } finally {
+      await db.teacherAssignment.deleteMany({ where: { subjectId } });
+      await db.batch.deleteMany({ where: { id: { in: batchIds } } });
+      await db.subject.deleteMany({ where: { id: subjectId } });
+    }
+  });
+  it("allows only admins to assign unique teacher IDs", async () => {
+    const teacherCode = `T-${crypto.randomUUID()}`;
+    const id = teacher.id;
+    await expect(mutate(teacher, "profile", "PATCH", { name: teacher.name, teacherCode })).rejects.toThrow();
+    await expect(mutate(teacher, "teachers", "PATCH", { id, teacherCode })).rejects.toThrow("Access denied");
+    await mutate(admin, "teachers", "PATCH", { id, teacherCode: ` ${teacherCode} ` });
+    expect(await getData(teacher, "profile", new URLSearchParams())).toMatchObject({ teacherCode });
+
+    const email = `${crypto.randomUUID()}@billing.test`;
+    const newTeacher = { name: "New teacher", email, password: "test-only-password" };
+    await expect(mutate(admin, "teachers", "POST", { ...newTeacher, teacherCode })).rejects.toMatchObject({ code: "P2002" });
+
+    await mutate(admin, "teachers", "PATCH", { id, teacherCode: "" });
+    expect(await getData(teacher, "profile", new URLSearchParams())).toMatchObject({ teacherCode: null });
+    const created = await mutate(admin, "teachers", "POST", { ...newTeacher, teacherCode });
+    if (created && "id" in created && typeof created.id === "string") users.push(created.id);
+    expect(await db.user.findUnique({ where: { email } })).toMatchObject({ teacherCode });
+  });
   it("persists each valid blood group on the signed-in account and supports clearing it", async () => {
     for (const bloodGroup of ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]) {
       await mutate(student, "profile", "PATCH", { name: student.name, bloodGroup });

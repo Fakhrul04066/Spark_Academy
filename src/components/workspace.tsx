@@ -3,6 +3,7 @@ import { RevisionDate } from "./revision-date";
 import { ImageAttachment } from "./image-attachment";
 import { StudyDashboard } from "./study-dashboard";
 import { StudentBilling } from "./billing";
+import { ClassRecordDetails, TeacherClasses, type ClassRecord } from "./teacher-classes";
 import { BLOOD_GROUPS } from "@/lib/profile";
 
 import Link from "next/link";
@@ -49,6 +50,16 @@ type Field = {
 };
 
 const forms: Record<string, Field[]> = {
+  "class-records": [
+    { key: "teacherId", label: "Teacher", source: "teachers" },
+    { key: "batchId", label: "Class or batch", source: "batches" },
+    { key: "subjectId", label: "Subject", source: "subjects" },
+    { key: "classNumber", label: "Class number", type: "number" },
+    { key: "amountTaka", label: "Class payment (৳)", type: "money" },
+    { key: "date", label: "Date taught", type: "date" },
+    { key: "payment", label: "Payment status", options: ["Unpaid", "Paid"] },
+    { key: "adminComment", label: "Admin comments", type: "textarea", required: false },
+  ],
   students: [
     { key: "name", label: "Full name" },
     { key: "email", label: "Email address", type: "email" },
@@ -63,6 +74,7 @@ const forms: Record<string, Field[]> = {
 
   teachers: [
     { key: "name", label: "Full name" },
+    { key: "teacherCode", label: "Teacher ID", required: false },
     { key: "email", label: "Email address", type: "email" },
     {
       key: "password",
@@ -218,7 +230,8 @@ export function Workspace({
 
   const requestId = useRef(0);
   const base = "/" + role.toLowerCase();
-  const endpoint = module === "settings" ? "profile" : module;
+  const teacherClasses = role === "TEACHER" && module === "batches";
+  const endpoint = teacherClasses ? "class-records" : module === "settings" ? "profile" : module;
 
   const load = useCallback(async () => {
     const sequence = ++requestId.current;
@@ -247,12 +260,12 @@ export function Workspace({
           revisions,
           questions,
         ] = await Promise.all([
-          api("progress"),
-          api("attendance"),
+          role === "TEACHER" ? [] : api("progress"),
+          role === "TEACHER" ? [] : api("attendance"),
           api("exams?open=true"),
-          api("results"),
-          api("revision-schedules"),
-          api("questions"),
+          role === "TEACHER" ? [] : api("results"),
+          role === "TEACHER" ? [] : api("revision-schedules"),
+          role === "TEACHER" ? [] : api("questions"),
         ]);
         if (sequence === requestId.current)
           setCatalog({
@@ -271,7 +284,7 @@ export function Workspace({
     } finally {
       if (sequence === requestId.current) setLoading(false);
     }
-  }, [endpoint, page, query, module, batchFilter, dateFilter, studentFilter]);
+  }, [endpoint, page, query, module, role, batchFilter, dateFilter, studentFilter]);
 
   useEffect(() => {
     load();
@@ -327,7 +340,7 @@ export function Workspace({
         <div>
           <span className="eyebrow">SPARK ACADEMY / {role.toLowerCase()}</span>
           <h1 className="mt-2">{title}</h1>
-          <p>
+          {!teacherClasses && module !== "class-records" && <p>
             {module === "dashboard"
               ? `Welcome back, ${name.split(" ")[0]}. Let’s make today count.`
               : module === "questions"
@@ -335,7 +348,7 @@ export function Workspace({
                 : module === "feedback"
                   ? "Confidential feedback between students and administrators."
                   : "Your academic information, organized and up to date."}
-          </p>
+          </p>}
         </div>
         {canCreate && (
           <button
@@ -355,7 +368,7 @@ export function Workspace({
                   ? "feedback"
                   : module === "exams"
                     ? "exam"
-                    : "new"}
+                    : module === "class-records" ? "class record" : "new"}
           </button>
         )}
       </div>}
@@ -392,6 +405,7 @@ export function Workspace({
           />
         ) : (
           <RecordForm
+            key={module === "class-records" ? editing?.id || "new-class-record" : undefined}
             module={module}
             fields={
               editing && ["students", "teachers"].includes(module)
@@ -417,7 +431,9 @@ export function Workspace({
                             required: false,
                           },
                         ]
-                      : []),
+                      : [
+                          { key: "teacherCode", label: "Teacher ID", required: false },
+                        ]),
                     { key: "phone", label: "Phone", required: false },
                     {
                       key: "school",
@@ -445,7 +461,9 @@ export function Workspace({
       ) : (
         data && (
           <>
-            {module === "dashboard" ? (
+            {teacherClasses ? (
+              <TeacherClasses records={data} batches={catalog.batches || []} />
+            ) : module === "dashboard" ? (
               <StudyDashboard
                 role={role}
                 name={name}
@@ -456,6 +474,7 @@ export function Workspace({
             ) : module === "profile" || module === "settings" ? (
               <Profile
                 data={data}
+                isTeacher={role === "TEACHER"}
                 save={(body) => act("profile", "PATCH", body)}
               />
             ) : module === "reports" ? (
@@ -465,6 +484,7 @@ export function Workspace({
                     "students",
                     "teachers",
                     "batches",
+                    "class-records",
                     "exams",
                     "questions",
                     "feedback",
@@ -1101,6 +1121,22 @@ export function Workspace({
                                   {r.completedAt ? "Completed" : "Pending"}
                                 </span>
                               </div>
+                            ) : module === "class-records" ? (
+                              <>
+                                <p className="muted">{r.teacher.name}</p>
+                                <ClassRecordDetails record={r as ClassRecord} />
+                                <p className="mt-2">Class payment <strong>৳{(r.amountMinor / 100).toLocaleString("en-BD", { maximumFractionDigits: 2 })}</strong></p>
+                                <button
+                                  className="btn secondary small mt-4"
+                                  onClick={() => {
+                                    setEditing({ ...r, amountTaka: (r.amountMinor / 100).toFixed(2), payment: r.paid ? "Paid" : "Unpaid" });
+                                    setShowForm(true);
+                                    window.scrollTo({ top: 0 });
+                                  }}
+                                >
+                                  Edit class record
+                                </button>
+                              </>
                             ) : (
                               <>
                                 <h3>
@@ -1109,6 +1145,7 @@ export function Workspace({
                                 <p className="mt-2">
                                   {[
                                     r.email,
+                                    module === "teachers" && r.teacherCode,
                                     r.className,
                                     r.subject?.name,
                                     r.batch?.name,
@@ -1308,12 +1345,17 @@ function RecordForm({
           .catch((e) => setError(e.message));
   }, [fields]);
 
-  const choices = (source: string) =>
-    source === "chapters"
+  const choices = (source: string) => {
+    if (module === "class-records" && source === "teachers" && value?.teacher &&
+      !catalog.teachers?.some((teacher: Row) => teacher.id === value.teacherId)) {
+      return [...(catalog.teachers || []), { id: value.teacherId, name: value.teacher.name }];
+    }
+    return source === "chapters"
       ? (catalog.subjects || []).flatMap((s: Row) =>
           s.chapters.map((c: Row) => ({ ...c, name: `${s.name} / ${c.name}` })),
         )
       : people[source] || catalog[source] || [];
+  };
 
   return (
     <form
@@ -1340,7 +1382,7 @@ function RecordForm({
       }}
     >
       <div className="row">
-        <h3>{value ? "Edit record" : "Add " + module}</h3>
+        <h3>{module === "class-records" ? (value ? "Edit class record" : "Add class record") : value ? "Edit record" : "Add " + module}</h3>
         <button
           type="button"
           onClick={onCancel}
@@ -1360,7 +1402,7 @@ function RecordForm({
                 className="input"
                 name={f.key}
                 required
-                defaultValue={value?.[f.key] || ""}
+                defaultValue={value?.[f.key] || (f.key === "payment" ? "Unpaid" : "")}
               >
                 <option value="" disabled>
                   Choose {f.label.toLowerCase()}
@@ -1387,7 +1429,7 @@ function RecordForm({
               <input
                 aria-label={f.label}
                 className="input"
-                type={f.type || "text"}
+                type={f.type === "money" ? "number" : f.type || "text"}
                 name={f.key}
                 defaultValue={
                   value?.[f.key]
@@ -1407,7 +1449,9 @@ function RecordForm({
                 }
                 required={f.required !== false}
                 minLength={f.type === "password" ? 12 : undefined}
-                min={f.type === "number" ? 0 : undefined}
+                min={f.type === "number" || f.type === "money" ? 0 : undefined}
+                max={f.type === "money" ? 1000000 : undefined}
+                step={f.type === "money" ? "0.01" : undefined}
               />
             )}
           </label>
@@ -1483,13 +1527,37 @@ function ReplyForm({
 
 function Profile({
   data,
+  isTeacher,
   save,
 }: {
   data: Row;
+  isTeacher: boolean;
   save: (body: Row) => Promise<boolean>;
 }) {
   const [image, setImage] = useState(data.hasAvatar ? "/api/avatar" : ""),
     [uploadStatus, setUploadStatus] = useState("");
+  const accountDetails = isTeacher
+    ? [
+        ["Teacher ID", data.teacherCode || "Unassigned"],
+        ["Email", data.email],
+        [
+          "Join date",
+          new Intl.DateTimeFormat("en-GB", {
+            dateStyle: "medium",
+            timeZone: "Asia/Dhaka",
+          }).format(new Date(data.createdAt)),
+        ],
+      ]
+    : [
+        ["Email", data.email],
+        ["Student ID", data.studentCode],
+        ["Class", data.className],
+        ["Group", data.group],
+        ["Role", data.role],
+        ["Guardian", data.guardianName],
+        ["Guardian contact", data.guardianContact],
+        ["Admission", when(data.createdAt)],
+      ];
   return (
     <div className="grid two profile-details">
       <form
@@ -1502,7 +1570,7 @@ function Profile({
             phone: f.get("phone"),
             school: f.get("school"),
             bloodGroup: f.get("bloodGroup"),
-            emailReminders: f.get("emailReminders") === "on",
+            ...(!isTeacher && { emailReminders: f.get("emailReminders") === "on" }),
           });
         }}
       >
@@ -1550,14 +1618,24 @@ function Profile({
             {uploadStatus}
           </p>
         )}
-        {["name", "phone", "school"].map((k) => (
-          <label className="label capitalize" key={k}>
-            {k}
+        {[
+          { field: "name", label: "Name", maxLength: 500 },
+          { field: "phone", label: isTeacher ? "Phone number" : "Phone", maxLength: 30 },
+          {
+            field: "school",
+            label: isTeacher ? "Educational institution or current job title" : "School",
+            maxLength: 200,
+          },
+        ].map(({ field, label, maxLength }) => (
+          <label className="label" key={field}>
+            {label}
             <input
               className="input"
-              name={k}
-              defaultValue={data[k] || ""}
-              required={k === "name"}
+              name={field}
+              type={field === "phone" ? "tel" : "text"}
+              defaultValue={data[field] || ""}
+              required={field === "name"}
+              maxLength={maxLength}
             />
           </label>
         ))}
@@ -1567,33 +1645,40 @@ function Profile({
             {BLOOD_GROUPS.map((group) => <option key={group}>{group}</option>)}
           </select>
         </label>
-        <label className="flex">
-          <input
-            name="emailReminders"
-            type="checkbox"
-            defaultChecked={data.emailReminders}
-          />
-          Email revision reminders
-        </label>
+        {!isTeacher && (
+          <label className="flex">
+            <input
+              name="emailReminders"
+              type="checkbox"
+              defaultChecked={data.emailReminders}
+            />
+            Email revision reminders
+          </label>
+        )}
         <button className="btn">Save profile</button>
       </form>
       <div className="card stack">
-        <h3>Account & academic details</h3>
-        {[
-          ["Email", data.email],
-          ["Student ID", data.studentCode],
-          ["Class", data.className],
-          ["Group", data.group],
-          ["Role", data.role],
-          ["Guardian", data.guardianName],
-          ["Guardian contact", data.guardianContact],
-          ["Admission", when(data.createdAt)],
-        ].map(([k, v]) => (
+        <h3>{isTeacher ? "Account details" : "Account & academic details"}</h3>
+        {accountDetails.map(([k, v]) => (
           <div className="row" key={k}>
             <span className="muted">{k}</span>
             <strong>{v || "—"}</strong>
           </div>
         ))}
+        {isTeacher && (
+          <section className="stack" aria-labelledby="profile-subjects-heading">
+            <h3 id="profile-subjects-heading">My Subjects</h3>
+            {data.subjects?.length ? (
+              <ul className="list-disc pl-5">
+                {data.subjects.map((subject: { id: string; name: string }) => (
+                  <li key={subject.id}>{subject.name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">No subjects assigned yet.</p>
+            )}
+          </section>
+        )}
         <p className="footnote">
           Academic fields are managed by your administrator.
         </p>

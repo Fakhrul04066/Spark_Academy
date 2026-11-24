@@ -113,6 +113,27 @@
   border: 1px solid var(--desk-line);
   border-radius: 16px;
 }
+.desk-teaching-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.desk-teaching-links a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--desk-line);
+  border-radius: 8px;
+  font-weight: 600;
+}
+.desk-teaching-links a:hover {
+  color: var(--desk-accent);
+}
+.desk-teaching-links a svg:last-child {
+  margin-inline-start: auto;
+}
 .desk-metric {
   display: grid;
   align-content: start;

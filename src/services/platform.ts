@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { BLOOD_GROUPS } from "@/lib/profile";
 import { readBilling, recordFee, recordPayment } from "./billing";
+import { readTeacherPayments, updateTeacherPayment } from "./teacher-payments";
 import { hash } from "bcryptjs";
 import { db } from "@/lib/db";
 import { academicAccess, batchIds, type Actor } from "@/lib/auth";
@@ -155,6 +156,22 @@ export async function getData(
   const q = (params.get("q") || "").slice(0, 100);
   const academic = await academicWhere(u);
   switch (resource) {
+    case "teacher-payments":
+      return readTeacherPayments(u, params.get("teacherId"));
+    case "class-records":
+      check(u.role === "ADMIN" || u.role === "TEACHER");
+      return db.teacherClassRecord.findMany({
+        where: u.role === "TEACHER" ? { teacherId: u.id } : {
+          teacher: { name: { contains: q, mode: "insensitive" } },
+        },
+        include: {
+          teacher: { select: { name: true } },
+          batch: { select: { name: true, className: true } },
+          subject: { select: { name: true } },
+        },
+        orderBy: [{ date: "desc" }, { classNumber: "desc" }, { id: "asc" }],
+        ...(u.role === "ADMIN" && { skip, take }),
+      });
     case "billing":
       return readBilling(u, params.get("studentId"));
     case "catalog": {
@@ -208,6 +225,7 @@ export async function getData(
           school: true,
           bloodGroup: true,
           studentCode: true,
+          teacherCode: true,
           className: true,
           group: true,
           guardianName: true,
@@ -221,7 +239,13 @@ export async function getData(
       });
       if (!profile) return null;
       const { avatarKey, ...safe } = profile;
-      return { ...safe, hasAvatar: !!avatarKey };
+      if (u.role !== "TEACHER") return { ...safe, hasAvatar: !!avatarKey };
+      const subjects = await db.subject.findMany({
+        where: { assignments: { some: { userId: u.id } } },
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+      });
+      return { ...safe, hasAvatar: !!avatarKey, subjects };
     }
     case "students":
     case "teachers": {
@@ -249,6 +273,7 @@ export async function getData(
                 role: true,
                 active: true,
                 studentCode: true,
+                teacherCode: true,
                 className: true,
                 group: true,
                 phone: true,
@@ -733,6 +758,8 @@ export async function mutate(
   body: unknown,
 ): Promise<{ id?: string; saved?: boolean }> {
   const methods: Record<string, string[]> = {
+    "teacher-payments": ["PATCH"],
+    "class-records": ["POST", "PATCH"],
     "fee-charges": ["POST"],
     "fee-payments": ["POST"],
     profile: ["PATCH"],
@@ -763,6 +790,41 @@ export async function mutate(
   );
   const raw = z.object({ id: id.optional() }).passthrough().parse(body);
   const target = raw.id;
+  if (resource === "teacher-payments") return updateTeacherPayment(u, body);
+  if (resource === "class-records") {
+    check(u.role === "ADMIN");
+    const { id: recordId, payment, amountTaka, ...record } = z.object({
+      id: id.optional(),
+      teacherId: id,
+      batchId: id,
+      subjectId: id,
+      classNumber: z.number().int().min(1).max(999999),
+      amountTaka: z.string().trim().regex(/^\d{1,7}(\.\d{1,2})?$/, "Enter a class payment amount with up to two decimal places")
+        .transform((value) => {
+          const [whole, fraction = ""] = value.split(".");
+          return Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
+        })
+        .pipe(z.number().max(100000000, "Class payment cannot exceed ৳1,000,000")),
+      date: day.refine((value) => value <= dhakaDate(), "A completed class cannot have a future date"),
+      adminComment: z.string().trim().max(2000),
+      payment: z.enum(["Unpaid", "Paid"]),
+    }).strict().parse(body);
+    check((await db.user.findUnique({
+      where: { id: record.teacherId },
+      select: { role: true },
+    }))?.role === "TEACHER", 400, "Choose a teacher");
+    const data = { ...record, amountMinor: amountTaka, paid: payment === "Paid" };
+    const saved = await db.$transaction(async (tx) => {
+      const row = method === "PATCH"
+        ? await tx.teacherClassRecord.update({ where: { id: id.parse(recordId) }, data })
+        : await tx.teacherClassRecord.create({ data });
+      await tx.auditLog.create({
+        data: { actorId: u.id, action: method === "PATCH" ? "class.update" : "class.create", resource: row.id },
+      });
+      return row;
+    });
+    return { id: saved.id, saved: true };
+  }
   if (resource === "fee-charges") return recordFee(u, body);
   if (resource === "fee-payments") return recordPayment(u, body);
   if (resource === "profile") {
@@ -781,6 +843,10 @@ export async function mutate(
   }
   if (resource === "students" || resource === "teachers") {
     check(u.role === "ADMIN");
+    const teacherCode =
+      resource === "teachers"
+        ? z.string().trim().max(100).transform((value) => value || null).optional()
+        : z.never().optional();
     if (method === "PATCH") {
       const data = z
         .object({
@@ -794,6 +860,7 @@ export async function mutate(
           school: z.string().max(200).optional(),
           guardianName: z.string().max(200).optional(),
           guardianContact: z.string().max(100).optional(),
+          teacherCode,
         })
         .strict()
         .parse(body);
@@ -824,6 +891,7 @@ export async function mutate(
         password: z.string().min(12).max(128),
         className: str.optional(),
         studentCode: str.optional(),
+        teacherCode,
       })
       .strict()
       .parse(body);

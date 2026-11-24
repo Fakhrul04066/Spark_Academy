@@ -129,6 +129,15 @@ test("revision circle checkboxes update lights; private doubt images upload and 
     const context = await browser.newContext();
     const teacherPage = await context.newPage();
     await login(teacherPage, "teacher");
+    expect((await teacherPage.request.get("/api/question-images/" + imageId)).status()).toBe(403);
+    const adminContext = await browser.newContext();
+    const moderator = await adminContext.newPage();
+    await login(moderator, "admin");
+    expect((await moderator.request.patch("/api/questions", {
+      headers: { Origin: "http://127.0.0.1:3000" },
+      data: { id: questionId, publishToTeachers: true },
+    })).ok()).toBe(true);
+    await adminContext.close();
     expect(
       (
         await teacherPage.request.get("/api/question-images/" + imageId)

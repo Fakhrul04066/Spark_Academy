@@ -150,7 +150,9 @@ export function StudyDashboard({
           <p>
             {student
               ? "Your classes, attendance and progress, together."
-              : "Classes, student attendance and academic progress, together."}
+              : role === "TEACHER"
+                ? "Your class schedule and teaching tools."
+                : "Classes, student attendance and academic progress, together."}
           </p>
         </div>
         <div className="desk-heading-actions">
@@ -177,7 +179,7 @@ export function StudyDashboard({
           </Link>
         </div>
       </header>
-      <div className="desk-overview" aria-label="Academic overview">
+      {role !== "TEACHER" && <div className="desk-overview" aria-label="Academic overview">
         {metrics.map((metric) => (
           <a href={metric.href} key={metric.label} className="desk-metric">
             <span>{metric.label}</span>
@@ -185,17 +187,34 @@ export function StudyDashboard({
             <small>{metric.note}</small>
           </a>
         ))}
-      </div>
-      <div className="desk-main-grid">
+      </div>}
+      <div className={role === "TEACHER" ? undefined : "desk-main-grid"}>
         <DailyRoutine catalog={catalog} base={base} student={student} />
-        <AttendanceOverview
+        {role !== "TEACHER" && <AttendanceOverview
           initial={catalog.attendance || []}
           summary={summary}
           percentage={data.attendance}
           student={student}
           base={base}
-        />
+        />}
       </div>
+      {role === "TEACHER" ? (
+        <section className="desk-panel" aria-labelledby="teaching-shortcuts-title">
+          <PanelHeading title="Quick actions" id="teaching-shortcuts-title" />
+          <div className="desk-teaching-links">
+            <Link href={`${base}/batches`}>
+              <BookOpen size={16} strokeWidth={1.5} aria-hidden="true" />
+              <span>View my classes</span>
+              <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+            <Link href={`${base}/resources`}>
+              <BookOpen size={16} strokeWidth={1.5} aria-hidden="true" />
+              <span>Open study materials</span>
+              <ArrowRight size={16} strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+      ) : <>
       <div className="desk-secondary-grid">
         <section
           className="desk-panel"
@@ -284,9 +303,9 @@ export function StudyDashboard({
           <PanelHeading title="Revision plan" id="revision-title">
             <Link
               className="desk-text-link"
-              href={`${base}/${role === "ADMIN" ? "revision-schedules" : role === "TEACHER" ? "results" : "revision"}`}
+              href={`${base}/${role === "ADMIN" ? "revision-schedules" : "revision"}`}
             >
-              {role === "TEACHER" ? "View results" : "Open planner"}
+              Open planner
             </Link>
           </PanelHeading>
           <p className="desk-description">
@@ -405,6 +424,7 @@ export function StudyDashboard({
           )}
         </section>
       </div>
+      </>}
       <section className="desk-panel" aria-labelledby="exams-title">
         <PanelHeading title="Examinations" id="exams-title">
           <Link href={`${base}/exams`} className="desk-text-link">
@@ -568,7 +588,7 @@ function DailyRoutine({
                 month: "short",
               })}
         </h3>
-        <span>Dhaka time</span>
+        {base !== "/teacher" && <span>Dhaka time</span>}
       </div>
       <div className="desk-agenda-content" aria-busy={loading}>
         {loading && !routines.length ? (

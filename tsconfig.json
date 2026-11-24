@@ -38,7 +38,13 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     ".next-design-check/types/**/*.ts",
-    ".next-design-check/dev/types/**/*.ts"
+    ".next-design-check/dev/types/**/*.ts",
+    ".next-design-check/signup-verification/types/**/*.ts",
+    ".next-design-check/signup-verification/dev/types/**/*.ts",
+    ".next-perf/types/**/*.ts",
+    ".next-perf/dev/types/**/*.ts",
+    ".next-design-check/landing-performance/types/**/*.ts",
+    ".next-design-check/landing-performance/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

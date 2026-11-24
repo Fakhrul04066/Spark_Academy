@@ -1,0 +1,244 @@
+.page {
+  --payment-line: #dce5e2;
+  --payment-muted: #526571;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.page > h1 {
+  margin-block-end: 4px;
+}
+
+.teacherSelect {
+  max-inline-size: 360px;
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--payment-line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.total {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding: 24px;
+  background: #164e3c;
+  color: #fff;
+}
+
+.total h2,
+.panelHeading {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.total > span {
+  margin-block-start: 8px;
+  color: #d5e8dc;
+  font-size: 13px;
+}
+
+.total > strong {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.balance {
+  display: grid;
+  align-content: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+.balanceAmounts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.balanceAmounts > div {
+  display: grid;
+  gap: 4px;
+}
+
+.balanceAmounts span {
+  color: var(--payment-muted);
+  font-size: 13px;
+}
+
+.balanceAmounts strong {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.progress {
+  block-size: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #e7edea;
+}
+
+.progress span {
+  display: block;
+  block-size: 100%;
+  background: #238358;
+}
+
+.progressGroup {
+  display: grid;
+  gap: 4px;
+}
+
+.progressLabels {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--payment-muted);
+  font-size: 12px;
+}
+
+.progressLabels span:first-child {
+  color: #164e3c;
+}
+
+.panel {
+  min-width: 0;
+  border: 1px solid var(--payment-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.panelHeading {
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--payment-line);
+}
+
+.earningRows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.earning {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+.earning + .earning {
+  border-inline-start: 1px solid var(--payment-line);
+}
+
+.activityIcon {
+  color: var(--payment-muted);
+}
+
+.earning h3,
+.earning strong {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.earning p {
+  color: var(--payment-muted);
+  font-size: 12px;
+}
+
+.empty {
+  padding: 12px 20px;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel .table {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.panel .table :is(th, td) {
+  padding: 8px 12px;
+}
+
+.panel .table th {
+  background: #f4f7f6;
+  color: var(--payment-muted);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.table :is(th, td):nth-child(3) {
+  text-align: end;
+}
+
+.table td:nth-child(3),
+.balanceAmounts strong,
+.earning strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #fcf0dc;
+  color: #79460e;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status[data-paid="true"] {
+  background: #e4f3e9;
+  color: #205d3e;
+}
+
+@media (max-width: 640px) {
+  .overview,
+  .earningRows {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .total,
+  .balance,
+  .earning,
+  .panelHeading,
+  .empty {
+    padding-inline: 16px;
+  }
+
+  .total,
+  .balance {
+    padding-block: 16px;
+  }
+
+  .earning + .earning {
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--payment-line);
+  }
+
+  .panel .table :is(th, td) {
+    padding-inline: 6px;
+    font-size: 12px;
+  }
+}

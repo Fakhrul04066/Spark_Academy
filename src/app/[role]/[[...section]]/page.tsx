@@ -6,6 +6,7 @@ import { navigation } from "@/lib/navigation";
 import { Shell } from "@/components/shell";
 import { Workspace } from "@/components/workspace";
 import { BillingAdmin } from "@/components/billing";
+import { TeacherPayments } from "@/components/teacher-payments";
 export const dynamic = "force-dynamic";
 export default async function Page({
   params,
@@ -19,6 +20,7 @@ export default async function Page({
   if (!user) redirect("/login");
   if (user.role !== key) redirect("/" + user.role.toLowerCase());
   const module = section?.[0] || "dashboard";
+  if (key === "TEACHER" && module === "subjects") redirect("/teacher/profile");
   if (!navigation[key].some(([k]) => k === module) && module !== "attempt")
     notFound();
   const qa = module === "questions";
@@ -30,7 +32,9 @@ export default async function Page({
       })} />}
       {module === "payments" && key === "ADMIN" ? <BillingAdmin students={await db.user.findMany({
         where: { role: "STUDENT" }, orderBy: { name: "asc" }, select: { id: true, name: true, studentCode: true, email: true },
-      })} /> : qa ? <QaPage student={key === "STUDENT"} admin={key === "ADMIN"} /> : <Workspace
+      })} /> : module === "teacher-payments" ? <TeacherPayments teachers={key === "ADMIN" ? await db.user.findMany({
+        where: { role: "TEACHER" }, orderBy: { name: "asc" }, select: { id: true, name: true, teacherCode: true },
+      }) : undefined} /> : qa ? <QaPage student={key === "STUDENT"} admin={key === "ADMIN"} /> : <Workspace
         role={key}
         name={user.name}
         module={module}

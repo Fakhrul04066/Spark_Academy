@@ -410,6 +410,10 @@ async function handler(req: Request, ctx: Context) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025")
         return Response.json({ error: "Record not found" }, { status: 404 });
+      if (e.code === "P2002" && Array.isArray(e.meta?.target) && e.meta.target.includes("teacherCode"))
+        return Response.json({ error: "That Teacher ID is already in use." }, { status: 409 });
+      if (e.code === "P2002" && Array.isArray(e.meta?.target) && e.meta.target.includes("classNumber"))
+        return Response.json({ error: "That class number is already in use for this teacher, batch, and subject." }, { status: 409 });
       if (["P2002", "P2003", "P2034"].includes(e.code))
         return Response.json(
           {

@@ -248,6 +248,14 @@ test("recorded Q&A is private and teacher can answer asynchronously", async ({
   const teacherContext = await browser.newContext();
   const teacher = await teacherContext.newPage();
   await login(teacher, "teacher");
+  const adminContext = await browser.newContext();
+  const moderator = await adminContext.newPage();
+  await login(moderator, "admin");
+  expect((await moderator.request.patch("/api/questions", {
+    headers: { Origin: "http://127.0.0.1:3000" },
+    data: { id: questionId, publishToTeachers: true },
+  })).ok()).toBe(true);
+  await adminContext.close();
   const qs = await (await teacher.request.get("/api/questions")).json();
   expect(JSON.stringify(qs)).not.toContain("student1@spark.example");
   const selected = qs.data.find((q: { id: string }) => q.id === questionId);

@@ -4,7 +4,7 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
   await page.route("https://fonts.googleapis.com/**",r=>r.fulfill({contentType:"text/css",body:""}));
   await page.goto("/",{waitUntil:"commit"});
   await expect(page.locator(".storm-brand-title")).toContainText("SPARK");
-  await expect(page.locator("#coursegrid article:visible")).toHaveCount(4);
+  await expect(page.locator("#coursegrid article:visible")).toHaveCount(5);
   await expect(page.locator("#features .feature-3d-icon")).toHaveCount(6);
   await expect(page.locator("#coursegrid")).not.toContainText("ব্যাচের তথ্য অ্যাডমিনের কাছে");
   const mobile=(page.viewportSize()?.width||1440)<=1120;
@@ -23,16 +23,17 @@ test("supplied landing: readable FAQ, slow circular controls, courses and mobile
     return [".faq-q",".faq-a"].map(selector=>{const style=getComputedStyle(root.querySelector(selector)!);const a=lum(style.color),b=lum(style.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);});
   });
   for(const ratio of ratios)expect(ratio).toBeGreaterThanOrEqual(4.5);
-  const pause=page.getByRole("button",{name:"Pause or play courses"});
-  await pause.click();await expect(pause).toContainText("Play");
+  await expect(page.locator(".ring-control,.orbit-arrow")).toHaveCount(0);
   const current=page.locator(mobile?".storm-course-stack .is-mobile-current":".storm-course-stack .is-orbit-current");
   const before=await current.getAttribute("data-go-grade");
-  await page.getByRole("button",{name:"Next courses",exact:true}).click();
+  const carousel=page.locator(".storm-course-stack");
+  await carousel.focus();
+  await page.keyboard.press("ArrowRight");
   await expect(current).not.toHaveAttribute("data-go-grade",before!);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await expect(page.locator('.nav-actions a[href="/login"]')).toBeVisible();
   await page.emulateMedia({reducedMotion:"reduce"});
-  await expect(pause).toBeDisabled();
+  await expect(page.locator(".ring-control")).toHaveCount(0);
 });
 for (const role of ["student", "teacher", "admin"] as const)
   test(`${role}: reference theme preserves functional dashboard`, async ({

@@ -62,6 +62,7 @@ model User {
   bloodGroup       String?
   avatarKey        String?
   studentCode      String?             @unique
+  teacherCode      String?             @unique
   className        String?
   group            String?
   guardianName     String?
@@ -72,6 +73,7 @@ model User {
   qaBookmarks      QaBookmark[]
   enrollments      Enrollment[]
   assignments      TeacherAssignment[]
+  classRecords     TeacherClassRecord[]
   attempts         ExamAttempt[]
   attendance       AttendanceRecord[]
   progress         LearningProgress[]
@@ -117,6 +119,7 @@ model FeePayment {
 }
 
 model Batch {
+  classRecords TeacherClassRecord[]
   id          String              @id @default(cuid())
   name        String              @unique
   className   String
@@ -144,6 +147,7 @@ model Enrollment {
 }
 
 model Subject {
+  classRecords TeacherClassRecord[]
   id          String              @id @default(cuid())
   name        String              @unique
   chapters    Chapter[]
@@ -175,6 +179,25 @@ model TeacherAssignment {
   subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
 
   @@unique([userId, batchId, subjectId])
+}
+
+model TeacherClassRecord {
+  id           String  @id @default(cuid())
+  teacherId    String
+  batchId      String
+  subjectId    String
+  classNumber  Int
+  amountMinor  Int
+  date         String
+  adminComment String  @default("")
+  paid         Boolean @default(false)
+  teacher      User    @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  batch        Batch   @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([teacherId, batchId, subjectId, classNumber])
+  @@index([teacherId, date])
+  @@index([date])
 }
 
 model Lesson {
@@ -373,10 +396,14 @@ model QuestionReply {
   userId     String
   text       String
   audioId    String?           @unique
+  teacherPaid Boolean          @default(false)
   createdAt  DateTime          @default(now()) @db.Timestamptz(3)
   question   AnonymousQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
   user       User              @relation(fields: [userId], references: [id], onDelete: Restrict)
   audio      AudioAttachment?  @relation("ReplyAudio", fields: [audioId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([questionId, createdAt, id])
 }
 
 model AudioAttachment {

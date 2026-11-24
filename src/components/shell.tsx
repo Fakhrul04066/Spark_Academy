@@ -76,7 +76,11 @@ export function Shell({
         </button>
         <div className="eyebrow px-3">{role.toLowerCase()} workspace</div>
         <nav>
-          {navigation[role].filter(([key]) => !["settings", "notifications", "attendance", "progress", "routines"].includes(key)).map(([key, label]) => {
+          {navigation[role].filter(([key]) =>
+            key === "attendance"
+              ? role === "TEACHER"
+              : !["settings", "notifications", "progress", "routines"].includes(key),
+          ).map(([key, label]) => {
             const Icon = icons[key] || BookOpen;
             const href = key === "dashboard" ? base : `${base}/${key}`;
             return (
